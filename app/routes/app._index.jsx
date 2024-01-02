@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { json } from "@remix-run/node";
-import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { json, redirect } from "@remix-run/node";
+import { useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -12,84 +12,213 @@ import {
   List,
   Link,
   InlineStack,
+  IndexTable,
+  useIndexResourceState,
+  Thumbnail,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
+import { Products } from "../db.server";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
-  return null;
+  const products = await Products.find()
+
+  return json({
+    success: true,
+    products: products
+  })
 };
 
 export const action = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($input: ProductInput!) {
-        productCreate(input: $input) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
+
+  // const color = ["Red", "Orange", "Yellow", "Green"][
+  //   Math.floor(Math.random() * 4)
+  // ];
+  // const response = await admin.graphql(
+  //   `#graphql
+  //     mutation populateProduct($input: ProductInput!) {
+  //       productCreate(input: $input) {
+  //         product {
+  //           id
+  //           title
+  //           handle
+  //           status
+  //           variants(first: 10) {
+  //             edges {
+  //               node {
+  //                 id
+  //                 price
+  //                 barcode
+  //                 createdAt
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }`,
+  //   {
+  //     variables: {
+  //       input: {
+  //         title: `${color} Snowboard`,
+  //         variants: [{ price: Math.random() * 100 }],
+  //       },
+  //     },
+  //   }
+  // );
+  // const responseJson = await response.json();
+
+  // return json({
+  //   product: responseJson.data.productCreate.product,
+  // });
+
+  switch (request.method) {
+
+    case "POST":
+      const formData = await request.formData()
+      console.log('formData', formData)
+      const product_id = formData.get("product_id")
+      const product_title = formData.get("product_title")
+      const product_image = formData.get("product_image")
+
+      console.log('product_id', product_id)
+      console.log('product_title', product_title)
+
+      const doExists = await Products.findOne({ product_id })
+      if (doExists) {
+        return json({
+          success: false,
+          message: "Already Exists"
+        })
+      } else {
+        const isProductCreated = await Products.create({
+          product_id,
+          product_title,
+          product_image
+        })
+
+        if (!!isProductCreated && !!isProductCreated?._id) {
+          return redirect(`product/${isProductCreated._id}`)
+          // return json({
+          //   success: true,
+          //   // message: "Success!"
+          // })
         }
-      }`,
-    {
-      variables: {
-        input: {
-          title: `${color} Snowboard`,
-          variants: [{ price: Math.random() * 100 }],
-        },
-      },
-    }
-  );
-  const responseJson = await response.json();
+      }
+
+      break;
+
+    case "DELETE":
+      const body = await request.formData()
+      const selectedResources = body.get("selectedResources")
+      if (!!selectedResources) {
+        const found_products = await Products.findById(selectedResources)
+        console.log('found_products', found_products)
+
+        // await deleteFile(found_colors.filePath)
+
+        const isDeleted = await Products.findByIdAndDelete(selectedResources)
+        console.log('isDeleted', isDeleted)
+      }
+
+      break;
+  
+    default:
+      break;
+  }
 
   return json({
-    product: responseJson.data.productCreate.product,
+    success: true
   });
 };
 
 export default function Index() {
+
+  const navigate = useNavigate()
   const nav = useNavigation();
+  const loaderData = useLoaderData()
   const actionData = useActionData();
   const submit = useSubmit();
-  const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const productId = actionData?.product?.id.replace(
-    "gid://shopify/Product/",
-    ""
-  );
+  const isLoading = ["loading", "submitting"].includes(nav.state);
+  // const productId = actionData?.product?.id.replace(
+  //   "gid://shopify/Product/",
+  //   ""
+  // );
+
+  const [products, setProducts] = useState([])
+
+  // useEffect(() => {
+  //   if (productId) {
+  //     shopify.toast.show("Product created");
+  //   }
+  // }, [productId]);
 
   useEffect(() => {
-    if (productId) {
-      shopify.toast.show("Product created");
+    console.log('useEffect loaderData', loaderData)
+    setProducts(loaderData.products)
+  }, [loaderData])
+
+  useEffect(() => {
+    console.log('useEffect actionData', actionData)
+
+  }, [actionData])
+
+  // const generateProduct = () => submit({}, { replace: true, method: "POST" });
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange, clearSelection} = useIndexResourceState(products, false)
+
+  const onClickProductEditHandler = () => {
+    navigate(`/app/product/${selectedResources[0]}`)
+  }
+
+  const onClickProductDeleteHandler = () => {
+    console.log('selectedResources', selectedResources)
+    submit({ selectedResources: selectedResources }, { replace: true, method: "DELETE" })
+    clearSelection()
+  }
+
+  const onClickAddProductHandler = async () => {
+
+    let resourcePickerOptions = {
+      type: 'product'
     }
-  }, [productId]);
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+    const selected = await shopify.resourcePicker(resourcePickerOptions)
+
+    console.log('selected', selected)
+
+    if (!!selected && selected.length) {
+      const productInfo = selected[selected.length-1]
+      console.log('productInfo', productInfo)
+
+      const formData = new FormData()
+      formData.append('product_id', productInfo.id)
+      formData.append('product_title', productInfo.title)
+
+      if (!!productInfo.images && productInfo.images.length) {
+        const productImage = productInfo.images[0]
+        if (!!productImage.originalSrc) {
+          formData.append('product_image', productImage.originalSrc)
+        }
+      }
+  
+      submit(formData, { replace: true, method: "POST" })
+    }
+  }
 
   return (
     <Page>
-      <ui-title-bar title="Remix app template">
+      {/* <ui-title-bar title="Remix app template">
         <button variant="primary" onClick={generateProduct}>
           Generate a product
         </button>
+      </ui-title-bar> */}
+      <ui-title-bar title="Products">
+        <button variant="primary" onClick={onClickAddProductHandler}>
+          Add Product
+        </button>
       </ui-title-bar>
-      <BlockStack gap="500">
+      {/* <BlockStack gap="500">
         <Layout>
           <Layout.Section>
             <Card>
@@ -274,7 +403,55 @@ export default function Index() {
             </BlockStack>
           </Layout.Section>
         </Layout>
-      </BlockStack>
+      </BlockStack> */}
+      <IndexTable
+        resourceName={{
+          singular: 'product',
+          plural: 'products'
+        }}
+        itemCount={products.length}
+        selectedItemsCount={ allResourcesSelected ? '' : selectedResources.length }
+        onSelectionChange={(selectionType, isSelecting, selection) => {
+          clearSelection()
+          if ( ( selectionType === 'single' ) && (!!isSelecting) ) {
+            handleSelectionChange(selectionType, isSelecting, selection)
+          }
+        }}
+        headings={[
+          { title: '' },
+          { title: 'Title' },
+        ]}
+        promotedBulkActions={[
+          {
+            content: "Edit",
+            onAction: onClickProductEditHandler
+          },
+          {
+            content: "Delete",
+            onAction: onClickProductDeleteHandler
+          }
+        ]}
+      >
+        {products.map(
+          ({_id, product_id, product_title, product_image}, index) => (
+            <IndexTable.Row
+              id={_id}
+              key={_id}
+              selected={selectedResources.includes(_id)}
+              position={index}
+            >
+              <IndexTable.Cell>
+                <Thumbnail source={product_image} />
+              </IndexTable.Cell>
+              <IndexTable.Cell>
+                <Text variant="bodyMd" fontWeight="bold" as="span">
+                  {product_title}
+                </Text>
+              </IndexTable.Cell>
+            </IndexTable.Row>
+          ),
+        )}
+      </IndexTable>
     </Page>
   );
 }
