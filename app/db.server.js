@@ -1,11 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
 
-const prisma = global.prisma || new PrismaClient();
+// const prisma = global.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
-  if (!global.prisma) {
-    global.prisma = new PrismaClient();
-  }
+// if (process.env.NODE_ENV !== "production") {
+//   if (!global.prisma) {
+//     global.prisma = new PrismaClient();
+//   }
+// }
+
+// export default prisma;
+
+import mongoose, { Schema } from "mongoose";
+
+main().catch(err => console.log('mongoose.connect err', err))
+
+async function main() {
+  await mongoose.connect('mongodb://127.0.0.1:27017/ring_customizer_app')
 }
 
-export default prisma;
+export const Session = mongoose.model('Session', new Schema({}, { strict: false, collection: 'shopify_sessions' }))
+export const Products = mongoose.model('Products', new Schema({}, { strict: false, collection: 'products' }))
