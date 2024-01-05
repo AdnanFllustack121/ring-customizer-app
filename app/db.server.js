@@ -19,4 +19,5 @@ async function main() {
 }
 
 export const Session = mongoose.model('Session', new Schema({}, { strict: false, collection: 'shopify_sessions' }))
+export const Files = mongoose.model('Files', new Schema({}, { strict: false, collection: 'files' }))
 export const Products = mongoose.model('Products', new Schema({}, { strict: false, collection: 'products' }))

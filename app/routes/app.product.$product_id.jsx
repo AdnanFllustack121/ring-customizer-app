@@ -30,7 +30,7 @@ import {
 } from "@shopify/polaris";
 import { CircleCancelMajor, CircleDotsMajor } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
-import { Products, Session } from "../db.server";
+import { Files, Products, Session } from "../db.server";
 import { deleteFile, makeid } from "../utils";
 
 export const loader = async ({ params, request }) => {
@@ -53,7 +53,7 @@ export const action = async ({ request }) => {
       if (request.headers.get('content-type').includes('multipart/form-data')) {
         const uploadHandlerToCreate = unstable_composeUploadHandlers(
           unstable_createFileUploadHandler({
-              directory: 'public/uploads/images',
+              directory: 'public/uploads/files',
               maxPartSize: 10000000,
               file: ({ filename }) => filename,
           }),
@@ -83,9 +83,18 @@ export const action = async ({ request }) => {
             color_id,
             option_id: makeid(24),
             option_title,
-            option_image_path,
+            // option_image_path: !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : '',
             option_price,
-            preview_image_path: !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : '',
+            // preview_image_path: !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : '',
+          }
+
+          if (!!preview_image_file) {
+            obj.option_image_path = !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : ''
+            const isColorCreated = await Files.create({
+              name: option_title,
+              // type: type,
+              filePath: `/uploads/files/${preview_image_file.name}`
+            })
           }
 
           const categoriesNew = foundProduct.categories.map(cat => {
@@ -193,7 +202,7 @@ export const action = async ({ request }) => {
       if (request.headers.get('content-type').includes('multipart/form-data')) {
         const uploadHandlerToUpdate = unstable_composeUploadHandlers(
           unstable_createFileUploadHandler({
-              directory: 'public/uploads/images',
+              directory: 'public/uploads/files',
               maxPartSize: 10000000,
               file: ({ filename }) => filename,
           }),
@@ -235,7 +244,14 @@ export const action = async ({ request }) => {
           }
 
           if (!!preview_image_file) {
-            optionObjToUpdate.preview_image_path = !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : ''
+            // optionObjToUpdate.preview_image_path = !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : ''
+
+            optionObjToUpdate.option_image_path = !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : ''
+            const isColorCreated = await Files.create({
+              name: option_title,
+              // type: type,
+              filePath: `/uploads/files/${preview_image_file.name}`
+            })
           }
 
           console.log('optionObjToUpdate', optionObjToUpdate)
@@ -518,7 +534,7 @@ export default function Index() {
 
   const isLoading = ["loading", "submitting"].includes(navigation.state)
 
-  const [colors, setColors] = useState([])
+  const [files, setColors] = useState([])
 
   const [productData, dispatchProductData] = useReducer(productDataReducer, {
     id: '',
@@ -591,56 +607,53 @@ export default function Index() {
         category_id: category_id
       }
 
-      console.log('colors', colors)
+      console.log('files', files)
 
-      if (!!colors && !!colors.length) {
+      if (!!option_id) {
+        console.log('option_id', option_id)
+        console.log('productData', productData)
+        console.log('productData.categories', productData.categories)
+        const categoryObj = productData.categories.find(cat => cat.category_id === category_id)
+        console.log('categoryObj', categoryObj)
 
-        if (!!option_id) {
-          console.log('option_id', option_id)
-          console.log('productData', productData)
-          console.log('productData.categories', productData.categories)
-          const categoryObj = productData.categories.find(cat => cat.category_id === category_id)
-          console.log('categoryObj', categoryObj)
+        const optionObj = categoryObj.options.find(opt => opt.option_id === option_id)
 
-          const optionObj = categoryObj.options.find(opt => opt.option_id === option_id)
-
+        the_obj = {
+          ...the_obj,
+          color_id: optionObj.color_id,
+          option_id: option_id,
+          option_title: optionObj.option_title,
+          option_image_path: optionObj.option_image_path,
+          option_price: optionObj.option_price,
+          preview_image_path: optionObj.preview_image_path
+        }
+      } else {
+        if (!!files && !!files.length) {
           the_obj = {
             ...the_obj,
-            color_id: optionObj.color_id,
-            option_id: option_id,
-            option_title: optionObj.option_title,
-            option_image_path: optionObj.option_image_path,
-            option_price: optionObj.option_price,
-            preview_image_path: optionObj.preview_image_path
-          }
-        } else {
-          the_obj = {
-            ...the_obj,
-            color_id: colors[0].id,
-            option_title: colors[0].label,
-            option_image_path: colors[0].source,
+            color_id: files[0].id,
+            option_title: files[0].label,
+            option_image_path: files[0].source,
             option_price: '',
             preview_image_file: '',
           }
         }
+      }
 
         console.log('the_obj', the_obj)
-      }
+
 
       dispatchOptionModalData({ ...the_obj })
 
     } else {
       dispatchOptionModalData({ isActive: false })
     }
-  }, [colors, productData])
+  }, [files, productData])
 
 
-  useEffect(() => {
-    // if (productId) {
-    //   // shopify.toast.show("Product created")
-    // }
-    getColors()
-  }, [])
+  // useEffect(() => {
+  //   getColors()
+  // }, [])
 
 
   useEffect(() => {
@@ -701,7 +714,7 @@ export default function Index() {
 
 
   const getColors = async () => {
-    const colorsData = await fetch('/admin/colors').then((response) => response.json())
+    const colorsData = await fetch('/admin/files').then((response) => response.json())
 
     if (!!colorsData.data.length) {
 
@@ -816,8 +829,13 @@ export default function Index() {
                     onClick={() => changeMainImage(categoryIndex, mp)}
                     disabled={isLoading}
                   >
-                    {/* <Thumbnail size="extraSmall" source={mp.option_image_path} /> */}
-                    {mp.option_title}
+                    {
+                      !!mp?.option_image_path
+                      ?
+                      <Thumbnail size="extraSmall" source={mp.option_image_path} />
+                      :
+                      mp.option_title
+                    }
                   </Button>
 
                   <div
@@ -901,7 +919,7 @@ export default function Index() {
     if ( !!optionModalData?.option_id ) {
       formData.append("option_id", optionModalData.option_id)
       formData.append("update", "option")
-      // submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
+      submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
     } else {
       formData.append("create", "option")
       submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
@@ -1116,9 +1134,9 @@ export default function Index() {
           <LegacyStack vertical>
             {/* <Select
               label="Select Color"
-              options={colors}
-              onChange={op => handleSelectChange(colors.find(clr => clr.id === op))}
-              value={!!optionModalData.color_id ? optionModalData.color_id : (!!colors?.[0]?.id ? colors[0].id : '')}
+              options={files}
+              onChange={op => handleSelectChange(files.find(clr => clr.id === op))}
+              value={!!optionModalData.color_id ? optionModalData.color_id : (!!files?.[0]?.id ? files[0].id : '')}
             /> */}
 
             <TextField
@@ -1139,7 +1157,7 @@ export default function Index() {
 
             
 
-            {/* <DropZone
+            <DropZone
               accept="image/*"
               errorOverlayText="File type must be image"
               type="image"
@@ -1163,20 +1181,20 @@ export default function Index() {
               }
 
               {
-                  (!optionModalData.preview_image_file && optionModalData.preview_image_path) &&
+                  (!optionModalData.preview_image_file && optionModalData.option_image_path) &&
                   <LegacyStack>
-                      <img src={optionModalData.preview_image_path} style={{
+                      <img src={optionModalData.option_image_path} style={{
                         width: '60%',
                         height: 'auto'
                       }} />
                       <div>
-                          {optionModalData.preview_image_path}
+                          {optionModalData.option_image_path}
                       </div>
                   </LegacyStack>
               }
 
-              {(!optionModalData.preview_image_file) && (!optionModalData.preview_image_path) && <DropZone.FileUpload />}
-            </DropZone> */}
+              {(!optionModalData.preview_image_file) && (!optionModalData.option_image_path) && <DropZone.FileUpload />}
+            </DropZone>
           </LegacyStack>
         </Modal.Section>
       </Modal>
