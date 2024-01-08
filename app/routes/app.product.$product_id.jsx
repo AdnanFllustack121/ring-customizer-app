@@ -33,6 +33,14 @@ import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
 import { deleteFile, makeid } from "../utils";
 
+import productStyles from "~/styles/product.css";
+
+import CircleTick from "../assets/CircleTick.svg";
+
+export const links = () => [
+  { rel: "stylesheet", href: productStyles },
+];
+
 export const loader = async ({ params, request }) => {
   await authenticate.admin(request)
 
@@ -70,7 +78,7 @@ export const action = async ({ request }) => {
         if (createType === 'option') {
           const document_id = formDataToCreate.get("document_id")
           const category_id = formDataToCreate.get("category_id")
-          const color_id = formDataToCreate.get("color_id")
+          const file_id = formDataToCreate.get("file_id")
   
           const option_title = formDataToCreate.get("option_title")
           const option_image_path = formDataToCreate.get("option_image_path")
@@ -80,9 +88,10 @@ export const action = async ({ request }) => {
           const foundProduct = await Products.findById(document_id)
 
           const obj = {
-            color_id,
+            file_id,
             option_id: makeid(24),
             option_title,
+            option_image_path,
             // option_image_path: !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : '',
             option_price,
             // preview_image_path: !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : '',
@@ -95,6 +104,8 @@ export const action = async ({ request }) => {
               // type: type,
               filePath: `/uploads/files/${preview_image_file.name}`
             })
+            console.log('isColorCreated', isColorCreated)
+            obj.file_id = isColorCreated._id.toString()
           }
 
           const categoriesNew = foundProduct.categories.map(cat => {
@@ -225,7 +236,7 @@ export const action = async ({ request }) => {
 
           console.log('category_id', category_id)
 
-          const color_id = formDataToUpdate.get("color_id")
+          const file_id = formDataToUpdate.get("file_id")
 
           const option_id = formDataToUpdate.get("option_id")
           const option_title = formDataToUpdate.get("option_title")
@@ -236,7 +247,7 @@ export const action = async ({ request }) => {
           console.log('preview_image_file', preview_image_file, !!preview_image_file)
 
           const optionObjToUpdate = {
-            color_id,
+            file_id,
             option_id,
             option_title,
             option_image_path,
@@ -470,7 +481,7 @@ const optionModalReducer = (state, action) => {
         return {
           isActive: false,
           category_id: '',
-          color_id: '',
+          file_id: '',
           option_id: '',
           option_title: '',
           option_image_path: '',
@@ -534,7 +545,7 @@ export default function Index() {
 
   const isLoading = ["loading", "submitting"].includes(navigation.state)
 
-  const [files, setColors] = useState([])
+  const [files, setFiles] = useState([])
 
   const [productData, dispatchProductData] = useReducer(productDataReducer, {
     id: '',
@@ -579,7 +590,7 @@ export default function Index() {
   const [optionModalData, dispatchOptionModalData] = useReducer(optionModalReducer, {
     isActive: false,
     category_id: '',
-    color_id: '',
+    file_id: '',
     option_id: '',
     option_title: '',
     option_image_path: '',
@@ -589,7 +600,7 @@ export default function Index() {
   })
 
   const handleSelectChange = useCallback(
-    (value) => dispatchOptionModalData({ color_id: value.id, option_title: value.label, option_image_path: value.source }),
+    (value) => dispatchOptionModalData({ file_id: value.id, option_title: value.label, option_image_path: value.source }),
     [],
   )
 
@@ -620,7 +631,7 @@ export default function Index() {
 
         the_obj = {
           ...the_obj,
-          color_id: optionObj.color_id,
+          file_id: optionObj.file_id,
           option_id: option_id,
           option_title: optionObj.option_title,
           option_image_path: optionObj.option_image_path,
@@ -629,14 +640,14 @@ export default function Index() {
         }
       } else {
         if (!!files && !!files.length) {
-          the_obj = {
-            ...the_obj,
-            color_id: files[0].id,
-            option_title: files[0].label,
-            option_image_path: files[0].source,
-            option_price: '',
-            preview_image_file: '',
-          }
+          // the_obj = {
+          //   ...the_obj,
+          //   file_id: files[0].id,
+          //   option_title: files[0].label,
+          //   option_image_path: files[0].source,
+          //   option_price: '',
+          //   preview_image_file: '',
+          // }
         }
       }
 
@@ -693,6 +704,8 @@ export default function Index() {
         }))
       }
     }
+
+    getColors()
   }, [loaderData])
 
 
@@ -716,6 +729,8 @@ export default function Index() {
   const getColors = async () => {
     const colorsData = await fetch('/admin/files').then((response) => response.json())
 
+    console.log('colorsData', colorsData)
+
     if (!!colorsData.data.length) {
 
       const colorsStateData = colorsData.data.map(cd => ({
@@ -727,7 +742,7 @@ export default function Index() {
         source: `${cd.filePath}`
       }))
 
-      setColors(colorsStateData)
+      setFiles(colorsStateData)
     }
 
   }
@@ -907,7 +922,7 @@ export default function Index() {
 
     formData.append("document_id", productData.id)
     formData.append("category_id", optionModalData.category_id)
-    formData.append("color_id", optionModalData.color_id)
+    formData.append("file_id", optionModalData.file_id)
     formData.append("option_title", optionModalData.option_title)
     formData.append("option_image_path", optionModalData.option_image_path)
     formData.append("option_price", optionModalData.option_price)
@@ -925,7 +940,7 @@ export default function Index() {
       submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
     }
 
-    console.log('formData', formData)
+    console.log('handleOptionModalSaveOrUpdate formData', formData)
 
     toggleOptionModalActive()
   }
@@ -948,6 +963,15 @@ export default function Index() {
     formData.append('product_price', productData.product_price)
 
     submit(formData, { replace: true, method: "PATCH" })
+  }
+
+  const handleModalImageClick = (fileObj = null) => {
+    console.log('handleModalImageClick fileObj optionModalData', fileObj, optionModalData)
+    if (!!fileObj) {
+      dispatchOptionModalData({ file_id: fileObj.id, option_image_path: fileObj.source })
+    } else {
+      dispatchOptionModalData({ file_id: null })
+    }
   }
 
   return (
@@ -1136,7 +1160,7 @@ export default function Index() {
               label="Select Color"
               options={files}
               onChange={op => handleSelectChange(files.find(clr => clr.id === op))}
-              value={!!optionModalData.color_id ? optionModalData.color_id : (!!files?.[0]?.id ? files[0].id : '')}
+              value={!!optionModalData.file_id ? optionModalData.file_id : (!!files?.[0]?.id ? files[0].id : '')}
             /> */}
 
             <TextField
@@ -1157,14 +1181,14 @@ export default function Index() {
 
             
 
-            <DropZone
+            {/* <DropZone
               accept="image/*"
               errorOverlayText="File type must be image"
               type="image"
               allowMultiple={false}
               onDrop={handleProductDropZoneDrop}
-            >
-              {
+            > */}
+              {/* {
                   (optionModalData.preview_image_file) &&
                   <LegacyStack>
                       <img src={window.URL.createObjectURL(optionModalData.preview_image_file)} style={{
@@ -1179,7 +1203,6 @@ export default function Index() {
                       </div>
                   </LegacyStack>
               }
-
               {
                   (!optionModalData.preview_image_file && optionModalData.option_image_path) &&
                   <LegacyStack>
@@ -1192,9 +1215,62 @@ export default function Index() {
                       </div>
                   </LegacyStack>
               }
+              {(!optionModalData.preview_image_file) && (!optionModalData.option_image_path) && <DropZone.FileUpload />} */}
 
-              {(!optionModalData.preview_image_file) && (!optionModalData.option_image_path) && <DropZone.FileUpload />}
-            </DropZone>
+              <div className="Image-Container">
+                
+                <button type="button" className="DropZone-Container" onClick={handleModalImageClick}>
+                  <DropZone
+                    accept="image/*"
+                    errorOverlayText="File type must be image"
+                    type="image"
+                    allowMultiple={false}
+                    onDrop={handleProductDropZoneDrop}
+                  >
+                    
+                    {
+                      (optionModalData.preview_image_file) &&
+                      <LegacyStack>
+                          <img src={window.URL.createObjectURL(optionModalData.preview_image_file)} style={{
+                            // width: '60%',
+                            // height: 'auto'
+                          }} />
+                          {/* <div>
+                              {optionModalData.preview_image_file.name}{' '}
+                              <Text variant="bodySm" as="p">
+                                  {optionModalData.preview_image_file.size} bytes
+                              </Text>
+                          </div> */}
+                      </LegacyStack>
+                    }
+
+                    {/* <DropZone.FileUpload /> */}
+                    {(!optionModalData.preview_image_file) && (!optionModalData.option_image_path) && <DropZone.FileUpload />}
+                  </DropZone>
+                </button>
+
+                {files.map(fl => {
+                  return (
+                    <button className={`Image-Item ${(fl.id === optionModalData.file_id) && 'Image-Item__Selected'}`} type="button" onClick={() => handleModalImageClick(fl)}>
+                      <div className={`CAUQv ${(fl.id === optionModalData.file_id) && 'e97eu'}`}></div>
+                      <div className="OT4Wj">
+                        <img className="Nm7Sx" src={fl.source} alt={fl.label} />
+                      </div>
+                      <div className="Image-Checkbox__Container">
+                        {
+                          (fl.id === optionModalData.file_id) &&
+                          <span className="Image-Checkbox__Container__Span">
+                            <img src={CircleTick} alt="" />
+                          </span>
+                        }
+                      </div>
+                    </button>
+                  )
+                })}
+
+              </div>
+
+            {/* </DropZone> */}
           </LegacyStack>
         </Modal.Section>
       </Modal>

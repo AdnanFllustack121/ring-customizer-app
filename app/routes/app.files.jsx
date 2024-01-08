@@ -201,7 +201,7 @@ export default function ColorsPage() {
 
     const isLoading = ["loading", "submitting"].includes(navigation.state)
 
-    const [files, setColors] = useState(loaderData?.data.length ? loaderData.data.map(singleColor => ({
+    const [files, setFiles] = useState(loaderData?.data.length ? loaderData.data.map(singleColor => ({
         id: singleColor._id,
         name: singleColor.name,
         type: singleColor.type,
@@ -337,7 +337,7 @@ export default function ColorsPage() {
                 thumbnail: singleColor.filePath
             })) : []
 
-            setColors(newColors)
+            setFiles(newColors)
 
             console.log('fetcher', fetcher)
 

@@ -2,7 +2,7 @@
 
 name = "ring-customizer-app"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://stake-visited-communist-dozens.trycloudflare.com"
+application_url = "https://relevant-sig-missile-compatibility.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://stake-visited-communist-dozens.trycloudflare.com/auth/callback",
-  "https://stake-visited-communist-dozens.trycloudflare.com/auth/shopify/callback",
-  "https://stake-visited-communist-dozens.trycloudflare.com/api/auth/callback"
+  "https://relevant-sig-missile-compatibility.trycloudflare.com/auth/callback",
+  "https://relevant-sig-missile-compatibility.trycloudflare.com/auth/shopify/callback",
+  "https://relevant-sig-missile-compatibility.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
