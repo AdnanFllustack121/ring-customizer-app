@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useReducer, useState } from "react";
 import { json, unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
-import { useActionData, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
+import { useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -27,8 +27,9 @@ import {
   ActionList,
   ButtonGroup,
   TextField,
+  Divider,
 } from "@shopify/polaris";
-import { CircleCancelMajor, CircleDotsMajor } from "@shopify/polaris-icons";
+import { CircleCancelMajor, CircleDotsMajor, DeleteMajor, UploadMajor } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
 import { deleteFile, makeid } from "../utils";
@@ -77,30 +78,30 @@ export const action = async ({ request }) => {
 
         if (createType === 'option') {
           const document_id = formDataToCreate.get("document_id")
-          const category_id = formDataToCreate.get("category_id")
+          const option_id = formDataToCreate.get("option_id")
           const file_id = formDataToCreate.get("file_id")
   
-          const option_title = formDataToCreate.get("option_title")
+          const option_value_title = formDataToCreate.get("option_value_title")
           const option_image_path = formDataToCreate.get("option_image_path")
-          const option_price = formDataToCreate.get("option_price")
+          const option_value_price = formDataToCreate.get("option_value_price")
           const preview_image_file = formDataToCreate.get("preview_image_file")
   
           const foundProduct = await Products.findById(document_id)
 
           const obj = {
             file_id,
-            option_id: makeid(24),
-            option_title,
+            option_value_id: makeid(24),
+            option_value_title,
             option_image_path,
             // option_image_path: !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : '',
-            option_price,
+            option_value_price,
             // preview_image_path: !!preview_image_file ? `/uploads/images/${preview_image_file.name}` : '',
           }
 
           if (!!preview_image_file) {
             obj.option_image_path = !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : ''
             const isColorCreated = await Files.create({
-              name: option_title,
+              name: option_value_title,
               // type: type,
               filePath: `/uploads/files/${preview_image_file.name}`
             })
@@ -108,21 +109,21 @@ export const action = async ({ request }) => {
             obj.file_id = isColorCreated._id.toString()
           }
 
-          const categoriesNew = foundProduct.categories.map(cat => {
-            if (cat.category_id === category_id) {
+          const categoriesNew = foundProduct.options.map(cat => {
+            if (cat.option_id === option_id) {
 
-              if (!!cat?.options?.length) {
+              if (!!cat?.option_values?.length) {
                 return {
                   ...cat,
-                  options: [
-                    ...cat.options,
+                  option_values: [
+                    ...cat.option_values,
                     obj
                   ]
                 }
               } else {
                 return {
                   ...cat,
-                  options: [obj]
+                  option_values: [obj]
                 }
               }
             } else {
@@ -135,7 +136,7 @@ export const action = async ({ request }) => {
           const isProductUpdated = await Products.findOneAndUpdate({
             _id: document_id
           }, {
-            categories: categoriesNew
+            options: categoriesNew
           })
 
         }
@@ -150,21 +151,21 @@ export const action = async ({ request }) => {
   
         const foundProduct = await Products.findById(product_id)
   
-        const categoryTitle = formData.get("category_title")
+        const categoryTitle = formData.get("option_title")
   
         if (!!foundProduct) {
           if (createType === "category") {
   
             const newCategory = {
-              category_id: makeid(24),
-              category_title: categoryTitle
+              option_id: makeid(24),
+              option_title: categoryTitle
             }
   
-            if (!!foundProduct?.categories) {
+            if (!!foundProduct?.options) {
               const isProductUpdated = await Products.findOneAndUpdate({
                 _id: product_id
               }, {
-                categories: [...foundProduct.categories, newCategory]
+                options: [...foundProduct.options, newCategory]
               })
   
               return json({
@@ -176,12 +177,12 @@ export const action = async ({ request }) => {
               const isProductUpdated = await Products.findOneAndUpdate({
                 _id: product_id
               }, {
-                categories: [newCategory]
+                options: [newCategory]
               })
               return json({
                 success: true,
                 product: isProductUpdated,
-                message: "New Category Added!"
+                message: "New Option Added!"
               })
             }
           }
@@ -232,26 +233,26 @@ export const action = async ({ request }) => {
 
         if (updateType === 'option') {
 
-          const category_id = formDataToUpdate.get("category_id")
+          const option_id = formDataToUpdate.get("option_id")
 
-          console.log('category_id', category_id)
+          console.log('option_id', option_id)
 
           const file_id = formDataToUpdate.get("file_id")
 
-          const option_id = formDataToUpdate.get("option_id")
-          const option_title = formDataToUpdate.get("option_title")
+          const option_value_id = formDataToUpdate.get("option_value_id")
+          const option_value_title = formDataToUpdate.get("option_value_title")
           const option_image_path = formDataToUpdate.get("option_image_path")
-          const option_price = formDataToUpdate.get("option_price")
+          const option_value_price = formDataToUpdate.get("option_value_price")
           const preview_image_file = formDataToUpdate.get("preview_image_file")
 
           console.log('preview_image_file', preview_image_file, !!preview_image_file)
 
           const optionObjToUpdate = {
             file_id,
-            option_id,
-            option_title,
+            option_value_id,
+            option_value_title,
             option_image_path,
-            option_price
+            option_value_price
           }
 
           if (!!preview_image_file) {
@@ -259,7 +260,7 @@ export const action = async ({ request }) => {
 
             optionObjToUpdate.option_image_path = !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : ''
             const isColorCreated = await Files.create({
-              name: option_title,
+              name: option_value_title,
               // type: type,
               filePath: `/uploads/files/${preview_image_file.name}`
             })
@@ -267,11 +268,11 @@ export const action = async ({ request }) => {
 
           console.log('optionObjToUpdate', optionObjToUpdate)
 
-          const categoryOptionToUpdate = found_product.categories.map(cat => {
-            if (cat.category_id === category_id) {
+          const categoryOptionToUpdate = found_product.options.map(cat => {
+            if (cat.option_id === option_id) {
 
-              const optionsModified = cat.options.map(opt => {
-                if (opt.option_id === option_id) {
+              const optionsModified = cat.option_values.map(opt => {
+                if (opt.option_value_id === option_value_id) {
 
                   console.log('!!opt.preview_image_path && !!preview_image_file', !!opt.preview_image_path && !!preview_image_file)
 
@@ -290,7 +291,7 @@ export const action = async ({ request }) => {
 
               return {
                 ...cat,
-                options: optionsModified
+                option_values: optionsModified
               }
             } else {
               return cat
@@ -302,7 +303,7 @@ export const action = async ({ request }) => {
           const isProductUpdated = await Products.findOneAndUpdate({
             _id: document_id
           }, {
-            categories: categoryOptionToUpdate
+            options: categoryOptionToUpdate
           })
 
         }
@@ -319,14 +320,14 @@ export const action = async ({ request }) => {
         if (!!updateType && updateType === 'category') {
           // Update Category
 
-          const category_id = formData.get('category_id')
-          const category_title = formData.get('category_title')
+          const option_id = formData.get('option_id')
+          const option_title = formData.get('option_title')
 
-          const updatedCategories = found_product.categories.map(cat => {
-            if (category_id == cat.category_id) {
+          const updatedCategories = found_product.options.map(cat => {
+            if (option_id == cat.option_id) {
               return {
                 ...cat,
-                category_title
+                option_title
               }
             } else {
               return cat
@@ -336,7 +337,7 @@ export const action = async ({ request }) => {
           const isProductUpdated = await Products.findOneAndUpdate({
             _id: document_id
           }, {
-            categories: updatedCategories
+            options: updatedCategories
           })
 
         } else if (!!updateType && updateType === 'option') {
@@ -377,55 +378,55 @@ export const action = async ({ request }) => {
 
       if (deleteType === "category") {
         // Delete Category
-        const category_id = formDataToDelete.get("category_id")
+        const option_id = formDataToDelete.get("option_id")
 
-        const categoryIndex = productToDeleteOptionColor.categories.findIndex(cat => cat.category_id === category_id)
+        const categoryIndex = productToDeleteOptionColor.options.findIndex(cat => cat.option_id === option_id)
 
         if (
           (!!categoryIndex || (categoryIndex === 0)) &&
           (
-            (!!productToDeleteOptionColor.categories[categoryIndex]?.options && !productToDeleteOptionColor.categories[categoryIndex].options.length) ||
-            (!productToDeleteOptionColor.categories[categoryIndex]?.options)
+            (!!productToDeleteOptionColor.options[categoryIndex]?.option_values && !productToDeleteOptionColor.options[categoryIndex].option_values.length) ||
+            (!productToDeleteOptionColor.options[categoryIndex]?.option_values)
           )
         ) {
-          productToDeleteOptionColor.categories.splice(categoryIndex, 1)
+          productToDeleteOptionColor.options.splice(categoryIndex, 1)
           const isProductOptionUpdated = await Products.findOneAndUpdate({
             _id: document_id
           }, {
-            categories: productToDeleteOptionColor.categories
+            options: productToDeleteOptionColor.options
           })
         }
 
       } else if (deleteType === "option") {
         // Delete Option
-        const category_id = formDataToDelete.get("category_id")
         const option_id = formDataToDelete.get("option_id")
+        const option_value_id = formDataToDelete.get("option_value_id")
 
-        const categoryIndex = productToDeleteOptionColor.categories.findIndex(cat => cat.category_id === category_id)
+        const categoryIndex = productToDeleteOptionColor.options.findIndex(cat => cat.option_id === option_id)
         console.log('categoryIndex', categoryIndex)
 
-        const optionIndex = productToDeleteOptionColor.categories[categoryIndex].options.findIndex(opt => opt.option_id === option_id)
+        const optionIndex = productToDeleteOptionColor.options[categoryIndex].option_values.findIndex(opt => opt.option_value_id === option_value_id)
         console.log('optionIndex', optionIndex)
 
         // Delete the file first
-        if (!!productToDeleteOptionColor.categories[categoryIndex].options[optionIndex].preview_image_path) {
-          await deleteFile(productToDeleteOptionColor.categories[categoryIndex].options[optionIndex].preview_image_path)
+        if (!!productToDeleteOptionColor.options[categoryIndex].option_values[optionIndex].preview_image_path) {
+          await deleteFile(productToDeleteOptionColor.options[categoryIndex].option_values[optionIndex].preview_image_path)
         }
 
-        productToDeleteOptionColor.categories[categoryIndex].options.splice(optionIndex, 1)
+        productToDeleteOptionColor.options[categoryIndex].option_values.splice(optionIndex, 1)
 
         const isProductOptionUpdated = await Products.findOneAndUpdate({
           _id: document_id
         }, {
-          categories: productToDeleteOptionColor.categories
+          options: productToDeleteOptionColor.options
         })
 
       } else {
         const optionType = formDataToDelete.get("optionType")
-        const option_title = formDataToDelete.get("option_title")
+        const option_value_title = formDataToDelete.get("option_value_title")
   
-        const optionArr = productToDeleteOptionColor.options[optionType]
-        const optionIndex = optionArr.findIndex(o => o.option_title === option_title)
+        const optionArr = productToDeleteOptionColor.option_values[optionType]
+        const optionIndex = optionArr.findIndex(o => o.option_value_title === option_value_title)
   
         // Delete the file first
         if (!!optionArr[optionIndex].preview_image_path) {
@@ -435,14 +436,14 @@ export const action = async ({ request }) => {
         optionArr.splice(optionIndex, 1)
   
         const newOptions = {
-          ...productToDeleteOptionColor.options,
+          ...productToDeleteOptionColor.option_values,
           [optionType]: optionArr
         }
   
         const isProductOptionUpdated = await Products.findOneAndUpdate({
           _id: document_id
         }, {
-          options: newOptions
+          option_values: newOptions
         })
       }
 
@@ -463,8 +464,8 @@ const categoryModalReducer = (state, action) => {
       case "CLEAR":
           return {
               isActive: false,
-              category_id: '',
-              category_title: ''
+              option_id: '',
+              option_title: ''
           }
       default:
         const newOne = { ...state, ...action }
@@ -480,12 +481,12 @@ const optionModalReducer = (state, action) => {
       case false:
         return {
           isActive: false,
-          category_id: '',
-          file_id: '',
           option_id: '',
-          option_title: '',
+          file_id: '',
+          option_value_id: '',
+          option_value_title: '',
           option_image_path: '',
-          option_price: '',
+          option_value_price: '',
           preview_image_file: '',
           preview_image_path: ''
         }
@@ -504,13 +505,14 @@ const productDataReducer = (state, action) => {
   
     case "ADD":
       const action_option = action.option
+      console.log('action_option', action_option)
 
       const new_state = {
         ...state,
-        options: {
-          ...state.options,
+        option_values: {
+          ...state.option_values,
           [action_option]: [
-            ...state.options[action_option],
+            ...state.option_values[action_option],
             action.data
           ]
         }
@@ -519,12 +521,12 @@ const productDataReducer = (state, action) => {
 
     case "REMOVE":
 
-      let newOptions = state.options[action.option].filter(soao => soao.name !== action.name)
+      let newOptions = state.option_values[action.option].filter(soao => soao.name !== action.name)
 
       const new_state_after_removal = {
         ...state,
-        options: {
-          ...state.options,
+        option_values: {
+          ...state.option_values,
           [action.option]: newOptions
         }
       }
@@ -532,12 +534,14 @@ const productDataReducer = (state, action) => {
       return { ...new_state_after_removal }
 
     default:
-      return { ...state, ...action }
+      const state_merge = { ...state, ...action }
+      return state_merge
   }
 }
 
 export default function Index() {
 
+  const navigate = useNavigate()
   const loaderData = useLoaderData()
   const navigation = useNavigation();
   const actionData = useActionData();
@@ -553,7 +557,8 @@ export default function Index() {
     product_title: '',
     product_image: '',
     product_price: '',
-    categories: []
+    options: [],
+    variants: []
   })
   console.log('productData', productData)
 
@@ -567,10 +572,11 @@ export default function Index() {
 
   const [previewMainImages, setMainImage] = useState({})
 
+
   const [categoryModalData, dispatchCategoryModalData] = useReducer(categoryModalReducer, {
     isActive: false,
-    category_id: '',
-    category_title: '',
+    option_id: '',
+    option_title: '',
   })
 
   const optionModalToggleActive = useCallback(({...args}) => {
@@ -578,8 +584,8 @@ export default function Index() {
     if (args?.isActive === false) {
       args = {
         ...args,
-        category_id: '',
-        category_title: '',
+        option_id: '',
+        option_title: '',
       }
     }
 
@@ -589,18 +595,18 @@ export default function Index() {
 
   const [optionModalData, dispatchOptionModalData] = useReducer(optionModalReducer, {
     isActive: false,
-    category_id: '',
-    file_id: '',
     option_id: '',
-    option_title: '',
+    file_id: '',
+    option_value_id: '',
+    option_value_title: '',
     option_image_path: '',
-    option_price: '',
+    option_value_price: '',
     preview_image_file: '',
     preview_image_path: ''
   })
 
   const handleSelectChange = useCallback(
-    (value) => dispatchOptionModalData({ file_id: value.id, option_title: value.label, option_image_path: value.source }),
+    (value) => dispatchOptionModalData({ file_id: value.id, option_value_title: value.label, option_image_path: value.source }),
     [],
   )
 
@@ -609,33 +615,33 @@ export default function Index() {
 
     console.log('args', args)
 
-    const { isActive, category_id, option_id } = args
+    const { isActive, option_id, option_value_id } = args
 
-    if (!!category_id) {
+    if (!!option_id) {
 
       let the_obj = {
         isActive: true,
-        category_id: category_id
+        option_id: option_id
       }
 
       console.log('files', files)
 
-      if (!!option_id) {
-        console.log('option_id', option_id)
+      if (!!option_value_id) {
+        console.log('option_value_id', option_value_id)
         console.log('productData', productData)
-        console.log('productData.categories', productData.categories)
-        const categoryObj = productData.categories.find(cat => cat.category_id === category_id)
+        console.log('productData.options', productData.options)
+        const categoryObj = productData.options.find(cat => cat.option_id === option_id)
         console.log('categoryObj', categoryObj)
 
-        const optionObj = categoryObj.options.find(opt => opt.option_id === option_id)
+        const optionObj = categoryObj.option_values.find(opt => opt.option_value_id === option_value_id)
 
         the_obj = {
           ...the_obj,
           file_id: optionObj.file_id,
-          option_id: option_id,
-          option_title: optionObj.option_title,
+          option_value_id: option_value_id,
+          option_value_title: optionObj.option_value_title,
           option_image_path: optionObj.option_image_path,
-          option_price: optionObj.option_price,
+          option_value_price: optionObj.option_value_price,
           preview_image_path: optionObj.preview_image_path
         }
       } else {
@@ -643,9 +649,9 @@ export default function Index() {
           // the_obj = {
           //   ...the_obj,
           //   file_id: files[0].id,
-          //   option_title: files[0].label,
+          //   option_value_title: files[0].label,
           //   option_image_path: files[0].source,
-          //   option_price: '',
+          //   option_value_price: '',
           //   preview_image_file: '',
           // }
         }
@@ -661,6 +667,9 @@ export default function Index() {
     }
   }, [files, productData])
 
+  
+  const {selectedResources, allResourcesSelected, handleSelectionChange, clearSelection} = useIndexResourceState(productData.variants, false)
+
 
   // useEffect(() => {
   //   getColors()
@@ -668,14 +677,16 @@ export default function Index() {
 
 
   useEffect(() => {
+    console.log('useEffect loaderData', loaderData);
+
     dispatchProductData({
       id: loaderData.product._id,
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
-      categories: !!loaderData?.product?.categories ? loaderData.product.categories : [],
+      options: !!loaderData?.product?.options ? loaderData.product.options : [],
     })
 
-    if (!!loaderData?.product?.categories && !!Object.keys(loaderData.product.categories).length) {
+    if (!!loaderData?.product?.options && !!Object.keys(loaderData.product.options).length) {
 
       // const enabledOpsArr = Object.keys(loaderData.product.options).map(opKey => opKey)
 
@@ -691,10 +702,10 @@ export default function Index() {
       // }, {})
 
       const mainImages = {}
-      for (let index = 0; index < loaderData.product.categories.length; index++) {
-        const cat = loaderData.product.categories[index]
-        if (!!cat?.options?.length) {
-          mainImages[index] = cat.options[cat.options.length - 1]?.preview_image_path
+      for (let index = 0; index < loaderData.product.options.length; index++) {
+        const cat = loaderData.product.options[index]
+        if (!!cat?.option_values?.length) {
+          mainImages[index] = cat.option_values[cat.option_values.length - 1]?.preview_image_path
         }
       }
       if (!Object.keys(previewMainImages).length) {
@@ -703,6 +714,19 @@ export default function Index() {
           ...mainImages
         }))
       }
+
+
+      // Setup Variants START
+      console.log('loaderData?.product?.variants?.length', loaderData?.product?.variants?.length)
+      if (!loaderData?.product?.variants?.length) {
+        const allVariations = generateVariations(loaderData?.product?.options)
+        console.log('allVariations', allVariations)
+        dispatchProductData({
+          variants: allVariations
+        })
+      }
+      // Setup Variants END
+
     }
 
     getColors()
@@ -783,35 +807,35 @@ export default function Index() {
     [],
   )
 
-  const removeColorHandler = (category_id, option_id) => {
+  const removeColorHandler = (option_id, option_value_id) => {
     const formData = new FormData()
     formData.append("document_id", productData.id)
     formData.append("delete", 'option')
-    formData.append("category_id", category_id)
     formData.append("option_id", option_id)
+    formData.append("option_value_id", option_value_id)
 
     submit(formData, { replace: true, method: "DELETE" })
   }
 
-  const editColorHandler = ( category_id, option_id ) => {
-    toggleOptionModalActive({ category_id, option_id })
+  const editColorHandler = ( option_id, option_value_id ) => {
+    toggleOptionModalActive({ option_id, option_value_id })
   }
 
-  const CpcustomHolder = ({ categoryIndex, category_id, category_title, category_options }) => {
+  const CpcustomHolder = ({ categoryIndex, option_id, option_title, category_options }) => {
 
-    console.log('CpcustomHolder categoryIndex, category_id, category_title, category_options', categoryIndex, category_id, category_title, category_options)
+    console.log('CpcustomHolder categoryIndex, option_id, option_title, category_options', categoryIndex, option_id, option_title, category_options)
 
     return (
       <LegacyCard
         sectioned
-        title={category_title}
+        title={option_title}
         actions={[
           {
             content: "Edit",
             onAction: (event) => {
               optionModalToggleActive({
-                category_id,
-                category_title,
+                option_id,
+                option_title,
                 isActive: true
               })
             },
@@ -823,7 +847,7 @@ export default function Index() {
               const formData = new FormData()
               formData.append("document_id", productData.id)
               formData.append("delete", "category")
-              formData.append("category_id", category_id)
+              formData.append("option_id", option_id)
 
               submit(formData, { replace: true, method: "DELETE" })
             },
@@ -835,8 +859,8 @@ export default function Index() {
           {!!category_options && category_options.map((mp => {
             return (
               <Tooltip
-                key={mp.option_title}
-                content={mp.option_title}
+                key={mp.option_value_title}
+                content={mp.option_value_title}
                 zIndexOverride={0}
               >
                 <div style={{ position: 'relative' }}>
@@ -849,7 +873,7 @@ export default function Index() {
                       ?
                       <Thumbnail size="extraSmall" source={mp.option_image_path} />
                       :
-                      mp.option_title
+                      mp.option_value_title
                     }
                   </Button>
 
@@ -861,7 +885,7 @@ export default function Index() {
                       cursor: 'pointer'
                     }}
                     onClick={(e) => {
-                      editColorHandler(category_id, mp.option_id)
+                      editColorHandler(option_id, mp.option_value_id)
                     }}
                   >
                     <Icon source={CircleDotsMajor} />
@@ -875,7 +899,7 @@ export default function Index() {
                       cursor: 'pointer'
                     }}
                     onClick={() => {
-                      removeColorHandler(category_id, mp.option_id)
+                      removeColorHandler(option_id, mp.option_value_id)
                     }}
                   >
                     <Icon source={CircleCancelMajor} />
@@ -887,7 +911,7 @@ export default function Index() {
 
           <Button
             onClick={() => {
-              toggleOptionModalActive({ isActive: true, category_id })
+              toggleOptionModalActive({ isActive: true, option_id })
             }}
             disabled={isLoading}
           >
@@ -902,11 +926,11 @@ export default function Index() {
   const handleCategoryModalSave = () => {
     const formData = new FormData()
     formData.append("document_id", productData.id)
-    formData.append("category_title", categoryModalData.category_title)
+    formData.append("option_title", categoryModalData.option_title)
 
-    if (!!categoryModalData.category_id) {
+    if (!!categoryModalData.option_id) {
       formData.append("update", "category")
-      formData.append("category_id", categoryModalData.category_id)
+      formData.append("option_id", categoryModalData.option_id)
       submit(formData, { replace: true, method: "PATCH" })
     } else {
       formData.append("create", "category")
@@ -921,18 +945,18 @@ export default function Index() {
     const formData = new FormData()
 
     formData.append("document_id", productData.id)
-    formData.append("category_id", optionModalData.category_id)
+    formData.append("option_id", optionModalData.option_id)
     formData.append("file_id", optionModalData.file_id)
-    formData.append("option_title", optionModalData.option_title)
+    formData.append("option_value_title", optionModalData.option_value_title)
     formData.append("option_image_path", optionModalData.option_image_path)
-    formData.append("option_price", optionModalData.option_price)
+    formData.append("option_value_price", optionModalData.option_value_price)
 
     if ( !!optionModalData.preview_image_file ) {
       formData.append("preview_image_file", optionModalData.preview_image_file)
     }
 
-    if ( !!optionModalData?.option_id ) {
-      formData.append("option_id", optionModalData.option_id)
+    if ( !!optionModalData?.option_value_id ) {
+      formData.append("option_value_id", optionModalData.option_value_id)
       formData.append("update", "option")
       submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
     } else {
@@ -974,6 +998,70 @@ export default function Index() {
     }
   }
 
+  const generateVariations = (options = []) => {
+    const variations = []
+
+    // Helper function to recursively generate variations
+    function generate(currentIndex, currentVariation) {
+      if (currentIndex === options.length) {
+        variations.push({...currentVariation})
+        return
+      }
+
+
+      if (!!options[currentIndex]?.option_values) {
+        for ( const option_value of options[currentIndex].option_values ) {
+          currentVariation.push({
+            option_id: options[currentIndex].option_id,
+            option_title: options[currentIndex].option_title,
+            ...option_value
+          })
+          generate(currentIndex + 1, currentVariation)
+          currentVariation.pop()
+        }
+      }
+
+
+    }
+    generate(0, []);
+
+
+    console.log('variations', variations)
+
+
+    const newVariations = []
+    for (let index = 0; index < variations.length; index++) {
+      const variation_options = variations[index]
+      console.log('variation_options', variation_options)
+
+      let variant_title = ''
+
+      console.log('Object.keys(variation_options)', Object.keys(variation_options))
+
+      for (const jindex in variation_options) {
+        const variation_option = variation_options[jindex]
+        console.log('variation_option', variation_option)
+
+        if ((Object.keys(variation_options).length - 1) == jindex) {
+          variant_title += variation_option.option_value_title
+        } else {
+          variant_title += variation_option.option_value_title + ' / '
+        }
+      }
+
+      console.log('variant_title', variant_title)
+
+      newVariations.push({
+        id: makeid(24),
+        title: variant_title,
+        price: '',
+        options: variation_options
+      })
+    }
+
+    return newVariations
+  }
+
   return (
     <Page
       backAction={{ content: "Products", url: "/app" }}
@@ -1005,7 +1093,7 @@ export default function Index() {
               </Button>
               {
                 !!productData?.product_title &&
-                <Text as="h5" variant="headingLg">{productData.product_title}</Text>
+                <Text as="h5" z="headingLg">{productData.product_title}</Text>
               }
             </Card>
 
@@ -1023,7 +1111,7 @@ export default function Index() {
               >
                 {/* <BlockStack>
                   <InlineStack gap={400}>
-                    {productData.categories.map(cat => {
+                    {productData.options.map(cat => {
                       return (
                         <Checkbox
                           key={cat.id}
@@ -1082,9 +1170,75 @@ export default function Index() {
             } */}
 
 
-            {productData.categories.map((cat, categoryIndex) => {
-              return <CpcustomHolder key={cat.category_id} categoryIndex={categoryIndex} category_id={cat.category_id} category_title={cat.category_title} category_options={cat.options} />
+            {productData.options.map((cat, categoryIndex) => {
+              return <CpcustomHolder key={cat.option_id} categoryIndex={categoryIndex} option_id={cat.option_id} option_title={cat.option_title} category_options={cat.option_values} />
             })}
+
+
+            {
+              !!productData.variants.length &&
+              <div className="eQ_yd" style={{
+                margin: 'var(--p-space-400) 0'
+              }}>
+                <LegacyCard title="Variants" actions={[{ content: 'Add Variant', onAction: (event) => { navigate(`/app/product/${productData.id}/variants/new`) }, disabled: isLoading }]}>
+                  <div className="gaCeK" style={{ marginBlockStart: 'var(--p-space-400)' }}>
+                    <Divider borderColor="border" />
+                  </div>
+                  <div className="udaqm">
+                    <IndexTable
+                      resourceName={{
+                        singular: 'variant',
+                        plural: 'variants'
+                      }}
+                      itemCount={productData.variants.length}
+                      selectedItemsCount={ allResourcesSelected ? 'All' : selectedResources.length }
+                      onSelectionChange={() => {}}
+                      headings={[
+                        { title: '' },
+                        { title: 'Variant' },
+                        { title: 'Price' },
+                        { title: '' },
+                      ]}
+                    >
+                      {productData.variants.map(({ id, title, price }, index) => {
+                        return (
+                          <IndexTable.Row
+                            id={id}
+                            key={id}
+                            selected={selectedResources.includes(id)}
+                            position={index}
+                          >
+                            <IndexTable.Cell>
+                              <Button>
+                                <Icon source={UploadMajor} />
+                              </Button>
+                            </IndexTable.Cell>
+                            <IndexTable.Cell>{title}</IndexTable.Cell>
+                            <IndexTable.Cell>
+                              <TextField
+                                value={price}
+                                onChange={() => {}}
+                              />
+                            </IndexTable.Cell>
+                            <IndexTable.Cell>
+                              <ButtonGroup>
+                                <Button>
+                                  Edit
+                                </Button>
+                                <Button>
+                                  <Icon source={DeleteMajor} />
+                                </Button>
+                              </ButtonGroup>
+                            </IndexTable.Cell>
+                          </IndexTable.Row>
+                        )
+                      })}
+                    </IndexTable>
+                  </div>
+                </LegacyCard>
+              </div>
+            }
+
 
           </Layout.Section>
 
@@ -1116,9 +1270,9 @@ export default function Index() {
         onClose={() => {
           optionModalToggleActive({ isActive: false })
         }}
-        title={`${!!categoryModalData.category_id ? 'Edit' : 'Add'} Custom Option`}
+        title={`${!!categoryModalData.option_id ? 'Edit' : 'Add'} Custom Option`}
         primaryAction={{
-          content: !!categoryModalData.category_id ? 'Update' : 'Save',
+          content: !!categoryModalData.option_id ? 'Update' : 'Save',
           onAction: handleCategoryModalSave,
         }}
         secondaryActions={{
@@ -1131,9 +1285,9 @@ export default function Index() {
         <Modal.Section>
           <TextField
             label="Title"
-            value={categoryModalData.category_title}
+            value={categoryModalData.option_title}
             onChange={(value) => {
-              optionModalToggleActive({ category_title: value })
+              optionModalToggleActive({ option_title: value })
             }}
           />
         </Modal.Section>
@@ -1145,7 +1299,7 @@ export default function Index() {
         onClose={toggleOptionModalActive}
         title="Select Color and Upload product image for this color"
         primaryAction={{
-          content: !!optionModalData.option_id ? 'Update' : 'Save',
+          content: !!optionModalData.option_value_id ? 'Update' : 'Save',
           onAction: handleOptionModalSaveOrUpdate
         }}
         secondaryActions={{
@@ -1164,18 +1318,18 @@ export default function Index() {
             /> */}
 
             <TextField
-              label="Option Name"
+              label="Option Value Name"
               type="text"
-              value={optionModalData.option_title}
-              onChange={val => dispatchOptionModalData({ option_title: val })}
+              value={optionModalData.option_value_title}
+              onChange={val => dispatchOptionModalData({ option_value_title: val })}
               autoComplete="off"
             />
 
             <TextField
               label="Price"
               type="number"
-              value={optionModalData.option_price}
-              onChange={val => dispatchOptionModalData({ option_price: val })}
+              value={optionModalData.option_value_price}
+              onChange={val => dispatchOptionModalData({ option_value_price: val })}
               autoComplete="off"
             />
 

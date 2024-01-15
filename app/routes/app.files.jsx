@@ -107,12 +107,12 @@ export const action = async ({ request }) => {
                 uploadHandler
             )
 
-            const option_title = formData.get("option_title")
+            const option_value_title = formData.get("option_value_title")
             const colorImageFile = formData.get("colorImageFile")
             const type = JSON.parse(formData.get("type"))
 
             const isColorCreated = await Files.create({
-                name: option_title,
+                name: option_value_title,
                 type: type,
                 filePath: `/uploads/files/${colorImageFile.name}`
             })
@@ -134,7 +134,7 @@ export const action = async ({ request }) => {
                 uploadHandlerToUpdate
             )
             const colorId = formDataToUpdate.get("colorId")
-            const colorNameToUpdate = formDataToUpdate.get("option_title")
+            const colorNameToUpdate = formDataToUpdate.get("option_value_title")
             const colorImageFileToUpdate = formDataToUpdate.get("colorImageFile")
             const typeToUpdate = JSON.parse(formDataToUpdate.get("type"))
 
@@ -181,7 +181,7 @@ const reducer = (state, action) => {
         case "CLEAR":
             return {
                 colorId: '',
-                option_title: '',
+                option_value_title: '',
                 colorImageFile: null,
                 option_image_path: '',
                 type: []
@@ -213,7 +213,7 @@ export default function ColorsPage() {
 
     const [modalData, dispatchModalData] = useReducer(reducer, {
         colorId: '',
-        option_title: '',
+        option_value_title: '',
         colorImageFile: null,
         option_image_path: '',
         type: ''
@@ -247,7 +247,7 @@ export default function ColorsPage() {
 
 
     const handleChangeColorName = useCallback(
-        (newValue) => dispatchModalData({ option_title: newValue }),
+        (newValue) => dispatchModalData({ option_value_title: newValue }),
         [],
     )
 
@@ -270,7 +270,7 @@ export default function ColorsPage() {
 
     const handleColorSave = () => {
         const formData = new FormData()
-        formData.append("option_title", modalData.option_title)
+        formData.append("option_value_title", modalData.option_value_title)
         formData.append("colorImageFile", modalData.colorImageFile)
         formData.append("type", JSON.stringify(modalData.type.map(mt => mt.value)))
         submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
@@ -281,7 +281,7 @@ export default function ColorsPage() {
         let isSomethingChanged = false
         const formData = new FormData()
         formData.append("colorId", modalData.colorId)
-        formData.append("option_title", modalData.option_title)
+        formData.append("option_value_title", modalData.option_value_title)
 
         formData.append("type", JSON.stringify(modalData.type.map(mt => mt.value)))
         if (modalData.colorImageFile) {
@@ -298,7 +298,7 @@ export default function ColorsPage() {
         setModalActive(true)
         dispatchModalData({
             colorId: file.id,
-            option_title: file.name,
+            option_value_title: file.name,
             option_image_path: file.thumbnail,
             type: !!file?.type ? file.type.map(ct => ({ value: ct, label: ct })) : ''
         })
@@ -457,14 +457,14 @@ export default function ColorsPage() {
                 primaryAction={{
                     content: modalData.colorId ? 'Update' : 'Save',
                     onAction: modalData.colorId ? handleColorUpdate : handleColorSave,
-                    disabled: !modalData.option_title || !modalData.type.length
+                    disabled: !modalData.option_value_title || !modalData.type.length
                 }}
             >
                 <Modal.Section>
                     <FormLayout>
                         <TextField
                             label="Name"
-                            value={modalData.option_title}
+                            value={modalData.option_value_title}
                             onChange={handleChangeColorName}
                             autoComplete="off"
                         />
