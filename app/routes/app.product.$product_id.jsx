@@ -539,7 +539,7 @@ const productDataReducer = (state, action) => {
   }
 }
 
-export default function Index() {
+export default function Product() {
 
   const navigate = useNavigate()
   const loaderData = useLoaderData()
@@ -1020,9 +1020,9 @@ export default function Index() {
           currentVariation.pop()
         }
       }
-
-
     }
+
+
     generate(0, []);
 
 
@@ -1093,7 +1093,7 @@ export default function Index() {
               </Button>
               {
                 !!productData?.product_title &&
-                <Text as="h5" z="headingLg">{productData.product_title}</Text>
+                <Text as="h5" variant="headingLg">{productData.product_title}</Text>
               }
             </Card>
 
@@ -1180,7 +1180,16 @@ export default function Index() {
               <div className="eQ_yd" style={{
                 margin: 'var(--p-space-400) 0'
               }}>
-                <LegacyCard title="Variants" actions={[{ content: 'Add Variant', onAction: (event) => { navigate(`/app/product/${productData.id}/variants/new`) }, disabled: isLoading }]}>
+                <LegacyCard
+                  title="Variants"
+                  actions={[
+                    {
+                      content: 'Add Variant',
+                      onAction: (event) => { navigate(`/app/variant/${productData.id}/new`) },
+                      disabled: isLoading
+                    }
+                  ]}
+                >
                   <div className="gaCeK" style={{ marginBlockStart: 'var(--p-space-400)' }}>
                     <Divider borderColor="border" />
                   </div>
@@ -1222,7 +1231,11 @@ export default function Index() {
                             </IndexTable.Cell>
                             <IndexTable.Cell>
                               <ButtonGroup>
-                                <Button>
+                                <Button
+                                  onClick={() => {
+                                    navigate(`/app/variant/${productData.id}/new`)
+                                  }}
+                                >
                                   Edit
                                 </Button>
                                 <Button>

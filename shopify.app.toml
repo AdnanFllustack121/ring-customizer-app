@@ -2,7 +2,7 @@
 
 name = "ring-customizer-app"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://cameron-cherry-subdivision-cool.trycloudflare.com"
+application_url = "https://supported-ampland-lifestyle-deviant.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://cameron-cherry-subdivision-cool.trycloudflare.com/auth/callback",
-  "https://cameron-cherry-subdivision-cool.trycloudflare.com/auth/shopify/callback",
-  "https://cameron-cherry-subdivision-cool.trycloudflare.com/api/auth/callback"
+  "https://supported-ampland-lifestyle-deviant.trycloudflare.com/auth/callback",
+  "https://supported-ampland-lifestyle-deviant.trycloudflare.com/auth/shopify/callback",
+  "https://supported-ampland-lifestyle-deviant.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
