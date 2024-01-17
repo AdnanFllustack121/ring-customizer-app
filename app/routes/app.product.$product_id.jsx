@@ -29,7 +29,7 @@ import {
   TextField,
   Divider,
 } from "@shopify/polaris";
-import { CircleCancelMajor, CircleDotsMajor, DeleteMajor, UploadMajor } from "@shopify/polaris-icons";
+import { CircleCancelMajor, CircleDotsMajor, DeleteMajor, AddImageMajor } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
 import { deleteFile, makeid } from "../utils";
@@ -684,6 +684,24 @@ export default function Product() {
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
+      variants: !!loaderData?.product?.variants ? loaderData.product.variants.map(vrnt => {
+
+        let variant_title = ''
+        for (let index = 0; index < vrnt.variant_options.length; index++) {
+          const vrnt_variant_option = vrnt.variant_options[index];
+
+          if ((Object.keys(vrnt.variant_options).length - 1) == index) {
+            variant_title += vrnt_variant_option.option_value_title
+          } else {
+            variant_title += vrnt_variant_option.option_value_title + ' / '
+          }
+        }
+
+        return {
+          ...vrnt,
+          variant_title
+        }
+      }) : [],
     })
 
     if (!!loaderData?.product?.options && !!Object.keys(loaderData.product.options).length) {
@@ -719,11 +737,11 @@ export default function Product() {
       // Setup Variants START
       console.log('loaderData?.product?.variants?.length', loaderData?.product?.variants?.length)
       if (!loaderData?.product?.variants?.length) {
-        const allVariations = generateVariations(loaderData?.product?.options)
-        console.log('allVariations', allVariations)
-        dispatchProductData({
-          variants: allVariations
-        })
+        // const allVariations = generateVariations(loaderData?.product?.options)
+        // console.log('allVariations', allVariations)
+        // dispatchProductData({
+        //   variants: allVariations
+        // })
       }
       // Setup Variants END
 
@@ -1175,82 +1193,86 @@ export default function Product() {
             })}
 
 
-            {
-              !!productData.variants.length &&
-              <div className="eQ_yd" style={{
-                margin: 'var(--p-space-400) 0'
-              }}>
-                <LegacyCard
-                  title="Variants"
-                  actions={[
-                    {
-                      content: 'Add Variant',
-                      onAction: (event) => { navigate(`/app/variant/${productData.id}/new`) },
-                      disabled: isLoading
-                    }
-                  ]}
-                >
-                  <div className="gaCeK" style={{ marginBlockStart: 'var(--p-space-400)' }}>
-                    <Divider borderColor="border" />
-                  </div>
-                  <div className="udaqm">
-                    <IndexTable
-                      resourceName={{
-                        singular: 'variant',
-                        plural: 'variants'
-                      }}
-                      itemCount={productData.variants.length}
-                      selectedItemsCount={ allResourcesSelected ? 'All' : selectedResources.length }
-                      onSelectionChange={() => {}}
-                      headings={[
-                        { title: '' },
-                        { title: 'Variant' },
-                        { title: 'Price' },
-                        { title: '' },
-                      ]}
-                    >
-                      {productData.variants.map(({ id, title, price }, index) => {
-                        return (
-                          <IndexTable.Row
-                            id={id}
-                            key={id}
-                            selected={selectedResources.includes(id)}
-                            position={index}
-                          >
-                            <IndexTable.Cell>
-                              <Button>
-                                <Icon source={UploadMajor} />
-                              </Button>
-                            </IndexTable.Cell>
-                            <IndexTable.Cell>{title}</IndexTable.Cell>
-                            <IndexTable.Cell>
-                              <TextField
-                                value={price}
-                                onChange={() => {}}
+            
+            <div className="eQ_yd" style={{
+              margin: 'var(--p-space-400) 0'
+            }}>
+              <LegacyCard
+                title="Variants"
+                actions={[
+                  {
+                    content: 'Add Variant',
+                    onAction: (event) => { navigate(`/app/variant/${productData.id}/new`) },
+                    disabled: isLoading
+                  }
+                ]}
+              >
+                <div className="gaCeK" style={{ marginBlockStart: 'var(--p-space-400)' }}>
+                  <Divider borderColor="border" />
+                </div>
+                <div className="udaqm">
+                  <IndexTable
+                    resourceName={{
+                      singular: 'variant',
+                      plural: 'variants'
+                    }}
+                    itemCount={productData.variants.length}
+                    selectedItemsCount={ allResourcesSelected ? 'All' : selectedResources.length }
+                    onSelectionChange={() => {}}
+                    headings={[
+                      { title: '' },
+                      { title: 'Variant' },
+                      { title: 'Price' },
+                      { title: '' },
+                    ]}
+                  >
+                    {productData.variants.map(({ variant_id, variant_title, variant_image_path, variant_options }, index) => {
+                      return (
+                        <IndexTable.Row
+                          id={variant_id}
+                          key={variant_id}
+                          selected={selectedResources.includes(variant_id)}
+                          position={index}
+                        >
+                          <IndexTable.Cell>
+                            {
+                              !!variant_image_path
+                              ?
+                              <Thumbnail
+                                source={`${variant_image_path}`}
                               />
-                            </IndexTable.Cell>
-                            <IndexTable.Cell>
+                              :
+                              <Icon source={AddImageMajor} />
+                            }
+                          </IndexTable.Cell>
+                          <IndexTable.Cell>{variant_title}</IndexTable.Cell>
+                          <IndexTable.Cell>
+                            {/* {price} */}
+                          </IndexTable.Cell>
+                          <IndexTable.Cell>
+                            <div className="u9Xhb">
                               <ButtonGroup>
-                                <Button
-                                  onClick={() => {
-                                    navigate(`/app/variant/${productData.id}/new`)
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-                                <Button>
-                                  <Icon source={DeleteMajor} />
-                                </Button>
+                                  <Button
+                                    onClick={() => {
+                                      navigate(`/app/variant/${productData.id}/${variant_id}`)
+                                    }}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button>
+                                    <Icon source={DeleteMajor} />
+                                  </Button>
                               </ButtonGroup>
-                            </IndexTable.Cell>
-                          </IndexTable.Row>
-                        )
-                      })}
-                    </IndexTable>
-                  </div>
-                </LegacyCard>
-              </div>
-            }
+                            </div>
+                          </IndexTable.Cell>
+                        </IndexTable.Row>
+                      )
+                    })}
+                  </IndexTable>
+                </div>
+              </LegacyCard>
+            </div>
+            
 
 
           </Layout.Section>
