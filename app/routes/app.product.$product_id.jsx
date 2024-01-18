@@ -690,6 +690,10 @@ export default function Product() {
         for (let index = 0; index < vrnt.variant_options.length; index++) {
           const vrnt_variant_option = vrnt.variant_options[index];
 
+          if (!vrnt_variant_option) {
+            continue
+          }
+
           if ((Object.keys(vrnt.variant_options).length - 1) == index) {
             variant_title += vrnt_variant_option.option_value_title
           } else {
@@ -1259,9 +1263,9 @@ export default function Product() {
                                   >
                                     Edit
                                   </Button>
-                                  <Button>
+                                  {/* <Button>
                                     <Icon source={DeleteMajor} />
-                                  </Button>
+                                  </Button> */}
                               </ButtonGroup>
                             </div>
                           </IndexTable.Cell>

@@ -10,3 +10,7 @@
   border-color: var(--p-color-border-secondary);
   margin-top: var(--p-space-500);
 }
+
+.blockStack-parent .Polaris-FormLayout__Item.Polaris-FormLayout--grouped:first-child {
+  margin-bottom: -12px;
+}

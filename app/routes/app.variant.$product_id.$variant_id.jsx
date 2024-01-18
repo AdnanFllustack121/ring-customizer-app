@@ -1,12 +1,25 @@
-import { BlockStack, Box, Button, DropZone, FormLayout, InlineStack, Layout, LegacyCard, LegacyStack, Page, Text, TextField, Thumbnail } from "@shopify/polaris";
+import {
+    BlockStack,
+    Box,
+    Button,
+    DropZone,
+    FormLayout,
+    InlineStack,
+    Layout,
+    LegacyCard,
+    LegacyStack,
+    Page,
+    Text,
+    TextField,
+    Thumbnail,
+} from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { json, redirect, unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams, useSubmit } from "@remix-run/react";
 import { Products } from "../db.server";
 import { useCallback, useEffect, useReducer, useState } from "react";
 
-// import CreatableSelect from "react-select/creatable";
-import Select from 'react-select'
+import CreatableSelect from "react-select/creatable";
 
 import variantStyles from "~/styles/variant.css";
 import { makeid } from "../utils";
@@ -99,6 +112,65 @@ export const action = async ({ request }) => {
     
                 break;
 
+            case "PATCH":
+
+                const uploadHandlerToUpdate = unstable_composeUploadHandlers(
+                    unstable_createFileUploadHandler({
+                        directory: 'public/uploads/files',
+                        maxPartSize: 10000000,
+                        file: ({ filename }) => filename,
+                    }),
+                    // parse everything else into memory
+                    unstable_createMemoryUploadHandler()
+                )
+
+                const formDataToUpdate = await unstable_parseMultipartFormData(
+                    request,
+                    uploadHandlerToUpdate
+                )
+
+                const document_id_to_update = formDataToUpdate.get("document_id")
+                const variant_id_to_update = formDataToUpdate.get("variant_id")
+                let variant_options_to_update = formDataToUpdate.get("variant_options")
+                variant_options_to_update = JSON.parse(variant_options_to_update)
+                const variant_image_file_to_update = formDataToUpdate.get('variant_image_file')
+
+                const foundProductToUpdate = await Products.findById(document_id_to_update)
+                // console.log('foundProductToUpdate', foundProductToUpdate)
+
+                const existingVariantsToUpdate = !!foundProductToUpdate?.variants ? foundProductToUpdate.variants : []
+                // console.log('existingVariantsToUpdate', existingVariantsToUpdate)
+                
+                const foundProductVariantIndex = existingVariantsToUpdate.findIndex(vrnt => vrnt.variant_id == variant_id_to_update)
+                // console.log('foundProductVariantIndex', foundProductVariantIndex)
+
+                // console.log('existingVariantsToUpdate[foundProductVariantIndex].variant_image_path', existingVariantsToUpdate[foundProductVariantIndex].variant_image_path)
+                const newVariantToUpdate = {
+                    variant_id: variant_id_to_update,
+                    variant_options: variant_options_to_update,
+                    variant_image_path: existingVariantsToUpdate[foundProductVariantIndex].variant_image_path
+                }
+
+                if (variant_image_file_to_update != 'null') {
+                    console.log('variant_image_file_to_update', typeof variant_image_file_to_update, variant_image_file_to_update)
+                    newVariantToUpdate.variant_image_path = `/uploads/files/${variant_image_file_to_update.name}`
+                }
+
+                const newVariantsUpdated = [
+                    ...existingVariantsToUpdate,
+                ]
+                newVariantsUpdated[foundProductVariantIndex] = newVariantToUpdate
+
+                console.log('newVariantsUpdated', newVariantsUpdated)
+
+                const isProductUpdatedVariants = await Products.findOneAndUpdate({
+                    _id: document_id_to_update
+                  }, {
+                    variants: newVariantsUpdated
+                })
+                // console.log('isProductUpdatedVariants', isProductUpdatedVariants)
+                return redirect(`/app/product/${foundProductToUpdate._id}`)
+                break;
 
             case "DELETE":
                 const formDataToDelete = await request.formData()
@@ -246,7 +318,6 @@ export default function Variant() {
 
         const newVariantData = {
             ...variantData
-            // variant_options: [...variantData.variant_options]
         }
 
         if (!!selected_option) {
@@ -256,24 +327,33 @@ export default function Variant() {
                 option_value_title: selected_option.label
             }
         } else {
-            newVariantData.variant_options[optn_index] = null
+            newVariantData.variant_options[optn_index] = {}
         }
+
+        console.log('newVariantData.variant_options', newVariantData.variant_options)
 
         dispatchVariantData(newVariantData)
     }
 
 
     const handleVariantSaveEvent = () => {
+
         console.log('handleVariantSaveEvent variantData', variantData)
         console.log('productData', productData)
-
         const formData = new FormData()
-        formData.append('document_id', productData.id)
-        formData.append('variant_options', JSON.stringify(variantData.variant_options))
-        
-        formData.append("variant_image_file", variantData.variant_image_file)
 
-        submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
+        if (!!variantData.variant_id) {
+            formData.append('document_id', productData.id)
+            formData.append('variant_id', variantData.variant_id)
+            formData.append('variant_options', JSON.stringify(variantData.variant_options))
+            formData.append("variant_image_file", variantData.variant_image_file)
+            submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
+        } else {
+            formData.append('document_id', productData.id)
+            formData.append('variant_options', JSON.stringify(variantData.variant_options))
+            formData.append("variant_image_file", variantData.variant_image_file)
+            submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
+        }
     }
 
     const handleVariantDeleteEvent = () => {
@@ -296,7 +376,7 @@ export default function Variant() {
             }}
             title="Add variant"
             primaryAction={{
-                content: 'Save Variant',
+                content: !!variantData.variant_id ? 'Edit Variant' : 'Save Variant',
                 onAction: handleVariantSaveEvent
             }}
             secondaryActions={[{
@@ -309,7 +389,11 @@ export default function Variant() {
                 <Layout.Section variant="oneThird">
                     <LegacyCard title="Variants">
                         <div className="ezVmi">
-
+                            {/* <Scrollable>
+                                <ul id="variantsList" className="V3AvU">
+                                    
+                                </ul>
+                            </Scrollable> */}
                         </div>
                     </LegacyCard>
                 </Layout.Section>
@@ -323,50 +407,29 @@ export default function Variant() {
                                         productData.options.map((optn, optn_index) => {
                                             return (
                                                 !!optn?.option_values?.length &&
-                                                <FormLayout
-                                                    key={optn.option_id}
-                                                >
-                                                    {/* <TextField label={optn.option_title} /> */}
-                                                    {/* <CreatableSelect
+                                                <FormLayout key={optn.option_id}>
+                                                    <label for={optn.option_id}>{optn.option_title}</label>
+                                                    <CreatableSelect
+                                                        id={optn.option_id}
                                                         key={optn.option_id}
                                                         // defaultValue={optn.option_values[0].option_value_id}
-                                                        // value={variantData.variant_options[optn_index]?.option_value_id}
+                                                        value={{
+                                                            value: variantData?.variant_options[optn_index]?.option_value_id,
+                                                            label: variantData?.variant_options[optn_index]?.option_value_title,
+                                                        }}
                                                         onChange={(selected_option) => {
-                                                            console.log('selected_option', selected_option)
-                                                            console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)
                                                             handleVariantSelectOptionChange(optn_index, selected_option)
                                                         }}
                                                         isLoading={false}
                                                         isClearable
                                                         isSearchable
                                                         options={optn.option_values.map(ov => {
-                                                            return {
+                                                            const option_value = {
                                                                 value: ov.option_value_id,
                                                                 label: ov.option_value_title,
                                                                 optn
                                                             }
-                                                        })}
-                                                        placeholder={`Select ${optn.option_title}`}
-                                                    /> */}
-                                                    {console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)}
-                                                    <Select
-                                                        key={optn.option_id}
-                                                        // defaultValue={optn.option_values[0].option_value_id}
-                                                        value={variantData.variant_options[optn_index]?.option_value_id}
-                                                        onChange={(selected_option) => {
-                                                            console.log('selected_option', selected_option)
-                                                            console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)
-                                                            handleVariantSelectOptionChange(optn_index, selected_option)
-                                                        }}
-                                                        isLoading={false}
-                                                        isClearable
-                                                        isSearchable
-                                                        options={optn.option_values.map(ov => {
-                                                            return {
-                                                                value: ov.option_value_id,
-                                                                label: ov.option_value_title,
-                                                                optn
-                                                            }
+                                                            return option_value
                                                         })}
                                                         placeholder={`Select ${optn.option_title}`}
                                                     />
