@@ -4,7 +4,9 @@ import { json, redirect, unstable_composeUploadHandlers, unstable_createFileUplo
 import { useLoaderData, useNavigate, useParams, useSubmit } from "@remix-run/react";
 import { Products } from "../db.server";
 import { useCallback, useEffect, useReducer, useState } from "react";
-import CreatableSelect from "react-select/creatable";
+
+// import CreatableSelect from "react-select/creatable";
+import Select from 'react-select'
 
 import variantStyles from "~/styles/variant.css";
 import { makeid } from "../utils";
@@ -16,12 +18,20 @@ export const links = () => [
 export const loader = async ({ params, request }) => {
     await authenticate.admin(request)
 
+    console.log('variant loader params', params)
+
     const product = await Products.findById(params.product_id)
 
-    return json({
+    const loaderResponse = {
         success: true,
         product
-    })
+    }
+
+    if ( !!params?.variant_id && params.variant_id != 'new' ) {
+        loaderResponse.variant = product.variants.find(vrnt => vrnt.variant_id === params.variant_id)
+    }
+
+    return json(loaderResponse)
 }
 
 export const action = async ({ request }) => {
@@ -87,6 +97,27 @@ export const action = async ({ request }) => {
 
                 return redirect(`/app/product/${foundProduct._id}`)
     
+                break;
+
+
+            case "DELETE":
+                const formDataToDelete = await request.formData()
+
+                const document_id_to_delete = formDataToDelete.get("document_id")
+                const variant_id_to_delete = formDataToDelete.get("variant_id")
+
+                const foundProductToDelete = await Products.findById(document_id_to_delete)
+
+                const new_Variants = foundProductToDelete.variants.filter(vrnt => vrnt.variant_id != variant_id_to_delete)
+
+                const isVariantDeleted = await Products.findOneAndUpdate({
+                    _id: document_id_to_delete
+                  }, {
+                    variants: new_Variants
+                })
+
+                return redirect(`/app/product/${foundProductToDelete._id}`)
+
                 break;
         }
 
@@ -164,14 +195,6 @@ export default function Variant() {
 
     console.log('params', params)
 
-    const [file, setFile] = useState(null)
-
-    const handleDropZoneDrop = useCallback(
-        (_dropFiles, acceptedFiles, _rejectedFiles) =>
-        setFile((file) => acceptedFiles[0]),
-        [],
-    );
-
     const [productData, dispatchProductData] = useReducer(productDataReducer, {
         id: '',
         product_id: '',
@@ -181,17 +204,26 @@ export default function Variant() {
         options: [],
         variants: []
     })
-    console.log('productData', productData)
 
 
     const [variantData, dispatchVariantData] = useReducer(variantDataReducer, {
         variant_id: '',
         variant_options: [],
+        variant_image_file: null,
+        variant_image_path: ''
     })
 
+    const handleDropZoneDrop = useCallback(
+        (_dropFiles, acceptedFiles, _rejectedFiles) => {
+            dispatchVariantData({
+                variant_image_file: acceptedFiles[0]
+            })
+        },
+        [],
+    );
 
     useEffect(() => {
-        console.log('loaderData', loaderData)
+        console.log('useEffect loaderData', loaderData)
 
         dispatchProductData({
             id: loaderData.product._id,
@@ -199,6 +231,12 @@ export default function Variant() {
             product_title: loaderData.product.product_title,
             options: !!loaderData?.product?.options ? loaderData.product.options : [],
         })
+
+        if (!!loaderData?.variant) {
+            dispatchVariantData({
+                ...loaderData.variant
+            })
+        }
 
     }, [loaderData])
 
@@ -211,16 +249,19 @@ export default function Variant() {
             // variant_options: [...variantData.variant_options]
         }
 
-        newVariantData.variant_options[optn_index] = {
-            option_id: selected_option.optn.option_id,
-            option_value_id: selected_option.value,
-            option_value_title: selected_option.label
+        if (!!selected_option) {
+            newVariantData.variant_options[optn_index] = {
+                option_id: selected_option.optn.option_id,
+                option_value_id: selected_option.value,
+                option_value_title: selected_option.label
+            }
+        } else {
+            newVariantData.variant_options[optn_index] = null
         }
 
         dispatchVariantData(newVariantData)
     }
 
-    console.log('variantData', variantData)
 
     const handleVariantSaveEvent = () => {
         console.log('handleVariantSaveEvent variantData', variantData)
@@ -230,10 +271,22 @@ export default function Variant() {
         formData.append('document_id', productData.id)
         formData.append('variant_options', JSON.stringify(variantData.variant_options))
         
-        formData.append("variant_image_file", file)
+        formData.append("variant_image_file", variantData.variant_image_file)
 
         submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
     }
+
+    const handleVariantDeleteEvent = () => {
+        console.log('handleVariantDeleteEvent variantData', variantData)
+
+        const formData = new FormData()
+        formData.append('document_id', productData.id)
+        formData.append("variant_id", variantData.variant_id)
+        submit(formData, { replace: true, method: "DELETE" })
+    }
+
+    console.log('productData', productData)
+    console.log('variantData', variantData)
 
     return (
         <Page
@@ -246,10 +299,18 @@ export default function Variant() {
                 content: 'Save Variant',
                 onAction: handleVariantSaveEvent
             }}
+            secondaryActions={[{
+                content: 'Delete Variant',
+                destructive: true,
+                onAction: handleVariantDeleteEvent,
+            }]}
         >
             <Layout>
                 <Layout.Section variant="oneThird">
                     <LegacyCard title="Variants">
+                        <div className="ezVmi">
+
+                        </div>
                     </LegacyCard>
                 </Layout.Section>
 
@@ -266,10 +327,32 @@ export default function Variant() {
                                                     key={optn.option_id}
                                                 >
                                                     {/* <TextField label={optn.option_title} /> */}
-                                                    <CreatableSelect
+                                                    {/* <CreatableSelect
                                                         key={optn.option_id}
                                                         // defaultValue={optn.option_values[0].option_value_id}
                                                         // value={variantData.variant_options[optn_index]?.option_value_id}
+                                                        onChange={(selected_option) => {
+                                                            console.log('selected_option', selected_option)
+                                                            console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)
+                                                            handleVariantSelectOptionChange(optn_index, selected_option)
+                                                        }}
+                                                        isLoading={false}
+                                                        isClearable
+                                                        isSearchable
+                                                        options={optn.option_values.map(ov => {
+                                                            return {
+                                                                value: ov.option_value_id,
+                                                                label: ov.option_value_title,
+                                                                optn
+                                                            }
+                                                        })}
+                                                        placeholder={`Select ${optn.option_title}`}
+                                                    /> */}
+                                                    {console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)}
+                                                    <Select
+                                                        key={optn.option_id}
+                                                        // defaultValue={optn.option_values[0].option_value_id}
+                                                        value={variantData.variant_options[optn_index]?.option_value_id}
                                                         onChange={(selected_option) => {
                                                             console.log('selected_option', selected_option)
                                                             console.log('variantData.variant_options[optn_index]?.option_value_id', variantData.variant_options[optn_index]?.option_value_id)
@@ -295,18 +378,25 @@ export default function Variant() {
                                         allowMultiple={false}
                                         onDrop={handleDropZoneDrop}
                                     >
-                                        {console.log('file', file)}
                                         {
-                                            !!file &&
+                                            (!!variantData.variant_image_file || !!variantData.variant_image_path) &&
                                             <LegacyStack>
                                                 <LegacyStack.Item>
                                                     <Thumbnail
                                                         source={
-                                                            ['image/gif', 'image/jpeg', 'image/png'].includes(file.type)
-                                                            ? window.URL.createObjectURL(file) : ''
+                                                            !!variantData.variant_image_file
+                                                            ?
+                                                            (
+                                                                ['image/gif', 'image/jpeg', 'image/png'].includes(variantData.variant_image_file.type)
+                                                                ?
+                                                                window.URL.createObjectURL(variantData.variant_image_file)
+                                                                :
+                                                                ''
+                                                            )
+                                                            :
+                                                            variantData.variant_image_path
                                                         }
                                                         size="large"
-                                                        
                                                     />
                                                 </LegacyStack.Item>
                                                 <LegacyStack.Item>
@@ -318,17 +408,17 @@ export default function Variant() {
                                             //         <LegacyStack alignment="center">
                                             //         <Thumbnail
                                             //             size="small"
-                                            //             alt={file.name}
+                                            //             alt={variantData.variant_image_file.name}
                                             //             source={
-                                            //                 ['image/gif', 'image/jpeg', 'image/png'].includes(file.type)
-                                            //                 ? window.URL.createObjectURL(file)
+                                            //                 ['image/gif', 'image/jpeg', 'image/png'].includes(variantData.variant_image_file.type)
+                                            //                 ? window.URL.createObjectURL(variantData.variant_image_file)
                                             //                 : 'NoteIcon'
                                             //             }
                                             //         />
                                             //         <div>
-                                            //             {file.name}{' '}
+                                            //             {variantData.variant_image_file.name}{' '}
                                             //             <Text variant="bodySm" as="p">
-                                            //             {file.size} bytes
+                                            //             {variantData.variant_image_file.size} bytes
                                             //             </Text>
                                             //         </div>
                                             //         </LegacyStack>
@@ -337,7 +427,7 @@ export default function Variant() {
                                             // </div>
                                         }
                                         {
-                                            !file &&
+                                            !variantData.variant_image_file && !variantData.variant_image_path &&
                                             <DropZone.FileUpload />
                                         }
                                     </DropZone>

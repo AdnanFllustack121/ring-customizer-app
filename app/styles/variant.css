@@ -1,3 +1,12 @@
 .blockStack-parent .Polaris-DropZone--sizeLarge {
-    min-height: 18.3rem;
+  min-height: 18.3rem;
+}
+
+.ezVmi {
+  background-color: var(--p-color-bg-surface);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+  border-color: var(--p-color-border-secondary);
+  margin-top: var(--p-space-500);
 }
