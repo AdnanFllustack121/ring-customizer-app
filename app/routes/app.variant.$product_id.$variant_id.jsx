@@ -14,7 +14,14 @@ import {
     Thumbnail,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
-import { json, redirect, unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
+import {
+    json,
+    redirect,
+    unstable_composeUploadHandlers,
+    unstable_createFileUploadHandler,
+    unstable_createMemoryUploadHandler,
+    unstable_parseMultipartFormData
+} from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams, useSubmit } from "@remix-run/react";
 import { Products } from "../db.server";
 import { useCallback, useEffect, useReducer, useState } from "react";
@@ -22,11 +29,12 @@ import { useCallback, useEffect, useReducer, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 
 import variantStyles from "~/styles/variant.css";
-import { makeid } from "../utils";
+import { deleteFile, makeid } from "../utils";
 
 export const links = () => [
     { rel: "stylesheet", href: variantStyles },
 ];
+
 
 export const loader = async ({ params, request }) => {
     await authenticate.admin(request)
@@ -47,6 +55,7 @@ export const loader = async ({ params, request }) => {
     return json(loaderResponse)
 }
 
+
 export const action = async ({ request }) => {
     const { admin } = await authenticate.admin(request)
 
@@ -63,23 +72,23 @@ export const action = async ({ request }) => {
                     // parse everything else into memory
                     unstable_createMemoryUploadHandler()
                 )
-    
+
                 const formDataToCreate = await unstable_parseMultipartFormData(
                     request,
                     uploadHandlerToCreate
                 )
-    
+
                 const document_id = formDataToCreate.get("document_id")
                 console.log('document_id', document_id)
                 const variant_id = makeid(24)
                 let variant_options = formDataToCreate.get("variant_options")
-    
                 variant_options = JSON.parse(variant_options)
+                console.log('variant_options', variant_options)
+
+                const variant_title = formDataToCreate.get("variant_title")
 
                 const variant_image_file = formDataToCreate.get('variant_image_file')
-    
-                console.log('variant_options', variant_options)
-    
+
                 const foundProduct = await Products.findById(document_id)
                 console.log('foundProduct', foundProduct)
 
@@ -89,10 +98,11 @@ export const action = async ({ request }) => {
 
                 const newVariant = {
                     variant_id,
+                    variant_title,
                     variant_options
                 }
 
-                if (!!variant_image_file) {
+                if (!!variant_image_file && variant_image_file != 'null') {
                     newVariant.variant_image_path = `/uploads/files/${variant_image_file.name}`
                 }
 
@@ -131,6 +141,7 @@ export const action = async ({ request }) => {
 
                 const document_id_to_update = formDataToUpdate.get("document_id")
                 const variant_id_to_update = formDataToUpdate.get("variant_id")
+                const variant_title_to_update = formDataToUpdate.get("variant_title")
                 let variant_options_to_update = formDataToUpdate.get("variant_options")
                 variant_options_to_update = JSON.parse(variant_options_to_update)
                 const variant_image_file_to_update = formDataToUpdate.get('variant_image_file')
@@ -147,11 +158,12 @@ export const action = async ({ request }) => {
                 // console.log('existingVariantsToUpdate[foundProductVariantIndex].variant_image_path', existingVariantsToUpdate[foundProductVariantIndex].variant_image_path)
                 const newVariantToUpdate = {
                     variant_id: variant_id_to_update,
+                    variant_title: variant_title_to_update,
                     variant_options: variant_options_to_update,
                     variant_image_path: existingVariantsToUpdate[foundProductVariantIndex].variant_image_path
                 }
 
-                if (variant_image_file_to_update != 'null') {
+                if (!!variant_image_file_to_update && variant_image_file_to_update != 'null') {
                     console.log('variant_image_file_to_update', typeof variant_image_file_to_update, variant_image_file_to_update)
                     newVariantToUpdate.variant_image_path = `/uploads/files/${variant_image_file_to_update.name}`
                 }
@@ -180,6 +192,9 @@ export const action = async ({ request }) => {
 
                 const foundProductToDelete = await Products.findById(document_id_to_delete)
 
+                const foundVariantToDelete = foundProductToDelete.variants.find(vrnt => vrnt.variant_id === variant_id_to_delete)
+                deleteFile(foundVariantToDelete.variant_image_path)
+
                 const new_Variants = foundProductToDelete.variants.filter(vrnt => vrnt.variant_id != variant_id_to_delete)
 
                 const isVariantDeleted = await Products.findOneAndUpdate({
@@ -202,6 +217,7 @@ export const action = async ({ request }) => {
         success: true
     })
 }
+
 
 const productDataReducer = (state, action) => {
     console.log('productDataReducer state, action', state, action)
@@ -246,6 +262,7 @@ const productDataReducer = (state, action) => {
     }
 }
 
+
 const variantDataReducer = (state, action) => {
     switch (action.type) {
         case "CLEAR":
@@ -256,6 +273,7 @@ const variantDataReducer = (state, action) => {
             return { ...state, ...action }
     }
 }
+
 
 export default function Variant() {
 
@@ -302,6 +320,7 @@ export default function Variant() {
             product_id: loaderData.product.product_id,
             product_title: loaderData.product.product_title,
             options: !!loaderData?.product?.options ? loaderData.product.options : [],
+            variants: !!loaderData?.product?.variants ? loaderData.product.variants : [],
         })
 
         if (!!loaderData?.variant) {
@@ -336,25 +355,38 @@ export default function Variant() {
     }
 
 
-    const handleVariantSaveEvent = () => {
-
-        console.log('handleVariantSaveEvent variantData', variantData)
-        console.log('productData', productData)
+    const handleVariantSaveOrEditEvent = () => {
+        console.log('handleVariantSaveOrEditEvent variantData', variantData)
+        console.log('handleVariantSaveOrEditEvent productData', productData)
         const formData = new FormData()
 
+        const variant_title = variantData.variant_options.filter(vo => !!vo).map(vo => vo.option_value_title).join(' / ')
+        console.log('variant_title', variant_title)
+
         if (!!variantData.variant_id) {
-            formData.append('document_id', productData.id)
-            formData.append('variant_id', variantData.variant_id)
-            formData.append('variant_options', JSON.stringify(variantData.variant_options))
-            formData.append("variant_image_file", variantData.variant_image_file)
-            submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
+            if (productData.variants.find(vrnt => ((vrnt.variant_title === variant_title) && (vrnt.variant_id !== variantData.variant_id)))) {
+                shopify.toast.show("Variant Already Exists!")
+            } else {
+                formData.append('document_id', productData.id)
+                formData.append('variant_id', variantData.variant_id)
+                formData.append('variant_title', variant_title)
+                formData.append('variant_options', JSON.stringify(variantData.variant_options))
+                formData.append("variant_image_file", variantData.variant_image_file)
+                submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
+            }
         } else {
-            formData.append('document_id', productData.id)
-            formData.append('variant_options', JSON.stringify(variantData.variant_options))
-            formData.append("variant_image_file", variantData.variant_image_file)
-            submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
+            if (productData.variants.find(vrnt => vrnt.variant_title === variant_title)) {
+                shopify.toast.show("Variant Already Exists!")
+            } else {
+                formData.append('document_id', productData.id)
+                formData.append('variant_title', variant_title)
+                formData.append('variant_options', JSON.stringify(variantData.variant_options))
+                formData.append("variant_image_file", variantData.variant_image_file)            
+                submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
+            }
         }
     }
+
 
     const handleVariantDeleteEvent = () => {
         console.log('handleVariantDeleteEvent variantData', variantData)
@@ -374,10 +406,10 @@ export default function Variant() {
                 content: '',
                 url: `/app/product/${params.product_id}`
             }}
-            title="Add variant"
+            title={!!variantData.variant_id ? variantData.variant_title : "Add Variant"}
             primaryAction={{
                 content: !!variantData.variant_id ? 'Edit Variant' : 'Save Variant',
-                onAction: handleVariantSaveEvent
+                onAction: handleVariantSaveOrEditEvent
             }}
             secondaryActions={[{
                 content: 'Delete Variant',
@@ -389,11 +421,9 @@ export default function Variant() {
                 <Layout.Section variant="oneThird">
                     <LegacyCard title="Variants">
                         <div className="ezVmi">
-                            {/* <Scrollable>
-                                <ul id="variantsList" className="V3AvU">
-                                    
-                                </ul>
-                            </Scrollable> */}
+                            <ul id="variantsList" className="V3AvU">
+                                
+                            </ul>
                         </div>
                     </LegacyCard>
                 </Layout.Section>

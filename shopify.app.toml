@@ -2,7 +2,7 @@
 
 name = "ring-customizer-app"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://suppose-north-estimated-pillow.trycloudflare.com"
+application_url = "https://qualified-checklist-gentleman-sister.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://suppose-north-estimated-pillow.trycloudflare.com/auth/callback",
-  "https://suppose-north-estimated-pillow.trycloudflare.com/auth/shopify/callback",
-  "https://suppose-north-estimated-pillow.trycloudflare.com/api/auth/callback"
+  "https://qualified-checklist-gentleman-sister.trycloudflare.com/auth/callback",
+  "https://qualified-checklist-gentleman-sister.trycloudflare.com/auth/shopify/callback",
+  "https://qualified-checklist-gentleman-sister.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

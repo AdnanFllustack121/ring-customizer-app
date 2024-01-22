@@ -29,7 +29,13 @@ import {
   TextField,
   Divider,
 } from "@shopify/polaris";
-import { CircleCancelMajor, CircleDotsMajor, DeleteMajor, AddImageMajor } from "@shopify/polaris-icons";
+import {
+  AddImageMajor,
+  CircleCancelMajor,
+  CircleDotsMajor,
+  DeleteMajor,
+  PlusMinor
+} from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
 import { deleteFile, makeid } from "../utils";
@@ -684,28 +690,7 @@ export default function Product() {
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
-      variants: !!loaderData?.product?.variants ? loaderData.product.variants.map(vrnt => {
-
-        let variant_title = ''
-        for (let index = 0; index < vrnt.variant_options.length; index++) {
-          const vrnt_variant_option = vrnt.variant_options[index];
-
-          if (!vrnt_variant_option) {
-            continue
-          }
-
-          if ((Object.keys(vrnt.variant_options).length - 1) == index) {
-            variant_title += vrnt_variant_option.option_value_title
-          } else {
-            variant_title += vrnt_variant_option.option_value_title + ' / '
-          }
-        }
-
-        return {
-          ...vrnt,
-          variant_title
-        }
-      }) : [],
+      variants: !!loaderData?.product?.variants ? loaderData.product.variants : [],
     })
 
     if (!!loaderData?.product?.options && !!Object.keys(loaderData.product.options).length) {
@@ -807,12 +792,14 @@ export default function Product() {
 
     const selected = await shopify.resourcePicker(resourcePickerOptions)
     console.log('selected', selected)
-    dispatchProductData({
-      product_id: selected?.[0]?.id,
-      product_title: selected?.[0]?.title,
-      product_image: !!selected?.[0]?.images?.[0]?.originalSrc ? selected[0].images[0].originalSrc : "",
-      product_price: selected?.[0]?.variants?.[0]?.price
-    })
+    if (!!selected) {
+      dispatchProductData({
+        product_id: selected?.[0]?.id,
+        product_title: selected?.[0]?.title,
+        product_image: !!selected?.[0]?.images?.[0]?.originalSrc ? selected[0].images[0].originalSrc : "",
+        product_price: selected?.[0]?.variants?.[0]?.price
+      })
+    }
   }
 
   const changeMainImage = (categoryIndex, optionObj) => {
@@ -1087,73 +1074,46 @@ export default function Product() {
   return (
     <Page
       backAction={{ content: "Products", url: "/app" }}
-      title={!!productData?.id ? "Update product" : "Setup new product"}
-      fullWidth
+      title={!!productData?.id ? productData.product_title : "Setup new product"}
+      // fullWidth
       primaryAction={{
         content: !!productData?.id ? "Update" : 'Save',
         onAction: !!productData?.id ? onProductDataUpdateHandler : onProductDataSaveHandler,
         disabled: !!productData?.product_id ? false : true,
         disabled: isLoading
       }}
+      secondaryActions={[{
+        content: !!productData?.product_id ? 'Change Product' : 'Select Product',
+        onAction: selectProduct,
+        disabled: isLoading
+      }]}
     >
       <BlockStack gap="500">
         <Layout>
 
           <Layout.Section>
-            <Card>
-              <Button
-                onClick={selectProduct}
-                disabled={isLoading}
-              >
-                {
-                  !!productData?.product_id
-                  ?
-                  'Change Product'
-                  :
-                  'Select Product'
-                }
-              </Button>
-              {
-                !!productData?.product_title &&
-                <Text as="h5" variant="headingLg">{productData.product_title}</Text>
-              }
-            </Card>
 
-            {
-              !!productData?.id &&
-              <LegacyCard
-                sectioned
-                title="Options"
-                actions={[{
-                  content: "Add Option",
-                  onAction: (event) => {
-                    optionModalToggleActive({ isActive: true })
-                  }
-                }]}
-              >
-                {/* <BlockStack>
-                  <InlineStack gap={400}>
-                    {productData.options.map(cat => {
-                      return (
-                        <Checkbox
-                          key={cat.id}
-                          label={cat.title}
-                          // checked={enabledOptions[cat.value]}
-                          onChange={(isChecked) => {
-                            // setEnabledOptions((prevOptions) => {
-                            //   return {
-                            //     ...prevOptions,
-                            //     [cat.value]: isChecked
-                            //   }
-                            // })
-                          }}
-                        />
-                      )
-                    })}
-                  </InlineStack>
-                </BlockStack> */}
-              </LegacyCard>
-            }
+
+            <LegacyCard title="Options">
+              {/* <div className="_Divider_138lb_3"> */}
+                <Divider />
+              {/* </div> */}
+              <div className="addnewoptionwrapper">
+                <Box>
+                  <span>
+                    <BlockStack inlineAlign="start">
+                      <Button
+                        variant="plain"
+                        icon={PlusMinor}
+                        onClick={() => { optionModalToggleActive({ isActive: true }) }}
+                      >
+                        Add another option
+                      </Button>
+                    </BlockStack>
+                  </span>
+                </Box>
+              </div>
+            </LegacyCard>
 
             {/* {
               !!productData?.id &&
@@ -1198,15 +1158,13 @@ export default function Product() {
 
 
             
-            <div className="eQ_yd" style={{
-              margin: 'var(--p-space-400) 0'
-            }}>
+            <div className="eQ_yd">
               <LegacyCard
                 title="Variants"
                 actions={[
                   {
                     content: 'Add Variant',
-                    onAction: (event) => { navigate(`/app/variant/${productData.id}/new`) },
+                    onAction: () => { navigate(`/app/variant/${productData.id}/new`) },
                     disabled: isLoading
                   }
                 ]}
@@ -1242,9 +1200,11 @@ export default function Product() {
                             {
                               !!variant_image_path
                               ?
-                              <Thumbnail
-                                source={`${variant_image_path}`}
-                              />
+                              <div className="variant-cell">
+                                <Thumbnail
+                                  source={`${variant_image_path}`}
+                                />
+                              </div>
                               :
                               <Icon source={AddImageMajor} />
                             }
@@ -1281,7 +1241,7 @@ export default function Product() {
 
           </Layout.Section>
 
-          <Layout.Section variant="oneHalf">
+          {/* <Layout.Section variant="oneHalf">
             <Card>
               <div style={{
                 position: 'relative',
@@ -1300,7 +1260,8 @@ export default function Product() {
 
               </div>
             </Card>
-          </Layout.Section>
+          </Layout.Section> */}
+
         </Layout>
       </BlockStack>
 
