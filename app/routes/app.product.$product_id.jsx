@@ -1188,7 +1188,7 @@ export default function Product() {
                       { title: '' },
                     ]}
                   >
-                    {productData.variants.map(({ variant_id, variant_title, variant_image_path, variant_options }, index) => {
+                    {productData.variants.map(({ variant_id, variant_title, variant_image_path, variant_price }, index) => {
                       return (
                         <IndexTable.Row
                           id={variant_id}
@@ -1211,7 +1211,7 @@ export default function Product() {
                           </IndexTable.Cell>
                           <IndexTable.Cell>{variant_title}</IndexTable.Cell>
                           <IndexTable.Cell>
-                            {/* {price} */}
+                            {variant_price}
                           </IndexTable.Cell>
                           <IndexTable.Cell>
                             <div className="u9Xhb">
@@ -1297,7 +1297,7 @@ export default function Product() {
         size="large"
         open={optionModalData.isActive}
         onClose={toggleOptionModalActive}
-        title="Select Color and Upload product image for this color"
+        title="Select Option Image or Upload a new option image for this option"
         primaryAction={{
           content: !!optionModalData.option_value_id ? 'Update' : 'Save',
           onAction: handleOptionModalSaveOrUpdate
@@ -1325,13 +1325,13 @@ export default function Product() {
               autoComplete="off"
             />
 
-            <TextField
+            {/* <TextField
               label="Price"
               type="number"
               value={optionModalData.option_value_price}
               onChange={val => dispatchOptionModalData({ option_value_price: val })}
               autoComplete="off"
-            />
+            /> */}
 
             
 

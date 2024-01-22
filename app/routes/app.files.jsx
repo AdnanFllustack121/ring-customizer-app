@@ -356,12 +356,19 @@ export default function ColorsPage() {
     }, [fetcher.data])
 
     return (
-        <Page>
-            <ui-title-bar title="Files page">
+        <Page
+            title="Files"
+            primaryAction={{
+                content: "Add File",
+                onAction: handleModalChange,
+                disabled: isLoading
+            }}
+        >
+            {/* <ui-title-bar title="Files">
                 <button variant="primary" onClick={handleModalChange} disabled={isLoading}>
                     Add File
                 </button>
-            </ui-title-bar>
+            </ui-title-bar> */}
 
 
             <IndexFilters

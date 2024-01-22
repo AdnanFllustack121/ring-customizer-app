@@ -86,14 +86,13 @@ export const action = async ({ request }) => {
                 console.log('variant_options', variant_options)
 
                 const variant_title = formDataToCreate.get("variant_title")
-
                 const variant_image_file = formDataToCreate.get('variant_image_file')
+                const variant_price = formDataToCreate.get('variant_price')
 
                 const foundProduct = await Products.findById(document_id)
                 console.log('foundProduct', foundProduct)
 
                 const existingVariants = !!foundProduct?.variants ? foundProduct.variants : []
-
                 console.log('existingVariants', existingVariants)
 
                 const newVariant = {
@@ -105,6 +104,8 @@ export const action = async ({ request }) => {
                 if (!!variant_image_file && variant_image_file != 'null') {
                     newVariant.variant_image_path = `/uploads/files/${variant_image_file.name}`
                 }
+
+                newVariant.variant_price = variant_price
 
                 const newVariants = [
                     ...existingVariants,
@@ -145,6 +146,7 @@ export const action = async ({ request }) => {
                 let variant_options_to_update = formDataToUpdate.get("variant_options")
                 variant_options_to_update = JSON.parse(variant_options_to_update)
                 const variant_image_file_to_update = formDataToUpdate.get('variant_image_file')
+                const variant_price_to_update = formDataToUpdate.get('variant_price')
 
                 const foundProductToUpdate = await Products.findById(document_id_to_update)
                 // console.log('foundProductToUpdate', foundProductToUpdate)
@@ -160,7 +162,8 @@ export const action = async ({ request }) => {
                     variant_id: variant_id_to_update,
                     variant_title: variant_title_to_update,
                     variant_options: variant_options_to_update,
-                    variant_image_path: existingVariantsToUpdate[foundProductVariantIndex].variant_image_path
+                    variant_image_path: existingVariantsToUpdate[foundProductVariantIndex].variant_image_path,
+                    variant_price: variant_price_to_update
                 }
 
                 if (!!variant_image_file_to_update && variant_image_file_to_update != 'null') {
@@ -300,7 +303,8 @@ export default function Variant() {
         variant_id: '',
         variant_options: [],
         variant_image_file: null,
-        variant_image_path: ''
+        variant_image_path: '',
+        variant_price: ''
     })
 
     const handleDropZoneDrop = useCallback(
@@ -372,6 +376,7 @@ export default function Variant() {
                 formData.append('variant_title', variant_title)
                 formData.append('variant_options', JSON.stringify(variantData.variant_options))
                 formData.append("variant_image_file", variantData.variant_image_file)
+                formData.append("variant_price", variantData.variant_price)
                 submit(formData, { replace: true, method: "PATCH", encType: "multipart/form-data" })
             }
         } else {
@@ -381,7 +386,8 @@ export default function Variant() {
                 formData.append('document_id', productData.id)
                 formData.append('variant_title', variant_title)
                 formData.append('variant_options', JSON.stringify(variantData.variant_options))
-                formData.append("variant_image_file", variantData.variant_image_file)            
+                formData.append("variant_image_file", variantData.variant_image_file)
+                formData.append("variant_price", variantData.variant_price)
                 submit(formData, { replace: true, method: "POST", encType: "multipart/form-data" })
             }
         }
@@ -528,6 +534,23 @@ export default function Variant() {
                             </div>
                         </Box>
                     </LegacyCard>
+
+                    <LegacyCard title="Pricing">
+                        <LegacyCard.Section>
+                            <BlockStack>
+                                <TextField
+                                    label="Price"
+                                    type="number"
+                                    value={variantData.variant_price}
+                                    onChange={(value) => {
+                                        dispatchVariantData({ variant_price: value })
+                                    }}
+                                    autoComplete="off"
+                                />
+                            </BlockStack>
+                        </LegacyCard.Section>
+                    </LegacyCard>
+
                 </Layout.Section>
             </Layout>
         </Page>

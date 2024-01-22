@@ -207,17 +207,23 @@ export default function Index() {
   }
 
   return (
-    <Page>
+    <Page
+      title="Products"
+      primaryAction={{
+        content: 'Add Product',
+        onAction: onClickAddProductHandler
+      }}
+    >
       {/* <ui-title-bar title="Remix app template">
         <button variant="primary" onClick={generateProduct}>
           Generate a product
         </button>
       </ui-title-bar> */}
-      <ui-title-bar title="Products">
+      {/* <ui-title-bar title="Products">
         <button variant="primary" onClick={onClickAddProductHandler}>
           Add Product
         </button>
-      </ui-title-bar>
+      </ui-title-bar> */}
       {/* <BlockStack gap="500">
         <Layout>
           <Layout.Section>
