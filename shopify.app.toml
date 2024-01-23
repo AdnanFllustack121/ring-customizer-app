@@ -2,7 +2,7 @@
 
 name = "ring-customizer-app"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://them-nhl-locked-sized.trycloudflare.com"
+application_url = "https://rankings-houston-archived-latino.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,13 +11,18 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://them-nhl-locked-sized.trycloudflare.com/auth/callback",
-  "https://them-nhl-locked-sized.trycloudflare.com/auth/shopify/callback",
-  "https://them-nhl-locked-sized.trycloudflare.com/api/auth/callback"
+  "https://rankings-houston-archived-latino.trycloudflare.com/auth/callback",
+  "https://rankings-houston-archived-latino.trycloudflare.com/auth/shopify/callback",
+  "https://rankings-houston-archived-latino.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
+
+[app_proxy]
+url = "https://rankings-houston-archived-latino.trycloudflare.com"
+subpath = "product-options"
+prefix = "apps"
 
 [pos]
 embedded = false
