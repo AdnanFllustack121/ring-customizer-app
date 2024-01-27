@@ -5,19 +5,95 @@ import './App.css'
 
 function App() {
   const [productInfo, setProductInfo] = useState({})
-  console.log('productInfo', productInfo)
-
+  const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
-  console.log('selectedOptions', selectedOptions)
+
 
   useEffect(() => {
-    getProductById()
-  }, [])
+    if (Object.keys(productInfo).length && ('options' in productInfo)) {
+      setFilteredOptions([...productInfo.options])
+    } else {
+      getProductById()
+    }
+  }, [productInfo])
+
+
+  useEffect(() => {
+    if ( !Object.keys(selectedOptions).length && !!filteredOptions.length && !!productInfo.variants.length ) {
+      
+      const firstFoundVariant = productInfo.variants[0]
+      const firstFoundVariantOptions = firstFoundVariant.variant_options
+
+      const initiallySelectedOptions = {}
+      for ( let index = 0; index < firstFoundVariantOptions.length; index++ ) {
+        const firstFoundVariantOption = firstFoundVariantOptions[index]
+
+        const mainOption = filteredOptions[index]
+
+        const mainOptionValue = mainOption.option_values.find(ov => ov.option_value_id === firstFoundVariantOption.option_value_id)
+
+        const option_with_value = {
+          option_id: mainOption.option_id,
+          option_title: mainOption.option_title,
+    
+          file_id: mainOptionValue.file_id,
+          option_image_path: mainOptionValue.option_image_path,
+          option_value_id: mainOptionValue.option_value_id,
+          option_value_price: mainOptionValue.option_value_price,
+          option_value_title: mainOptionValue.option_value_title
+        }
+        initiallySelectedOptions[index] = option_with_value
+      }
+
+      setSelectedOptions(initiallySelectedOptions)
+    }
+  }, [filteredOptions])
+
+
+  useEffect(() => {
+    if (!!Object.keys(selectedOptions).length) {
+      console.log('useEffect selectedOptions', selectedOptions)
+
+      const selectedOptionOneVariants = productInfo.variants.filter(variant => variant.variant_options[0].option_value_id === selectedOptions[0].option_value_id)
+
+      const inputWrappers = productInfo.options
+
+      let availableOptionInputsValues = []
+
+      inputWrappers.forEach((option, index) => {
+        if (index === 0) {
+          availableOptionInputsValues.push(option)
+          return;
+        }
+
+        const optionInputs = option.option_values;
+
+        const previousOptionSelected = selectedOptions[index - 1]
+
+        const availableOptionInputsValue = selectedOptionOneVariants
+        .filter((variant) => {
+          return variant.variant_options[index-1].option_value_id === previousOptionSelected.option_value_id
+        })
+        .map((variantOption) => {
+          return variantOption.variant_options[index].option_value_id
+        })
+
+        // 
+        availableOptionInputsValues.push({
+          option_id: option.option_id,
+          option_title: option.option_title,
+          option_values: option.option_values.filter(ov => availableOptionInputsValue.includes(ov.option_value_id))
+        })
+        // 
+      })
+
+      setFilteredOptions(availableOptionInputsValues)
+    }
+  }, [selectedOptions])
 
 
   const getProductById = async () => {
     const productResponse = await fetch(`/apps/product-options/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
-
     if (!!productResponse && !!productResponse.success) {
       setProductInfo(productResponse.data)
     }
@@ -36,29 +112,28 @@ function App() {
       option_value_title: option_value.option_value_title
     }
 
-    setSelectedOptions((prevSelectedOptions) => {
+    setSelectedOptions(prevSelectedOptions => {
       const newSelectedOptions = { ...prevSelectedOptions }
-      if ( newSelectedOptions[option_index]?.option_value_id === option_with_value.option_value_id ) {
-        delete newSelectedOptions[option_index]
-        return {
-          ...newSelectedOptions
-        }
-      } else {
+      // if ( newSelectedOptions[option_index]?.option_value_id === option_with_value.option_value_id ) {
+      //   delete newSelectedOptions[option_index]
+      //   return {
+      //     ...newSelectedOptions
+      //   }
+      // } else {
         return {
           ...prevSelectedOptions,
           [option_index]: option_with_value
         }
-      }
+      // }
     })
   }
 
 
   return (
     <>
-
       {
-        !!productInfo?.options &&
-        productInfo.options.map((optn, option_index) => {
+        !!filteredOptions.length &&
+        filteredOptions.map((optn, option_index) => {
           return (
             <fieldset>
               <legend>{optn.option_title}:</legend>
@@ -68,6 +143,9 @@ function App() {
                   return (
                     <>
                       <label htmlFor={option_value.option_value_id}>
+
+                        <span className='tooltiptext'>{option_value.option_value_title}</span>
+
                         {
                           !!option_value.option_image_path
                           ?
@@ -91,7 +169,6 @@ function App() {
           )
         })
       }
-
     </>
   )
 }
