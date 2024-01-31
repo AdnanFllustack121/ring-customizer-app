@@ -98,6 +98,7 @@ export const action = async ({ request }) => {
             file_id,
             option_value_id: makeid(24),
             option_value_title,
+            option_value_slug: option_value_title.toLowerCase().replace(/ /g,"_"),
             option_image_path,
             // option_image_path: !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : '',
             option_value_price,
@@ -164,7 +165,8 @@ export const action = async ({ request }) => {
   
             const newCategory = {
               option_id: makeid(24),
-              option_title: categoryTitle
+              option_title: categoryTitle,
+              option_slug: categoryTitle.toLowerCase().replace(/ /g,"_")
             }
   
             if (!!foundProduct?.options) {
@@ -257,6 +259,7 @@ export const action = async ({ request }) => {
             file_id,
             option_value_id,
             option_value_title,
+            option_value_slug: option_value_title.toLowerCase().replace(/ /g,"_"),
             option_image_path,
             option_value_price
           }
@@ -333,7 +336,8 @@ export const action = async ({ request }) => {
             if (option_id == cat.option_id) {
               return {
                 ...cat,
-                option_title
+                option_title,
+                option_slug: option_title.toLowerCase().replace(/ /g,"_")
               }
             } else {
               return cat

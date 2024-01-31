@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "ring-customizer-app"
+name = "Ring Customizer App"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://hostels-semi-casinos-custom.trycloudflare.com"
+application_url = "https://jews-option-penn-payments.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://hostels-semi-casinos-custom.trycloudflare.com/auth/callback",
-  "https://hostels-semi-casinos-custom.trycloudflare.com/auth/shopify/callback",
-  "https://hostels-semi-casinos-custom.trycloudflare.com/api/auth/callback"
+  "https://jews-option-penn-payments.trycloudflare.com/auth/callback",
+  "https://jews-option-penn-payments.trycloudflare.com/auth/shopify/callback",
+  "https://jews-option-penn-payments.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
 
 [app_proxy]
-url = "https://hostels-semi-casinos-custom.trycloudflare.com"
+url = "https://jews-option-penn-payments.trycloudflare.com"
 subpath = "product-options"
 prefix = "apps"
 

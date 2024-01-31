@@ -88,14 +88,12 @@ export const action = async ({ params, request }) => {
                             "images": [{
                                 "attachment": image_path
                             }],
-                            "metafields": [
-                                {
-                                    "key": "hidden",
-                                    "value": 1,
-                                    "type": "number_integer",
-                                    "namespace": "seo"
-                                }
-                            ],
+                            "metafields": [{
+                                "key": "hidden",
+                                "value": 1,
+                                "type": "number_integer",
+                                "namespace": "seo"
+                            }],
                             "variants": [{
                                 price: total_price
                             }]
