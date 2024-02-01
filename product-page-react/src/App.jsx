@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
+import Swatches from './components/Swatches'
+import DropDown from './components/DropDown'
+import RangeSlider from './components/RangeSlider'
 import './App.css'
 
 function App() {
@@ -41,6 +44,7 @@ function App() {
                 option_id: matchedOption.option_id,
                 option_title: matchedOption.option_title,
                 option_slug: matchedOption.option_slug,
+                option_type: matchedOption.option_type,
 
                 file_id: matchedOptionValue.file_id,
                 option_image_path: matchedOptionValue.option_image_path,
@@ -92,6 +96,7 @@ function App() {
           option_id: mainOption.option_id,
           option_title: mainOption.option_title,
           option_slug: mainOption.option_slug,
+          option_type: mainOption.option_type,
 
           file_id: mainOptionValue.file_id,
           option_image_path: mainOptionValue.option_image_path,
@@ -144,6 +149,8 @@ function App() {
           option_id: option.option_id,
           option_title: option.option_title,
           option_slug: option.option_slug,
+          option_type: option.option_type,
+
           option_values: option.option_values.filter(ov => availableOptionInputsValue.includes(ov.option_value_id))
         })
         // 
@@ -181,6 +188,7 @@ function App() {
       option_id: optn.option_id,
       option_title: optn.option_title,
       option_slug: optn.option_slug,
+      option_type: optn.option_type,
 
       file_id: option_value.file_id,
       option_image_path: option_value.option_image_path,
@@ -212,38 +220,30 @@ function App() {
       {
         !!filteredOptions.length &&
         filteredOptions.map((optn, option_index) => {
+
+          console.log('optn, optn.option_type', optn, optn.option_type)
+
+          // const OptionComponent = <Swatches optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
+          let OptionComponent
+
+          switch (optn.option_type) {
+            case 'swatch':
+              OptionComponent = Swatches
+              break;
+            case 'range':
+              OptionComponent = RangeSlider
+              break;
+            case 'select':
+              OptionComponent = DropDown
+              break;
+            default:
+              OptionComponent = Swatches
+              break;
+          }
+
           return (
             <fieldset>
-              <legend>{optn.option_title}:</legend>
-              {
-                !!optn?.option_values &&
-                optn.option_values.map(option_value => {
-                  return (
-                    <>
-                      <label htmlFor={option_value.option_value_id}>
-
-                        <span className='tooltiptext'>{option_value.option_value_title}</span>
-
-                        {
-                          !!option_value.option_image_path
-                          ?
-                          <img src={`/apps/product-options${option_value.option_image_path}`} alt="" />
-                          :
-                          option_value.option_value_title
-                        }
-                        <input
-                          type="radio"
-                          name={`properties[${optn.option_title}]`}
-                          value={option_value.option_value_title}
-                          id={option_value.option_value_id}
-                          onClick={() => onSelectOption(option_index, optn, option_value)}
-                          checked={selectedOptions[option_index]?.option_value_id === option_value.option_value_id}
-                        />
-                      </label>
-                    </>
-                  )
-                })
-              }
+              <OptionComponent optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
             </fieldset>
           )
         })

@@ -28,6 +28,7 @@ import {
   ButtonGroup,
   TextField,
   Divider,
+  FormLayout,
 } from "@shopify/polaris";
 import {
   AddImageMajor,
@@ -159,6 +160,7 @@ export const action = async ({ request }) => {
         const foundProduct = await Products.findById(product_id)
   
         const categoryTitle = formData.get("option_title")
+        const optionType = formData.get("option_type")
   
         if (!!foundProduct) {
           if (createType === "category") {
@@ -166,6 +168,7 @@ export const action = async ({ request }) => {
             const newCategory = {
               option_id: makeid(24),
               option_title: categoryTitle,
+              option_type: optionType,
               option_slug: categoryTitle.toLowerCase().replace(/ /g,"_")
             }
   
@@ -331,12 +334,14 @@ export const action = async ({ request }) => {
 
           const option_id = formData.get('option_id')
           const option_title = formData.get('option_title')
+          const option_type = formData.get("option_type")
 
           const updatedCategories = found_product.options.map(cat => {
             if (option_id == cat.option_id) {
               return {
                 ...cat,
                 option_title,
+                option_type,
                 option_slug: option_title.toLowerCase().replace(/ /g,"_")
               }
             } else {
@@ -587,6 +592,7 @@ export default function Product() {
     isActive: false,
     option_id: '',
     option_title: '',
+    option_type: ''
   })
 
   const optionModalToggleActive = useCallback(({...args}) => {
@@ -596,6 +602,7 @@ export default function Product() {
         ...args,
         option_id: '',
         option_title: '',
+        option_type: ''
       }
     }
 
@@ -834,9 +841,9 @@ export default function Product() {
     toggleOptionModalActive({ option_id, option_value_id })
   }
 
-  const CpcustomHolder = ({ categoryIndex, option_id, option_title, category_options }) => {
+  const CpcustomHolder = ({ categoryIndex, option_id, option_title, option_type, category_options }) => {
 
-    console.log('CpcustomHolder categoryIndex, option_id, option_title, category_options', categoryIndex, option_id, option_title, category_options)
+    console.log('CpcustomHolder categoryIndex, option_id, option_title, option_type, category_options', categoryIndex, option_id, option_title, option_type, category_options)
 
     return (
       <LegacyCard
@@ -849,6 +856,7 @@ export default function Product() {
               optionModalToggleActive({
                 option_id,
                 option_title,
+                option_type,
                 isActive: true
               })
             },
@@ -940,6 +948,7 @@ export default function Product() {
     const formData = new FormData()
     formData.append("document_id", productData.id)
     formData.append("option_title", categoryModalData.option_title)
+    formData.append("option_type", categoryModalData.option_type)
 
     if (!!categoryModalData.option_id) {
       formData.append("update", "category")
@@ -1157,11 +1166,20 @@ export default function Product() {
 
 
             {productData.options.map((cat, categoryIndex) => {
-              return <CpcustomHolder key={cat.option_id} categoryIndex={categoryIndex} option_id={cat.option_id} option_title={cat.option_title} category_options={cat.option_values} />
+              return (
+                <CpcustomHolder
+                  key={cat.option_id}
+                  categoryIndex={categoryIndex}
+                  option_id={cat.option_id}
+                  option_title={cat.option_title}
+                  option_type={cat.option_type}
+                  category_options={cat.option_values}
+                />
+              )
             })}
 
 
-            
+
             <div className="eQ_yd">
               <LegacyCard
                 title="Variants"
@@ -1240,7 +1258,7 @@ export default function Product() {
                 </div>
               </LegacyCard>
             </div>
-            
+
 
 
           </Layout.Section>
@@ -1274,7 +1292,7 @@ export default function Product() {
         onClose={() => {
           optionModalToggleActive({ isActive: false })
         }}
-        title={`${!!categoryModalData.option_id ? 'Edit' : 'Add'} Custom Option`}
+        title={ `${ !!categoryModalData.option_id ? 'Edit' : 'Add' } Custom Option` }
         primaryAction={{
           content: !!categoryModalData.option_id ? 'Update' : 'Save',
           onAction: handleCategoryModalSave,
@@ -1287,13 +1305,28 @@ export default function Product() {
         }}
       >
         <Modal.Section>
-          <TextField
-            label="Title"
-            value={categoryModalData.option_title}
-            onChange={(value) => {
-              optionModalToggleActive({ option_title: value })
-            }}
-          />
+          <FormLayout>
+            <TextField
+              label="Option Title"
+              value={categoryModalData.option_title}
+              onChange={(value) => {
+                optionModalToggleActive({ option_title: value })
+              }}
+            />
+            {console.log('categoryModalData.option_type', categoryModalData)}
+            <Select
+              label="Option Type"
+              options={[
+                { label: 'Swatch', value: 'swatch' },
+                { label: 'Dropdown', value: 'select' },
+                { label: 'Range', value: 'range' },
+              ]}
+              onChange={(value) => {
+                optionModalToggleActive({ option_type: value })
+              }}
+              value={categoryModalData.option_type}
+            />
+          </FormLayout>
         </Modal.Section>
       </Modal>
 
@@ -1322,7 +1355,7 @@ export default function Product() {
             /> */}
 
             <TextField
-              label="Option Value Name"
+              label="Option Value Title"
               type="text"
               value={optionModalData.option_value_title}
               onChange={val => dispatchOptionModalData({ option_value_title: val })}

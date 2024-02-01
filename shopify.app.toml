@@ -2,7 +2,7 @@
 
 name = "Ring Customizer App"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://jews-option-penn-payments.trycloudflare.com"
+application_url = "https://wash-henry-translated-licence.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://jews-option-penn-payments.trycloudflare.com/auth/callback",
-  "https://jews-option-penn-payments.trycloudflare.com/auth/shopify/callback",
-  "https://jews-option-penn-payments.trycloudflare.com/api/auth/callback"
+  "https://wash-henry-translated-licence.trycloudflare.com/auth/callback",
+  "https://wash-henry-translated-licence.trycloudflare.com/auth/shopify/callback",
+  "https://wash-henry-translated-licence.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
 
 [app_proxy]
-url = "https://jews-option-penn-payments.trycloudflare.com"
+url = "https://wash-henry-translated-licence.trycloudflare.com"
 subpath = "product-options"
 prefix = "apps"
 

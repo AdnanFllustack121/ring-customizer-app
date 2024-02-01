@@ -35,7 +35,7 @@
   width: 32px;
 }
 
-#shopify-block-ring_customizer_app_product_options_ input {
+#shopify-block-ring_customizer_app_product_options_ input[type="radio"] {
   display: none;
 }
 
