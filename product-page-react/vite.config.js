@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     watch: {},
-    // outDir: '../extensions/product-page-extension/assets/',  // Dist
+    // outDir: '../extensions/product-options/assets/',  // Dist
     outDir: '../public/storefront/',     // Dev
     rollupOptions: {
       input: '/src/main.jsx',

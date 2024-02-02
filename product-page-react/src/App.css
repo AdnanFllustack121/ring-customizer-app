@@ -1,10 +1,10 @@
-#shopify-block-ring_customizer_app_product_options_ {
+[id*=shopify-block-] {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none;
 }
 
-#shopify-block-ring_customizer_app_product_options_ fieldset {
+[id*=shopify-block-] fieldset {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -13,7 +13,7 @@
   margin-bottom: 14px;
 }
 
-#shopify-block-ring_customizer_app_product_options_ label {
+[id*=shopify-block-] label {
   outline: 1px solid #d8d8d8;
   padding: 8px 7px 5px;
   /* padding: 0; */
@@ -26,20 +26,20 @@
   display: inline-block;
 }
 
-#shopify-block-ring_customizer_app_product_options_ label:hover .tooltiptext {
+[id*=shopify-block-] label:hover .tooltiptext {
   visibility: visible;
 }
 
-#shopify-block-ring_customizer_app_product_options_ label img {
+[id*=shopify-block-] label img {
   height: 32px;
   width: 32px;
 }
 
-#shopify-block-ring_customizer_app_product_options_ input[type="radio"] {
+[id*=shopify-block-] input[type="radio"] {
   display: none;
 }
 
-#shopify-block-ring_customizer_app_product_options_ label:has(> input:checked) {
+[id*=shopify-block-] label:has(> input:checked) {
   outline: 2px solid black;
 }
 

@@ -32,7 +32,7 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                             {
                                 !!option_value.option_image_path
                                 ?
-                                <img src={`/apps/product-options${option_value.option_image_path}`} alt="" />
+                                <img src={`/apps/jewelry-builder-app${option_value.option_image_path}`} alt="" />
                                 :
                                 option_value.option_value_title
                             }

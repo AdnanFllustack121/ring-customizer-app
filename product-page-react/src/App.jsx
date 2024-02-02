@@ -121,8 +121,10 @@ function App() {
     if (!!Object.keys(selectedOptions).length) {
 
       const selectedOptionOneVariants = productInfo.variants.filter(variant => variant.variant_options[0].option_value_id === selectedOptions[0].option_value_id)
+      // console.log('selectedOptionOneVariants', selectedOptionOneVariants)
 
-      const inputWrappers = productInfo.options
+      const inputWrappers = productInfo.options.filter(po => !!po?.option_values)
+      // console.log('inputWrappers', inputWrappers)
 
       let availableOptionInputsValues = []
 
@@ -138,11 +140,17 @@ function App() {
 
         const availableOptionInputsValue = selectedOptionOneVariants
         .filter((variant) => {
+          // console.log('variant?.variant_options?.[index-1]', variant?.variant_options?.[index-1])
           return variant.variant_options[index-1].option_value_id === previousOptionSelected.option_value_id
         })
         .map((variantOption) => {
+
+          // console.log('variantOption.variant_options[index].option_value_id', variantOption.variant_options[index].option_value_id)
+          // console.log('index, variantOption?.variant_options?.[index]', index, variantOption?.variant_options?.[index])
+
           return variantOption.variant_options[index].option_value_id
         })
+        // console.log('availableOptionInputsValue', availableOptionInputsValue)
 
         // 
         availableOptionInputsValues.push({
@@ -174,7 +182,7 @@ function App() {
 
 
   const getProductById = async () => {
-    const productResponse = await fetch(`/apps/product-options/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
+    const productResponse = await fetch(`/apps/jewelry-builder-app/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
     if (!!productResponse && !!productResponse.success) {
       setProductInfo(productResponse.data)
     }

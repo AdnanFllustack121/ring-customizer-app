@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "Jewelry Builder App"
+client_id = "1944e3d11fe47b32b49a0e4560c2c1f4"
+application_url = "https://birthday-highlights-leaf-soft.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://birthday-highlights-leaf-soft.trycloudflare.com/auth/callback",
+  "https://birthday-highlights-leaf-soft.trycloudflare.com/auth/shopify/callback",
+  "https://birthday-highlights-leaf-soft.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[app_proxy]
+url = "https://birthday-highlights-leaf-soft.trycloudflare.com"
+subpath = "jewelry-builder-app"
+prefix = "apps"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "bulk-product-options.myshopify.com"
