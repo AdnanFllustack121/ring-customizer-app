@@ -1,0 +1,166 @@
+
+
+
+[id*="shopify-block-"] {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none;
+
+  fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border: unset;
+    padding: unset;
+    margin-bottom: 14px;
+
+    position: relative;
+  }
+
+  fieldset select {
+    border: none;
+    background: none;
+    outline: 1px solid #7c7c7c;
+    height: 47px;
+    padding: 1em;
+
+    -moz-appearance: none; /* Firefox */
+    -webkit-appearance: none; /* Safari and Chrome */
+    appearance: none;
+    width: 100%;
+  }
+
+  fieldset:has(> select)::after {
+    content: "▼";
+    font-size: 1rem;
+    top: 1.5rem;
+    right: 1rem;
+    position: absolute;
+  }
+
+  @mixin track() {
+    // box-sizing: border-box;
+    // border: none;
+    // width: 100%;
+    // height: 2px;
+    // background: black;
+  }
+  @mixin thumb() {
+    // box-sizing: border-box;
+    // border: none;
+    // width: 1.5em;
+    // height: 1.5em;
+    // border-radius: 20%;
+    // background: red;
+  }
+  input[type="range"] {
+    &::-webkit-slider-runnable-track { @include track }
+    &::-moz-range-track { @include track }
+    &::-ms-track { @include track }
+
+    &::-webkit-slider-thumb { @include thumb }
+    &::-moz-range-thumb { @include thumb }
+    &::-ms-thumb { @include thumb }
+
+    width: 100%;
+  }
+
+
+  fieldset div:has(input[type="number"]) {
+    height: 47px;
+    outline: 1px solid #969696;
+
+    input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+      -webkit-appearance: textfield;
+
+      text-align: center;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    input,
+    button {
+        height: 100%;
+        width: 47px;
+        border: none;
+        background: none;
+    }
+  }
+
+
+  datalist {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    // padding: 0 .45em;
+
+    option {
+        // padding: 0;
+    }
+
+    option:not(:first-child):not(:last-child) {
+        display: none;
+    }
+  }
+
+  label {
+    outline: 1px solid #d8d8d8;
+    padding: 8px 7px 5px;
+    /* padding: 0; */
+    height: 47px;
+    min-width: 47px;
+    text-align: center;
+
+    position: relative;
+    display: inline-block;
+  }
+
+  label:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 115%;
+    left: 50%;
+    margin-left: -60px;
+  }
+
+  .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+
+  label img {
+    height: 32px;
+    width: 32px;
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  label:has(> input:checked) {
+    outline: 2px solid black;
+  }
+}

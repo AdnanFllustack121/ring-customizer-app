@@ -2,7 +2,7 @@
 
 name = "Ring Customizer App"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://martial-promotion-preparation-peninsula.trycloudflare.com"
+application_url = "https://championships-events-summaries-often.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://martial-promotion-preparation-peninsula.trycloudflare.com/auth/callback",
-  "https://martial-promotion-preparation-peninsula.trycloudflare.com/auth/shopify/callback",
-  "https://martial-promotion-preparation-peninsula.trycloudflare.com/api/auth/callback"
+  "https://championships-events-summaries-often.trycloudflare.com/auth/callback",
+  "https://championships-events-summaries-often.trycloudflare.com/auth/shopify/callback",
+  "https://championships-events-summaries-often.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
 
 [app_proxy]
-url = "https://martial-promotion-preparation-peninsula.trycloudflare.com"
+url = "https://championships-events-summaries-often.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Swatches from './components/Swatches'
 import DropDown from './components/DropDown'
 import RangeSlider from './components/RangeSlider'
+
+import "./App.scss";
 import './App.css'
 
 function App() {
@@ -250,12 +252,30 @@ function App() {
           }
 
           return (
+            !!optn?.option_values?.length
+            ?
             <fieldset>
               <OptionComponent optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
             </fieldset>
+            :
+            <></>
           )
         })
       }
+      <fieldset>
+        <legend>Quantity:</legend>
+
+        <div className='quantity-input'>
+          <button type="button">-</button>
+          <input
+            type="number"
+            name=""
+            id=""
+            value={1}
+          />
+          <button type="button">+</button>
+        </div>
+      </fieldset>
     </>
   )
 }

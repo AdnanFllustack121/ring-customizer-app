@@ -2,6 +2,8 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
 
     const the_value = optn.option_values.findIndex(oov => oov.option_value_id === selectedOptions[option_index]?.option_value_id)
 
+    console.log('optn.option_values', optn.option_values)
+
     return (
         <>
             <legend>{optn.option_title}:</legend>
@@ -18,37 +20,19 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                     onSelectOption(option_index, optn, option_value)
                 }}
                 value={the_value}
+                list={`${optn.option_id}_list`}
             />
 
-            {/* {
-                !!optn?.option_values &&
-                optn.option_values.map(option_value => {
-                    return (
-                        <>
-                            <label htmlFor={option_value.option_value_id}>
+            <datalist id={`${optn.option_id}_list`}>
+                {
+                    optn.option_values.map((oov, oov_index) => {
+                        return (
+                            <option value={oov_index} label={optn.option_values[oov_index].option_value_title}></option>
+                        )
+                    })
+                }
+            </datalist>
 
-                            <span className='tooltiptext'>{option_value.option_value_title}</span>
-
-                            {
-                                !!option_value.option_image_path
-                                ?
-                                <img src={`/apps/jewelry-builder-app${option_value.option_image_path}`} alt="" />
-                                :
-                                option_value.option_value_title
-                            }
-                            <input
-                                type="radio"
-                                name={`properties[${optn.option_title}]`}
-                                value={option_value.option_value_title}
-                                id={option_value.option_value_id}
-                                onClick={() => onSelectOption(option_index, optn, option_value)}
-                                checked={selectedOptions[option_index]?.option_value_id === option_value.option_value_id}
-                            />
-                            </label>
-                        </>
-                    )
-                })
-            } */}
         </>
     )
 }
