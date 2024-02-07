@@ -23,9 +23,9 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
 
     const dividation = 100 / optn.option_values.length
     const dividation_of_single_dividation = dividation / ( optn.option_values.length - 1 )
+    console.log('dividation_of_single_dividation', dividation_of_single_dividation)
 
-
-    const progress_array = optn.option_values.map((optn_option_value, optn_option_value_index) => {
+    const tick_mark_positions = optn.option_values.map((optn_option_value, optn_option_value_index) => {
         let left_value = 0
         if (optn_option_value_index === 0) {
             left_value = 0
@@ -36,7 +36,7 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
         }
         return left_value
     })
-    console.log('progress_array', progress_array)
+
 
     const [rangeSliderData, dispatchRangeSliderData] = useReducer(rangeSliderReducer, {
         isMouseDown: false,
@@ -45,42 +45,69 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
         handlePosition: 0,
     })
 
+
+    // mousedown mouseup start
     useEffect(() => {
-        console.log('useEffect rangeSliderData', rangeSliderData)
+        const handleWindowMouseDown = (mouseDownEvent) => {
+            if (`input_type_range_handle_${optn.option_id}` === mouseDownEvent.target.id) {
+                dispatchRangeSliderData({ isMouseDown: true, isMouseMove: false, pageX: mouseDownEvent.pageX })
+            }
+        }
+
+        const handleWindowMouseUp = (mouseUpEvent) => {
+            dispatchRangeSliderData({ isMouseDown: false, pageX: mouseUpEvent.pageX })
+        }
+
+        window.addEventListener('mousedown', handleWindowMouseDown)
+        window.addEventListener('mouseup', handleWindowMouseUp)
+
+        return () => {
+            window.removeEventListener('mousedown', handleWindowMouseDown)
+            window.removeEventListener('mouseup', handleWindowMouseUp)
+        }
+    }, [])
+    // mousedown mouseup end
+
+
+    // mousemove
+    useEffect(() => {
+        const handleWindowMouseMove = (onMouseMoveEvent) => {
+            if (rangeSliderData.isMouseDown) {
+                const input_type_range_tick_marks = document.querySelectorAll(`#input_type_range_${optn.option_id} span.input_type_range_tick_mark`)
+                const tick_marks_x_coordinates = []
+                for ( let index = 0; index < input_type_range_tick_marks.length; index++ ) {
+                    const input_type_range_tick_mark = input_type_range_tick_marks[index]
+                    tick_marks_x_coordinates.push(
+                        Math.sqrt((onMouseMoveEvent.pageX - input_type_range_tick_mark.getBoundingClientRect().x) ** 2)
+                    )
+                }
+                const min_diff = Math.min.apply( Math, tick_marks_x_coordinates )
+                const min_diff_index = tick_marks_x_coordinates.findIndex(tmxc => tmxc === min_diff)
+                dispatchRangeSliderData({
+                    isMouseMove: true,
+                    handlePosition: min_diff_index
+                })
+
+                onSelectOption(option_index, optn, optn.option_values[min_diff_index])
+            }
+        }
+
+        window.addEventListener('mousemove', handleWindowMouseMove)
+
+        return () => window.removeEventListener('mousemove', handleWindowMouseMove)
     }, [rangeSliderData])
+
 
     return (
         <>
             <legend>{optn.option_title}:</legend>
 
-            <div className="input_type_range">
+            <div id={`input_type_range_${optn.option_id}`} className="input_type_range">
                 <div
-                    id=""
+                    id={`input_type_range_handle_${optn.option_id}`}
                     className="input_type_range_handle"
                     style={{
-                        left: `${progress_array[rangeSliderData.handlePosition]}%`
-                    }}
-                    onMouseDown={(mouseDownEvent) => {
-                        dispatchRangeSliderData({ isMouseDown: true, pageX: mouseDownEvent.pageX })
-                    }}
-                    onMouseMove={(onMouseMoveEvent) => {
-                        if ((rangeSliderData.pageX > onMouseMoveEvent.pageX) && rangeSliderData.isMouseDown) {
-                            // Left
-                            dispatchRangeSliderData({
-                                isMouseMove: true,
-                                handlePosition: (rangeSliderData.handlePosition >= 1) ? rangeSliderData.handlePosition - 1 : 0
-                            })
-                        } else if ((rangeSliderData.pageX < onMouseMoveEvent.pageX) && rangeSliderData.isMouseDown) {
-                            // Right
-                            dispatchRangeSliderData({
-                                isMouseMove: true,
-                                handlePosition: (rangeSliderData.handlePosition < optn.option_values.length - 1) ? rangeSliderData.handlePosition + 1 : 0
-                            })
-                        }
-                    }}
-                    onMouseUp={(mouseUpEvent) => {
-                        console.log('mouseUpEvent', mouseUpEvent)
-                        dispatchRangeSliderData({ isMouseDown: false, pageX: mouseUpEvent.pageX })
+                        left: `${tick_mark_positions[rangeSliderData.handlePosition]}%`
                     }}
                 >
                     {the_value}
@@ -88,8 +115,8 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                 {
                     optn.option_values.map((optn_option_value, optn_option_value_index) => {
                         return (
-                            <span className="input_type_range_tick_mark" style={{
-                                left: `${progress_array[optn_option_value_index]}%`
+                            <span id={`input_type_range_tick_mark_${optn.option_id}`} className="input_type_range_tick_mark" style={{
+                                left: `${tick_mark_positions[optn_option_value_index]}%`
                             }}>
                                 {
                                     ( optn_option_value_index === 0 || ( optn_option_value_index === ( optn.option_values.length - 1 ) ) )
@@ -110,7 +137,7 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                 }
             </div>
 
-            <input
+            {/* <input
                 type="range"
                 name={`properties[${optn.option_title}]`}
                 id={optn.option_id}
@@ -124,7 +151,6 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                 value={the_value_index}
                 list={`${optn.option_id}_list`}
             />
-
             <datalist id={`${optn.option_id}_list`}>
                 {
                     optn.option_values.map((oov, oov_index) => {
@@ -133,7 +159,7 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
                         )
                     })
                 }
-            </datalist>
+            </datalist> */}
 
         </>
     )

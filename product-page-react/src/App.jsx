@@ -261,7 +261,7 @@ function App() {
           return (
             !!optn?.option_values?.length
             ?
-            <fieldset>
+            <fieldset id={`fieldset_${optn.option_id}`}>
               <OptionComponent optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
             </fieldset>
             :

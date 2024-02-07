@@ -70,7 +70,7 @@ div:has(> product-form) {
     &::-ms-thumb { @include thumb }
 
     width: 100%;
-    display: none;
+    // display: none;
   }
   datalist {
     // display: flex;
