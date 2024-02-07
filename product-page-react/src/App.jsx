@@ -12,7 +12,8 @@ function App() {
   const [productInfo, setProductInfo] = useState({})
   const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
-
+  const [quantity, setQuantity] = useState(1)
+  const [isDisabled, setIsDisabled] = useState(true)
 
   useEffect(() => {
     console.log('useEffect productInfo', productInfo)
@@ -171,7 +172,7 @@ function App() {
 
     // 
     const params = new URLSearchParams(window.location.search)
-    console.log('params', params)
+    // console.log('params', params)
     // if (!params.size) {
       Object.keys(selectedOptions).forEach((index) => {
         params.set(selectedOptions[index].option_slug, selectedOptions[index].option_value_slug)
@@ -224,6 +225,13 @@ function App() {
     })
   }
 
+  const setQuantityInput = (valueAsNumber) => {
+    if ( typeof valueAsNumber === "number" && valueAsNumber > 0 ) {
+      setQuantity(parseInt(valueAsNumber))
+    } else {
+      setQuantity(1)
+    }
+  }
 
   return (
     <>
@@ -231,9 +239,8 @@ function App() {
         !!filteredOptions.length &&
         filteredOptions.map((optn, option_index) => {
 
-          console.log('optn, optn.option_type', optn, optn.option_type)
+          // console.log('optn, optn.option_type', optn, optn.option_type)
 
-          // const OptionComponent = <Swatches optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
           let OptionComponent
 
           switch (optn.option_type) {
@@ -264,17 +271,27 @@ function App() {
       }
       <fieldset>
         <legend>Quantity:</legend>
-
         <div className='quantity-input'>
-          <button type="button">-</button>
+          <button type="button" onClick={() => setQuantityInput(quantity - 1)} disabled={(quantity === 1) ? true : false}>-</button>
           <input
             type="number"
-            name=""
+            name="quantity"
             id=""
-            value={1}
+            value={quantity}
+            min={1}
+            step={1}
+            inputMode='numeric'
+            pattern='\d*'
+            onChange={(event) => setQuantityInput(event.target.valueAsNumber)}
           />
-          <button type="button">+</button>
+          <button type="button" onClick={() => setQuantityInput(quantity + 1)}>+</button>
         </div>
+      </fieldset>
+
+      <fieldset>
+        <button type="submit" disabled={isDisabled}>
+          Add to cart
+        </button>
       </fieldset>
     </>
   )

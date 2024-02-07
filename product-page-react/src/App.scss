@@ -1,4 +1,10 @@
+div.product-form__input.product-form__quantity {
+  display: none;
+}
 
+div:has(> product-form) {
+  display: none;
+}
 
 
 [id*="shopify-block-"] {
@@ -12,7 +18,7 @@
     gap: 8px;
     border: unset;
     padding: unset;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 
     position: relative;
   }
@@ -38,12 +44,13 @@
     position: absolute;
   }
 
+  // Input Type Range START
   @mixin track() {
-    // box-sizing: border-box;
-    // border: none;
-    // width: 100%;
-    // height: 2px;
-    // background: black;
+    box-sizing: border-box;
+    border: none;
+    width: 100%;
+    height: 2px;
+    background: black;
   }
   @mixin thumb() {
     // box-sizing: border-box;
@@ -63,8 +70,86 @@
     &::-ms-thumb { @include thumb }
 
     width: 100%;
+    display: none;
+  }
+  datalist {
+    // display: flex;
+    display: none;
+    width: 100%;
+    justify-content: space-between;
+    // padding: 0 .45em;
+
+    option {
+        // padding: 0;
+    }
+
+    option:not(:first-child):not(:last-child) {
+        display: none;
+    }
+  }
+  // Input Type Range END
+
+  // Custom Input type range start
+  .input_type_range {
+    width: 100%;
+    height: 2px;
+    border: 1px solid #c5c5c5;
+    background-color: #595959;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 16px;
+
+    .input_type_range_tick_mark {
+      // left: 4%;
+      display: inline-block;
+      width: 1px;
+      background: #595959;
+      height: 6px;
+      position: absolute;
+      top: -3px;
+
+      sub {
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+        bottom: -1.1em !important;
+        font-size: 65% !important;
+        color: gray;
+
+        &.left_sub {
+          left: -1px !important;
+        }
+
+        &.right_sub {
+          right: 99px !important;
+          display: inline-block;
+          text-align: right;
+          width: 100px;
+        }
+      }
+    }
+
+    .input_type_range_handle {
+      position: absolute;
+      top: -10px;
+      width: auto;
+      padding: 5px;
+      line-height: 10px;
+      text-transform: uppercase;
+      font-size: 13px;
+      height: 20px;
+      
+      border: 1px solid #c5c5c5;
+      background: white;
+      font-weight: normal;
+      color: #454545;
+      margin-left: -0.6em;
+      z-index: 1;
+    }
   }
 
+
+  // Custom Input type range end
 
   fieldset div:has(input[type="number"]) {
     height: 47px;
@@ -76,6 +161,12 @@
       -webkit-appearance: textfield;
 
       text-align: center;
+    }
+
+    button:first-child {
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
 
     button {
@@ -92,20 +183,7 @@
   }
 
 
-  datalist {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    // padding: 0 .45em;
 
-    option {
-        // padding: 0;
-    }
-
-    option:not(:first-child):not(:last-child) {
-        display: none;
-    }
-  }
 
   label {
     outline: 1px solid #d8d8d8;
@@ -162,5 +240,19 @@
 
   label:has(> input:checked) {
     outline: 2px solid black;
+  }
+
+  fieldset:has(> button[type="submit"]) button[type="submit"] {
+    background: none;
+    border: none;
+    outline: 1px solid #121212;
+    width: 100%;
+    height: 47px;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
   }
 }
