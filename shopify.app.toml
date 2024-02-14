@@ -2,7 +2,7 @@
 
 name = "Ring Customizer App"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://cams-literary-acids-pros.trycloudflare.com"
+application_url = "https://scales-northeast-chris-optical.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://cams-literary-acids-pros.trycloudflare.com/auth/callback",
-  "https://cams-literary-acids-pros.trycloudflare.com/auth/shopify/callback",
-  "https://cams-literary-acids-pros.trycloudflare.com/api/auth/callback"
+  "https://scales-northeast-chris-optical.trycloudflare.com/auth/callback",
+  "https://scales-northeast-chris-optical.trycloudflare.com/auth/shopify/callback",
+  "https://scales-northeast-chris-optical.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
 
 [app_proxy]
-url = "https://cams-literary-acids-pros.trycloudflare.com"
+url = "https://scales-northeast-chris-optical.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

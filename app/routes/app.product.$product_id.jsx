@@ -1120,7 +1120,7 @@ export default function Product() {
                         icon={PlusMinor}
                         onClick={() => { optionModalToggleActive({ isActive: true }) }}
                       >
-                        Add another option
+                        Add option
                       </Button>
                     </BlockStack>
                   </span>
