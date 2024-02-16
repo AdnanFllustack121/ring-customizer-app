@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App"
 client_id = "1944e3d11fe47b32b49a0e4560c2c1f4"
-application_url = "https://jewelrybuilderapp.com"
+application_url = "https://auctions-acknowledge-costs-independence.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://jewelrybuilderapp.com/auth/callback",
-  "https://jewelrybuilderapp.com/auth/shopify/callback",
-  "https://jewelrybuilderapp.com/api/auth/callback"
+  "https://auctions-acknowledge-costs-independence.trycloudflare.com/auth/callback",
+  "https://auctions-acknowledge-costs-independence.trycloudflare.com/auth/shopify/callback",
+  "https://auctions-acknowledge-costs-independence.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://jewelrybuilderapp.com/"
+url = "https://auctions-acknowledge-costs-independence.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 
@@ -28,4 +28,5 @@ prefix = "apps"
 embedded = false
 
 [build]
+automatically_update_urls_on_dev = true
 dev_store_url = "bulk-product-options.myshopify.com"

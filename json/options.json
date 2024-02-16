@@ -1,0 +1,595 @@
+[
+  {
+    "name": "Center Stone Type",
+    "slug": "center_stone_type",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "di",
+        "Shopify_Tag": "Center_StoneType_di"
+      },
+      {
+        "optionValueTitle": "Lab Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "ld",
+        "Shopify_Tag": "Center_StoneType_ld"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_4Pic": "em",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Center_StoneType_em"
+      },
+      {
+        "optionValueTitle": "Ruby",
+        "optionValue_4Pic": "ru",
+        "optionValue_Short": "ru",
+        "Shopify_Tag": "Center_StoneType_ru"
+      },
+      {
+        "optionValueTitle": "Blue Sapphire",
+        "optionValue_4Pic": "bs",
+        "optionValue_Short": "bs",
+        "Shopify_Tag": "Center_StoneType_bs"
+      },
+      {
+        "optionValueTitle": "Pink Sapphire",
+        "optionValue_4Pic": "ps",
+        "optionValue_Short": "ps",
+        "Shopify_Tag": "Center_StoneType_ps"
+      },
+      {
+        "optionValueTitle": "Green Sapphire",
+        "optionValue_4Pic": "gs",
+        "optionValue_Short": "gs",
+        "Shopify_Tag": "Center_StoneType_gs"
+      },
+      {
+        "optionValueTitle": "Orange Sapphire",
+        "optionValue_4Pic": "os",
+        "optionValue_Short": "os",
+        "Shopify_Tag": "Center_StoneType_os"
+      },
+      {
+        "optionValueTitle": "Red Sapphire",
+        "optionValue_4Pic": "rs",
+        "optionValue_Short": "rs",
+        "Shopify_Tag": "Center_StoneType_rs"
+      },
+      {
+        "optionValueTitle": "Yellow Sapphire",
+        "optionValue_4Pic": "ys",
+        "optionValue_Short": "ys",
+        "Shopify_Tag": "Center_StoneType_ys"
+      },
+      {
+        "optionValueTitle": "Amethyst",
+        "optionValue_4Pic": "am",
+        "optionValue_Short": "am",
+        "Shopify_Tag": "Center_StoneType_am"
+      },
+      {
+        "optionValueTitle": "Aquamarine",
+        "optionValue_4Pic": "aq",
+        "optionValue_Short": "aq",
+        "Shopify_Tag": "Center_StoneType_aq"
+      },
+      {
+        "optionValueTitle": "Citrine",
+        "optionValue_4Pic": "ci",
+        "optionValue_Short": "ci",
+        "Shopify_Tag": "Center_StoneType_ci"
+      },
+      {
+        "optionValueTitle": "Blue Topaz",
+        "optionValue_4Pic": "bt",
+        "optionValue_Short": "bt",
+        "Shopify_Tag": "Center_StoneType_bt"
+      },
+      {
+        "optionValueTitle": "Tanzanite",
+        "optionValue_4Pic": "ta",
+        "optionValue_Short": "ta",
+        "Shopify_Tag": "Center_StoneType_ta"
+      }
+    ]
+  },
+  {
+    "name": "Side Stone Type",
+    "slug": "side_stone_type",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "di",
+        "Shopify_Tag": "Side_StoneType_di"
+      },
+      {
+        "optionValueTitle": "Lab Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "ld",
+        "Shopify_Tag": "Side_StoneType_ld"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_4Pic": "em",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Side_StoneType_em"
+      },
+      {
+        "optionValueTitle": "Ruby",
+        "optionValue_4Pic": "ru",
+        "optionValue_Short": "ru",
+        "Shopify_Tag": "Side_StoneType_ru"
+      },
+      {
+        "optionValueTitle": "Blue Sapphire",
+        "optionValue_4Pic": "bs",
+        "optionValue_Short": "bs",
+        "Shopify_Tag": "Side_StoneType_bs"
+      },
+      {
+        "optionValueTitle": "Pink Sapphire",
+        "optionValue_4Pic": "ps",
+        "optionValue_Short": "ps",
+        "Shopify_Tag": "Side_StoneType_ps"
+      },
+      {
+        "optionValueTitle": "Green Sapphire",
+        "optionValue_4Pic": "gs",
+        "optionValue_Short": "gs",
+        "Shopify_Tag": "Side_StoneType_gs"
+      },
+      {
+        "optionValueTitle": "Orange Sapphire",
+        "optionValue_4Pic": "os",
+        "optionValue_Short": "os",
+        "Shopify_Tag": "Side_StoneType_os"
+      },
+      {
+        "optionValueTitle": "Red Sapphire",
+        "optionValue_4Pic": "rs",
+        "optionValue_Short": "rs",
+        "Shopify_Tag": "Side_StoneType_rs"
+      },
+      {
+        "optionValueTitle": "Yellow Sapphire",
+        "optionValue_4Pic": "ys",
+        "optionValue_Short": "ys",
+        "Shopify_Tag": "Side_StoneType_ys"
+      },
+      {
+        "optionValueTitle": "Amethyst",
+        "optionValue_4Pic": "am",
+        "optionValue_Short": "am",
+        "Shopify_Tag": "Side_StoneType_am"
+      },
+      {
+        "optionValueTitle": "Aquamarine",
+        "optionValue_4Pic": "aq",
+        "optionValue_Short": "aq",
+        "Shopify_Tag": "Side_StoneType_aq"
+      },
+      {
+        "optionValueTitle": "Citrine",
+        "optionValue_4Pic": "ci",
+        "optionValue_Short": "ci",
+        "Shopify_Tag": "Side_StoneType_ci"
+      },
+      {
+        "optionValueTitle": "Blue Topaz",
+        "optionValue_4Pic": "bt",
+        "optionValue_Short": "bt",
+        "Shopify_Tag": "Side_StoneType_bt"
+      },
+      {
+        "optionValueTitle": "Tanzanite",
+        "optionValue_4Pic": "ta",
+        "optionValue_Short": "ta",
+        "Shopify_Tag": "Side_StoneType_ta"
+      }
+    ]
+  },
+  {
+    "name": "Small Stone Type",
+    "slug": "small_stone_type",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "di",
+        "Shopify_Tag": "Small_StoneType_di"
+      },
+      {
+        "optionValueTitle": "Lab Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "ld",
+        "Shopify_Tag": "Small_StoneType_ld"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_4Pic": "em",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Small_StoneType_em"
+      },
+      {
+        "optionValueTitle": "Ruby",
+        "optionValue_4Pic": "ru",
+        "optionValue_Short": "ru",
+        "Shopify_Tag": "Small_StoneType_ru"
+      },
+      {
+        "optionValueTitle": "Blue Sapphire",
+        "optionValue_4Pic": "bs",
+        "optionValue_Short": "bs",
+        "Shopify_Tag": "Small_StoneType_bs"
+      },
+      {
+        "optionValueTitle": "Pink Sapphire",
+        "optionValue_4Pic": "ps",
+        "optionValue_Short": "ps",
+        "Shopify_Tag": "Small_StoneType_ps"
+      },
+      {
+        "optionValueTitle": "Green Sapphire",
+        "optionValue_4Pic": "gs",
+        "optionValue_Short": "gs",
+        "Shopify_Tag": "Small_StoneType_gs"
+      },
+      {
+        "optionValueTitle": "Orange Sapphire",
+        "optionValue_4Pic": "os",
+        "optionValue_Short": "os",
+        "Shopify_Tag": "Small_StoneType_os"
+      },
+      {
+        "optionValueTitle": "Red Sapphire",
+        "optionValue_4Pic": "rs",
+        "optionValue_Short": "rs",
+        "Shopify_Tag": "Small_StoneType_rs"
+      },
+      {
+        "optionValueTitle": "Yellow Sapphire",
+        "optionValue_4Pic": "ys",
+        "optionValue_Short": "ys",
+        "Shopify_Tag": "Small_StoneType_ys"
+      },
+      {
+        "optionValueTitle": "Amethyst",
+        "optionValue_4Pic": "am",
+        "optionValue_Short": "am",
+        "Shopify_Tag": "Small_StoneType_am"
+      },
+      {
+        "optionValueTitle": "Aquamarine",
+        "optionValue_4Pic": "aq",
+        "optionValue_Short": "aq",
+        "Shopify_Tag": "Small_StoneType_aq"
+      },
+      {
+        "optionValueTitle": "Citrine",
+        "optionValue_4Pic": "ci",
+        "optionValue_Short": "ci",
+        "Shopify_Tag": "Small_StoneType_ci"
+      },
+      {
+        "optionValueTitle": "Blue Topaz",
+        "optionValue_4Pic": "bt",
+        "optionValue_Short": "bt",
+        "Shopify_Tag": "Small_StoneType_bt"
+      },
+      {
+        "optionValueTitle": "Tanzanite",
+        "optionValue_4Pic": "ta",
+        "optionValue_Short": "ta",
+        "Shopify_Tag": "Small_StoneType_ta"
+      }
+    ]
+  },
+
+
+
+
+
+  {
+    "name": "Center Stone Weight",
+    "slug": "center_stone_weight",
+    "ProductType": "all",
+    "values": [
+      "0.10", "0.15", "0.25", "0.33", "0.40", "0.45", "0.50", "0.60", "0.66", "0.75", "0.80", "0.90",
+      "1.00", "1.10", "1.25", "1.35", "1.50", "1.60", "1.75", "1.80", "1.90",
+      "2.00", "2.10", "2.25", "2.40", "2.50", "2.60", "2.75", "2.90",
+      "3.00", "3.25", "3.50", "3.75",
+      "4.00", "4.25", "4.50", "4.75",
+      "5.00", "5.25", "5.50", "5.75",
+      "6.00"
+    ]
+  },
+
+
+
+  {
+    "name": "Center Stone Color",
+    "slug": "center_stone_color",
+    "ProductType": "all",
+    "values": ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
+  },
+  {
+    "name": "Center Stone Clarity",
+    "slug": "center_stone_clarity",
+    "ProductType": "all",
+    "values": ["FL", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2", "I3"]
+  },
+  {
+    "name": "Center Stone Lab Diamond Quality",
+    "slug": "center_stone_lab_diamond_quality",
+    "ProductType": "all",
+    "values": [
+      "Good (F, SI1)",
+      "Excellent (F, VS2)",
+      "Best (F, VVS1"
+    ]
+  },
+
+
+  {
+    "name": "Center Stone Gem Quality",
+    "slug": "center_stone_gem_quality",
+    "ProductType": "all",
+    "values": ["Good", "Excellent", "Best"]
+  },
+
+
+  {
+    "name": "Center Stone Shape",
+    "slug": "center_stone_shape",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Round",
+        "optionValue_Short": "rd",
+        "Shopify_Tag": "Center_StoneShape_rd"
+      },
+      {
+        "optionValueTitle": "Princess",
+        "optionValue_Short": "pr",
+        "Shopify_Tag": "Center_StoneShape_pr"
+      },
+      {
+        "optionValueTitle": "Pear",
+        "optionValue_Short": "pe",
+        "Shopify_Tag": "Center_StoneShape_pe"
+      },
+      {
+        "optionValueTitle": "Asscher",
+        "optionValue_Short": "as",
+        "Shopify_Tag": "Center_StoneShape_as"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Center_StoneShape_em"
+      },
+      {
+        "optionValueTitle": "Cushion",
+        "optionValue_Short": "cu",
+        "Shopify_Tag": "Center_StoneShape_cu"
+      },
+      {
+        "optionValueTitle": "Marquise",
+        "optionValue_Short": "mq",
+        "Shopify_Tag": "Center_StoneShape_mq"
+      },
+      {
+        "optionValueTitle": "Heart",
+        "optionValue_Short": "he",
+        "Shopify_Tag": "Center_StoneShape_he"
+      },
+      {
+        "optionValueTitle": "Oval",
+        "optionValue_Short": "ov",
+        "Shopify_Tag": "Center_StoneShape_ov"
+      },
+      {
+        "optionValueTitle": "Radiant",
+        "optionValue_Short": "ra",
+        "Shopify_Tag": "Center_StoneShape_ra"
+      }
+    ]
+  },
+  {
+    "name": "Side Stone Shape",
+    "slug": "side_stone_shape",
+    "ProductType": "ProductType_Ring",
+    "values": [
+      {
+        "optionValueTitle": "Round",
+        "optionValue_Short": "rd",
+        "Shopify_Tag": "Side_StoneShape_rd"
+      },
+      {
+        "optionValueTitle": "Princess",
+        "optionValue_Short": "pr",
+        "Shopify_Tag": "Side_StoneShape_pr"
+      },
+      {
+        "optionValueTitle": "Pear",
+        "optionValue_Short": "pe",
+        "Shopify_Tag": "Side_StoneShape_pe"
+      },
+      {
+        "optionValueTitle": "Asscher",
+        "optionValue_Short": "as",
+        "Shopify_Tag": "Side_StoneShape_as"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Side_StoneShape_em"
+      },
+      {
+        "optionValueTitle": "Cushion",
+        "optionValue_Short": "cu",
+        "Shopify_Tag": "Side_StoneShape_cu"
+      },
+      {
+        "optionValueTitle": "Marquise",
+        "optionValue_Short": "mq",
+        "Shopify_Tag": "Side_StoneShape_mq"
+      },
+      {
+        "optionValueTitle": "Heart",
+        "optionValue_Short": "he",
+        "Shopify_Tag": "Side_StoneShape_he"
+      },
+      {
+        "optionValueTitle": "Oval",
+        "optionValue_Short": "ov",
+        "Shopify_Tag": "Side_StoneShape_ov"
+      },
+      {
+        "optionValueTitle": "Radiant",
+        "optionValue_Short": "ra",
+        "Shopify_Tag": "Side_StoneShape_ra"
+      }
+    ]
+  },
+  {
+    "name": "Small Stone Shape",
+    "slug": "small_stone_shape",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Round",
+        "optionValue_Short": "rd",
+        "Shopify_Tag": "Small_StoneShape_rd"
+      },
+      {
+        "optionValueTitle": "Princess",
+        "optionValue_Short": "pr",
+        "Shopify_Tag": "Small_StoneShape_pr"
+      },
+      {
+        "optionValueTitle": "Pear",
+        "optionValue_Short": "pe",
+        "Shopify_Tag": "Small_StoneShape_pe"
+      },
+      {
+        "optionValueTitle": "Asscher",
+        "optionValue_Short": "as",
+        "Shopify_Tag": "Small_StoneShape_as"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Small_StoneShape_em"
+      },
+      {
+        "optionValueTitle": "Cushion",
+        "optionValue_Short": "cu",
+        "Shopify_Tag": "Small_StoneShape_cu"
+      },
+      {
+        "optionValueTitle": "Marquise",
+        "optionValue_Short": "mq",
+        "Shopify_Tag": "Small_StoneShape_mq"
+      },
+      {
+        "optionValueTitle": "Heart",
+        "optionValue_Short": "he",
+        "Shopify_Tag": "Small_StoneShape_he"
+      },
+      {
+        "optionValueTitle": "Oval",
+        "optionValue_Short": "ov",
+        "Shopify_Tag": "Small_StoneShape_ov"
+      },
+      {
+        "optionValueTitle": "Radiant",
+        "optionValue_Short": "ra",
+        "Shopify_Tag": "Small_StoneShape_ra"
+      }
+    ]
+  },
+
+  {
+    "name": "Metal Type",
+    "slug": "metal_type",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "10k White Gold",
+        "optionValue_4Pic": "ww",
+        "optionValue_Short": "10k_ww"
+      },
+      {
+        "optionValueTitle": "14k White Gold",
+        "optionValue_4Pic": "ww",
+        "optionValue_Short": "14k_ww"
+      }
+    ]
+  },
+
+
+  {
+    "name": "Ring Size",
+    "slug": "ring_size",
+    "ProductType": "ProductType_Ring",
+    "values": [
+      "3", "3.25", "3.5", "3.75",
+      "4", "4.25", "4.5", "4.75",
+      "5", "5.25", "5.5", "5.75",
+      "6", "6.25", "6.5", "6.75",
+      "7", "7.25", "7.5", "7.75",
+      "8", "8.25", "8.5", "8.75",
+      "9", "9.25", "9.5", "9.75",
+      "10", "10.25", "10.5", "10.75",
+      "11", "11.25", "11.5", "11.75",
+      "12", "12.25", "12.5", "12.75",
+      "13", "13.25", "13.5", "13.75",
+      "14", "14.25", "14.5", "14.75",
+      "15"
+    ]
+  },
+
+  {
+    "name": "Chain Length",
+    "slug": "chain_length",
+    "ProductType": "ProductType_Pendant",
+    "values": [
+      "16", "18", "20"
+    ]
+  },
+
+  {
+    "name": "Backing Type",
+    "slug": "backing_type",
+    "ProductType": "ProductType_Earrings",
+    "values": [
+      {
+        "optionValueTitle": "Push Back",
+        "optionValue_Short": "pb",
+        "Shopify_Tag": "BackingType_PushBack"
+      },
+      {
+        "optionValueTitle": "Screw Back",
+        "optionValue_Short": "sb",
+        "Shopify_Tag": "BackingType_ScrewBack"
+      },
+      {
+        "optionValueTitle": "Lever Back",
+        "optionValue_Short": "lb",
+        "Shopify_Tag": "BackingType_LeverBack"
+      },
+      {
+        "optionValueTitle": "Latch",
+        "optionValue_Short": "lt",
+        "Shopify_Tag": "BackingType_Latch"
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+1. Center Stone (Diamond, Lab Diamond, Gem)
+
+2. Center Stone Shape
+
+3. Center Stone Weight
+
+4. Side Stones
+    a) Stone Type
+    b) Stone Shape
+
+5. Small/Accented Stones
+    a) Stone Type
+    b) Stone Shape
+
+
+
+
+
+Show/Hide Rules
+If (Diamond)
+    i) Center Stone Color
+    ii) Center Stone Clarity
+
+else if (Lab Diamond)
+    Center Stone Lab Diamond Quality
+
+else (Gem)
+    Center Stone Gem Quality

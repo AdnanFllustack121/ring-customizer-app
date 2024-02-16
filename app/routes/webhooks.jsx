@@ -1,6 +1,11 @@
 import { authenticate } from "../shopify.server";
 import db, { Products, Session } from "../db.server";
 
+import { makeid } from "../utils";
+
+import ProductTypes from "../../json/productTypes.json";
+import Options from "../../json/options.json"
+
 export const action = async ({ request }) => {
   const { topic, shop, session, admin, payload } = await authenticate.webhook(
     request
@@ -49,11 +54,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
     console.log('productTags', productTags)
 
-    const productTypes = [
-      'ProductType_Ring',
-      'ProductType_Earrings',
-      'ProductType_Pendant'
-    ]
+    const productTypes = ProductTypes.map(rule => rule.shopify_Tag)
 
     if (!productTags.length) {
       return
@@ -64,7 +65,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       return
     }
 
-    console.log('whichProductType', whichProductType)
+    // console.log('whichProductType', whichProductType)
 
     let productData = await Products.findOne({
       product_id: productPayload.admin_graphql_api_id
@@ -74,14 +75,57 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       productData = await Products.create({
         product_id: productPayload.admin_graphql_api_id,
         product_title: productPayload.title,
-        product_image: productPayload.image
+        product_image: !!productPayload.image?.src ? productPayload.image.src : null
       })
       if (!productData) {
         return
       }
     }
 
+    let options = []
+
     console.log('productData', productData)
+
+    for (let index = 0; index < Options.length; index++) {
+      const option = Options[index]
+      const option_values = option.values
+
+      console.log('option_values', option_values)
+
+      const found_option_values = option_values.filter(options_value => productTags.includes(options_value.Shopify_Tag))
+      console.log('found_option_values', found_option_values)
+
+      if (!found_option_values.length) {
+        continue;
+      }
+
+      options.push({
+        option_id: makeid(24),
+        option_title: option.name,
+        option_type: 'swatch',
+        option_slug: option.slug,
+        option_values: found_option_values.map(found_option_value => {
+          return {
+            file_id: '',
+            option_value_id: makeid(24),
+            option_value_title: found_option_value.optionValueTitle,
+            option_value_slug: found_option_value.optionValue_Short,
+            option_image_path: '',
+            option_value_price: ''
+          }
+        })
+      })
+    }
+
+    console.log('options', options)
+
+    if (!!options.length) {
+      await Products.findOneAndUpdate({
+        product_id: productPayload.admin_graphql_api_id
+      }, {
+        options
+      })
+    }
 
   } catch (error) {
     
