@@ -65,7 +65,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       return
     }
 
-    // console.log('whichProductType', whichProductType)
+    console.log('whichProductType', whichProductType)
 
     let productData = await Products.findOne({
       product_id: productPayload.admin_graphql_api_id
@@ -84,7 +84,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
     let options = []
 
-    console.log('productData', productData)
+    console.log('productData.tags', productData.tags)
 
     for (let index = 0; index < Options.length; index++) {
       const option = Options[index]
@@ -92,8 +92,25 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
       console.log('option_values', option_values)
 
-      const found_option_values = option_values.filter(options_value => productTags.includes(options_value.Shopify_Tag))
-      console.log('found_option_values', found_option_values)
+      let found_option_values = []
+
+      if (
+        (
+          ( option.ProductType === 'all' ) ||
+          ( option.ProductType === whichProductType )
+        )
+        &&
+        !!option_values.length
+      ) {
+        // check for the tag key
+        if (!!option_values?.[0]?.Shopify_Tag) {
+          found_option_values = option_values.filter(options_value => productTags.includes(options_value.Shopify_Tag))
+        } else {
+          found_option_values = option_values
+        }
+        console.log('found_option_values', found_option_values)
+      }
+
 
       if (!found_option_values.length) {
         continue;
@@ -108,8 +125,8 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
           return {
             file_id: '',
             option_value_id: makeid(24),
-            option_value_title: found_option_value.optionValueTitle,
-            option_value_slug: found_option_value.optionValue_Short,
+            option_value_title: !!found_option_value?.optionValueTitle ? found_option_value.optionValueTitle : found_option_value,
+            option_value_slug: !!found_option_value?.optionValue_Short ? found_option_value.optionValue_Short : found_option_value,
             option_image_path: '',
             option_value_price: ''
           }

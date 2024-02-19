@@ -97,6 +97,91 @@
     ]
   },
   {
+    "name": "Center Stone Shape",
+    "slug": "center_stone_shape",
+    "ProductType": "all",
+    "values": [
+      {
+        "optionValueTitle": "Round",
+        "optionValue_Short": "rd",
+        "Shopify_Tag": "Center_StoneShape_rd"
+      },
+      {
+        "optionValueTitle": "Princess",
+        "optionValue_Short": "pr",
+        "Shopify_Tag": "Center_StoneShape_pr"
+      },
+      {
+        "optionValueTitle": "Pear",
+        "optionValue_Short": "pe",
+        "Shopify_Tag": "Center_StoneShape_pe"
+      },
+      {
+        "optionValueTitle": "Asscher",
+        "optionValue_Short": "as",
+        "Shopify_Tag": "Center_StoneShape_as"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Center_StoneShape_em"
+      },
+      {
+        "optionValueTitle": "Cushion",
+        "optionValue_Short": "cu",
+        "Shopify_Tag": "Center_StoneShape_cu"
+      },
+      {
+        "optionValueTitle": "Marquise",
+        "optionValue_Short": "mq",
+        "Shopify_Tag": "Center_StoneShape_mq"
+      },
+      {
+        "optionValueTitle": "Heart",
+        "optionValue_Short": "he",
+        "Shopify_Tag": "Center_StoneShape_he"
+      },
+      {
+        "optionValueTitle": "Oval",
+        "optionValue_Short": "ov",
+        "Shopify_Tag": "Center_StoneShape_ov"
+      },
+      {
+        "optionValueTitle": "Radiant",
+        "optionValue_Short": "ra",
+        "Shopify_Tag": "Center_StoneShape_ra"
+      }
+    ]
+  },
+  {
+    "name": "Center Stone Weight",
+    "slug": "center_stone_weight",
+    "ProductType": "all",
+    "values": [
+      "0.10", "0.15", "0.25", "0.33", "0.40", "0.45", "0.50", "0.60", "0.66", "0.75", "0.80", "0.90",
+      "1.00", "1.10", "1.25", "1.35", "1.50", "1.60", "1.75", "1.80", "1.90",
+      "2.00", "2.10", "2.25", "2.40", "2.50", "2.60", "2.75", "2.90",
+      "3.00", "3.25", "3.50", "3.75",
+      "4.00", "4.25", "4.50", "4.75",
+      "5.00", "5.25", "5.50", "5.75",
+      "6.00"
+    ]
+  },
+  {
+    "name": "Center Stone Color",
+    "slug": "center_stone_color",
+    "ProductType": "all",
+    "values": ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
+  },
+  {
+    "name": "Center Stone Clarity",
+    "slug": "center_stone_clarity",
+    "ProductType": "all",
+    "values": ["FL", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2", "I3"]
+  },
+
+
+  {
     "name": "Side Stone Type",
     "slug": "side_stone_type",
     "ProductType": "all",
@@ -193,6 +278,65 @@
       }
     ]
   },
+  {
+    "name": "Side Stone Shape",
+    "slug": "side_stone_shape",
+    "ProductType": "ProductType_Ring",
+    "values": [
+      {
+        "optionValueTitle": "Round",
+        "optionValue_Short": "rd",
+        "Shopify_Tag": "Side_StoneShape_rd"
+      },
+      {
+        "optionValueTitle": "Princess",
+        "optionValue_Short": "pr",
+        "Shopify_Tag": "Side_StoneShape_pr"
+      },
+      {
+        "optionValueTitle": "Pear",
+        "optionValue_Short": "pe",
+        "Shopify_Tag": "Side_StoneShape_pe"
+      },
+      {
+        "optionValueTitle": "Asscher",
+        "optionValue_Short": "as",
+        "Shopify_Tag": "Side_StoneShape_as"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Side_StoneShape_em"
+      },
+      {
+        "optionValueTitle": "Cushion",
+        "optionValue_Short": "cu",
+        "Shopify_Tag": "Side_StoneShape_cu"
+      },
+      {
+        "optionValueTitle": "Marquise",
+        "optionValue_Short": "mq",
+        "Shopify_Tag": "Side_StoneShape_mq"
+      },
+      {
+        "optionValueTitle": "Heart",
+        "optionValue_Short": "he",
+        "Shopify_Tag": "Side_StoneShape_he"
+      },
+      {
+        "optionValueTitle": "Oval",
+        "optionValue_Short": "ov",
+        "Shopify_Tag": "Side_StoneShape_ov"
+      },
+      {
+        "optionValueTitle": "Radiant",
+        "optionValue_Short": "ra",
+        "Shopify_Tag": "Side_StoneShape_ra"
+      }
+    ]
+  },
+
+
   {
     "name": "Small Stone Type",
     "slug": "small_stone_type",
@@ -292,172 +436,6 @@
   },
 
 
-
-
-
-  {
-    "name": "Center Stone Weight",
-    "slug": "center_stone_weight",
-    "ProductType": "all",
-    "values": [
-      "0.10", "0.15", "0.25", "0.33", "0.40", "0.45", "0.50", "0.60", "0.66", "0.75", "0.80", "0.90",
-      "1.00", "1.10", "1.25", "1.35", "1.50", "1.60", "1.75", "1.80", "1.90",
-      "2.00", "2.10", "2.25", "2.40", "2.50", "2.60", "2.75", "2.90",
-      "3.00", "3.25", "3.50", "3.75",
-      "4.00", "4.25", "4.50", "4.75",
-      "5.00", "5.25", "5.50", "5.75",
-      "6.00"
-    ]
-  },
-
-
-
-  {
-    "name": "Center Stone Color",
-    "slug": "center_stone_color",
-    "ProductType": "all",
-    "values": ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
-  },
-  {
-    "name": "Center Stone Clarity",
-    "slug": "center_stone_clarity",
-    "ProductType": "all",
-    "values": ["FL", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2", "I3"]
-  },
-  {
-    "name": "Center Stone Lab Diamond Quality",
-    "slug": "center_stone_lab_diamond_quality",
-    "ProductType": "all",
-    "values": [
-      "Good (F, SI1)",
-      "Excellent (F, VS2)",
-      "Best (F, VVS1"
-    ]
-  },
-
-
-  {
-    "name": "Center Stone Gem Quality",
-    "slug": "center_stone_gem_quality",
-    "ProductType": "all",
-    "values": ["Good", "Excellent", "Best"]
-  },
-
-
-  {
-    "name": "Center Stone Shape",
-    "slug": "center_stone_shape",
-    "ProductType": "all",
-    "values": [
-      {
-        "optionValueTitle": "Round",
-        "optionValue_Short": "rd",
-        "Shopify_Tag": "Center_StoneShape_rd"
-      },
-      {
-        "optionValueTitle": "Princess",
-        "optionValue_Short": "pr",
-        "Shopify_Tag": "Center_StoneShape_pr"
-      },
-      {
-        "optionValueTitle": "Pear",
-        "optionValue_Short": "pe",
-        "Shopify_Tag": "Center_StoneShape_pe"
-      },
-      {
-        "optionValueTitle": "Asscher",
-        "optionValue_Short": "as",
-        "Shopify_Tag": "Center_StoneShape_as"
-      },
-      {
-        "optionValueTitle": "Emerald",
-        "optionValue_Short": "em",
-        "Shopify_Tag": "Center_StoneShape_em"
-      },
-      {
-        "optionValueTitle": "Cushion",
-        "optionValue_Short": "cu",
-        "Shopify_Tag": "Center_StoneShape_cu"
-      },
-      {
-        "optionValueTitle": "Marquise",
-        "optionValue_Short": "mq",
-        "Shopify_Tag": "Center_StoneShape_mq"
-      },
-      {
-        "optionValueTitle": "Heart",
-        "optionValue_Short": "he",
-        "Shopify_Tag": "Center_StoneShape_he"
-      },
-      {
-        "optionValueTitle": "Oval",
-        "optionValue_Short": "ov",
-        "Shopify_Tag": "Center_StoneShape_ov"
-      },
-      {
-        "optionValueTitle": "Radiant",
-        "optionValue_Short": "ra",
-        "Shopify_Tag": "Center_StoneShape_ra"
-      }
-    ]
-  },
-  {
-    "name": "Side Stone Shape",
-    "slug": "side_stone_shape",
-    "ProductType": "ProductType_Ring",
-    "values": [
-      {
-        "optionValueTitle": "Round",
-        "optionValue_Short": "rd",
-        "Shopify_Tag": "Side_StoneShape_rd"
-      },
-      {
-        "optionValueTitle": "Princess",
-        "optionValue_Short": "pr",
-        "Shopify_Tag": "Side_StoneShape_pr"
-      },
-      {
-        "optionValueTitle": "Pear",
-        "optionValue_Short": "pe",
-        "Shopify_Tag": "Side_StoneShape_pe"
-      },
-      {
-        "optionValueTitle": "Asscher",
-        "optionValue_Short": "as",
-        "Shopify_Tag": "Side_StoneShape_as"
-      },
-      {
-        "optionValueTitle": "Emerald",
-        "optionValue_Short": "em",
-        "Shopify_Tag": "Side_StoneShape_em"
-      },
-      {
-        "optionValueTitle": "Cushion",
-        "optionValue_Short": "cu",
-        "Shopify_Tag": "Side_StoneShape_cu"
-      },
-      {
-        "optionValueTitle": "Marquise",
-        "optionValue_Short": "mq",
-        "Shopify_Tag": "Side_StoneShape_mq"
-      },
-      {
-        "optionValueTitle": "Heart",
-        "optionValue_Short": "he",
-        "Shopify_Tag": "Side_StoneShape_he"
-      },
-      {
-        "optionValueTitle": "Oval",
-        "optionValue_Short": "ov",
-        "Shopify_Tag": "Side_StoneShape_ov"
-      },
-      {
-        "optionValueTitle": "Radiant",
-        "optionValue_Short": "ra",
-        "Shopify_Tag": "Side_StoneShape_ra"
-      }
-    ]
-  },
   {
     "name": "Small Stone Shape",
     "slug": "small_stone_shape",
@@ -516,6 +494,27 @@
     ]
   },
 
+
+  {
+    "name": "Center Stone Lab Diamond Quality",
+    "slug": "center_stone_lab_diamond_quality",
+    "ProductType": "all",
+    "values": [
+      "Good (F, SI1)",
+      "Excellent (F, VS2)",
+      "Best (F, VVS1"
+    ]
+  },
+
+
+  {
+    "name": "Center Stone Gem Quality",
+    "slug": "center_stone_gem_quality",
+    "ProductType": "all",
+    "values": ["Good", "Excellent", "Best"]
+  },
+
+
   {
     "name": "Metal Type",
     "slug": "metal_type",
@@ -530,6 +529,46 @@
         "optionValueTitle": "14k White Gold",
         "optionValue_4Pic": "ww",
         "optionValue_Short": "14k_ww"
+      },
+      {
+        "optionValueTitle": "18k White Gold",
+        "optionValue_4Pic": "ww",
+        "optionValue_Short": "18k_ww"
+      },
+      {
+        "optionValueTitle": "10k Yellow Gold",
+        "optionValue_4Pic": "yy",
+        "optionValue_Short": "10k_yy"
+      },
+      {
+        "optionValueTitle": "14k Yellow Gold",
+        "optionValue_4Pic": "yy",
+        "optionValue_Short": "14k_yy"
+      },
+      {
+        "optionValueTitle": "18k Yellow Gold",
+        "optionValue_4Pic": "yy",
+        "optionValue_Short": "18k_yy"
+      },
+      {
+        "optionValueTitle": "10k Rose Gold",
+        "optionValue_4Pic": "rr",
+        "optionValue_Short": "10k_rr"
+      },
+      {
+        "optionValueTitle": "14k Rose Gold",
+        "optionValue_4Pic": "rr",
+        "optionValue_Short": "14k_rr"
+      },
+      {
+        "optionValueTitle": "18k Rose Gold",
+        "optionValue_4Pic": "rr",
+        "optionValue_Short": "18k_rr"
+      },
+      {
+        "optionValueTitle": "Platinum",
+        "optionValue_4Pic": "ww",
+        "optionValue_Short": "plat"
       }
     ]
   },
@@ -556,6 +595,7 @@
     ]
   },
 
+
   {
     "name": "Chain Length",
     "slug": "chain_length",
@@ -564,6 +604,7 @@
       "16", "18", "20"
     ]
   },
+
 
   {
     "name": "Backing Type",

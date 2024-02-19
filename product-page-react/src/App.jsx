@@ -27,7 +27,7 @@ function App() {
 
   useEffect(() => {
     console.log('useEffect filteredOptions', filteredOptions)
-    if ( !Object.keys(selectedOptions).length && !!filteredOptions.length && !!productInfo.variants.length ) {
+    if ( !Object.keys(selectedOptions).length && !!filteredOptions.length && !!productInfo?.variants?.length ) {
 
       const searchParams = new URLSearchParams(window.location.search)
 
@@ -123,51 +123,53 @@ function App() {
 
     if (!!Object.keys(selectedOptions).length) {
 
-      const selectedOptionOneVariants = productInfo.variants.filter(variant => variant.variant_options[0].option_value_id === selectedOptions[0].option_value_id)
+      const selectedOptionOneVariants = productInfo?.variants?.filter(variant => variant.variant_options[0].option_value_id === selectedOptions[0].option_value_id)
       // console.log('selectedOptionOneVariants', selectedOptionOneVariants)
 
-      const inputWrappers = productInfo.options.filter(po => !!po?.option_values)
-      // console.log('inputWrappers', inputWrappers)
-
-      let availableOptionInputsValues = []
-
-      inputWrappers.forEach((option, index) => {
-        if (index === 0) {
-          availableOptionInputsValues.push(option)
-          return;
-        }
-
-        // const optionInputs = option.option_values;
-
-        const previousOptionSelected = selectedOptions[index - 1]
-
-        const availableOptionInputsValue = selectedOptionOneVariants
-        .filter((variant) => {
-          // console.log('variant?.variant_options?.[index-1]', variant?.variant_options?.[index-1])
-          return variant.variant_options[index-1].option_value_id === previousOptionSelected.option_value_id
+      if (!!selectedOptionOneVariants) {
+        const inputWrappers = productInfo.options.filter(po => !!po?.option_values)
+        // console.log('inputWrappers', inputWrappers)
+  
+        let availableOptionInputsValues = []
+  
+        inputWrappers.forEach((option, index) => {
+          if (index === 0) {
+            availableOptionInputsValues.push(option)
+            return;
+          }
+  
+          // const optionInputs = option.option_values;
+  
+          const previousOptionSelected = selectedOptions[index - 1]
+  
+          const availableOptionInputsValue = selectedOptionOneVariants
+          .filter((variant) => {
+            // console.log('variant?.variant_options?.[index-1]', variant?.variant_options?.[index-1])
+            return variant.variant_options[index-1].option_value_id === previousOptionSelected.option_value_id
+          })
+          .map((variantOption) => {
+  
+            // console.log('variantOption.variant_options[index].option_value_id', variantOption.variant_options[index].option_value_id)
+            // console.log('index, variantOption?.variant_options?.[index]', index, variantOption?.variant_options?.[index])
+  
+            return variantOption.variant_options[index].option_value_id
+          })
+          console.log('availableOptionInputsValue', availableOptionInputsValue)
+  
+          // 
+          availableOptionInputsValues.push({
+            option_id: option.option_id,
+            option_title: option.option_title,
+            option_slug: option.option_slug,
+            option_type: option.option_type,
+  
+            option_values: option.option_values.filter(ov => availableOptionInputsValue.includes(ov.option_value_id))
+          })
+          // 
         })
-        .map((variantOption) => {
-
-          // console.log('variantOption.variant_options[index].option_value_id', variantOption.variant_options[index].option_value_id)
-          // console.log('index, variantOption?.variant_options?.[index]', index, variantOption?.variant_options?.[index])
-
-          return variantOption.variant_options[index].option_value_id
-        })
-        // console.log('availableOptionInputsValue', availableOptionInputsValue)
-
-        // 
-        availableOptionInputsValues.push({
-          option_id: option.option_id,
-          option_title: option.option_title,
-          option_slug: option.option_slug,
-          option_type: option.option_type,
-
-          option_values: option.option_values.filter(ov => availableOptionInputsValue.includes(ov.option_value_id))
-        })
-        // 
-      })
-
-      setFilteredOptions(availableOptionInputsValues)
+  
+        setFilteredOptions(availableOptionInputsValues)
+      }
     }
 
     // 
