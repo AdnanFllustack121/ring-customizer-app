@@ -121,7 +121,22 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
         option_title: option.name,
         option_type: 'swatch',
         option_slug: option.slug,
-        option_values: found_option_values.map(found_option_value => {
+        option_values: found_option_values
+        .filter(found_option_value => {
+          if (!!found_option_value?.ProductType) {
+            if (
+              (found_option_value.ProductType === "all") ||
+              found_option_value.ProductType.includes(whichProductType)
+            ) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return true
+          }
+        })
+        .map(found_option_value => {
           return {
             file_id: '',
             option_value_id: makeid(24),
