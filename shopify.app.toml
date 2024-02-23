@@ -2,7 +2,7 @@
 
 name = "Ring Customizer App"
 client_id = "872e315d169302fa855e100c5f9b032a"
-application_url = "https://a-netherlands-senators-retirement.trycloudflare.com"
+application_url = "https://queue-fight-efforts-planner.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://a-netherlands-senators-retirement.trycloudflare.com/auth/callback",
-  "https://a-netherlands-senators-retirement.trycloudflare.com/auth/shopify/callback",
-  "https://a-netherlands-senators-retirement.trycloudflare.com/api/auth/callback"
+  "https://queue-fight-efforts-planner.trycloudflare.com/auth/callback",
+  "https://queue-fight-efforts-planner.trycloudflare.com/auth/shopify/callback",
+  "https://queue-fight-efforts-planner.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2023-10"
 
 [app_proxy]
-url = "https://a-netherlands-senators-retirement.trycloudflare.com"
+url = "https://queue-fight-efforts-planner.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

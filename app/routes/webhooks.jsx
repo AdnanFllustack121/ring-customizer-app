@@ -5,6 +5,7 @@ import { makeid } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
 import Options from "../../json/options.json"
+import { existsSync } from "fs";
 
 export const action = async ({ request }) => {
   const { topic, shop, session, admin, payload } = await authenticate.webhook(
@@ -47,12 +48,9 @@ export const action = async ({ request }) => {
 
 
 const productsCreateOrUpdatehandler = async (productPayload) => {
-  console.log('productsCreateOrUpdatehandler productPayload', productPayload)
 
   try {
     const productTags = productPayload.tags.split(', ')
-
-    console.log('productTags', productTags)
 
     const productTypes = ProductTypes.map(rule => rule.shopify_Tag)
 
@@ -64,8 +62,6 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
     if (!whichProductType) {
       return
     }
-
-    console.log('whichProductType', whichProductType)
 
     let productData = await Products.findOne({
       product_id: productPayload.admin_graphql_api_id
@@ -84,13 +80,9 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
     let options = []
 
-    console.log('productData.tags', productData.tags)
-
     for (let index = 0; index < Options.length; index++) {
       const option = Options[index]
       const option_values = option.values
-
-      console.log('option_values', option_values)
 
       let found_option_values = []
 
@@ -108,7 +100,6 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
         } else {
           found_option_values = option_values
         }
-        console.log('found_option_values', found_option_values)
       }
 
 
@@ -121,8 +112,11 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
         option_title: option.name,
         option_type: 'swatch',
         option_slug: option.slug,
-        option_values: found_option_values
-        .filter(found_option_value => {
+        option_display_when: !!option?.showOnlyWhen ? {
+          option_slug: option.showOnlyWhen.optionSlug,
+          option_value_slug: option.showOnlyWhen.optionValueSlug
+        } : null,
+        option_values: found_option_values.filter(found_option_value => {
           if (!!found_option_value?.ProductType) {
             if (
               (found_option_value.ProductType === "all") ||
@@ -135,21 +129,20 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
           } else {
             return true
           }
-        })
-        .map(found_option_value => {
+        }).map(found_option_value => {
           return {
             file_id: '',
             option_value_id: makeid(24),
             option_value_title: !!found_option_value?.optionValueTitle ? found_option_value.optionValueTitle : found_option_value,
             option_value_slug: !!found_option_value?.optionValue_Short ? found_option_value.optionValue_Short : found_option_value,
-            option_image_path: '',
+            option_image_path: (
+              !!found_option_value?.optionValue_PicPath && existsSync(`${__dirname}/../public/options/${found_option_value.optionValue_PicPath}`)
+            ) ? `/options/${found_option_value.optionValue_PicPath}` : null,
             option_value_price: ''
           }
         })
       })
     }
-
-    console.log('options', options)
 
     if (!!options.length) {
       await Products.findOneAndUpdate({
@@ -160,7 +153,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
     }
 
   } catch (error) {
-    
+    console.log('productsCreateOrUpdatehandler error', error)
   }
 }
 

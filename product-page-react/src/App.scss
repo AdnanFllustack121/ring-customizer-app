@@ -116,15 +116,23 @@ div:has(> product-form) {
         font-size: 65% !important;
         color: gray;
 
+        &.left_sub,
+        &.right_sub {
+          display: inline-block;
+          width: 100px;
+        }
+
         &.left_sub {
           left: -1px !important;
+          // display: inline-block;
+          // width: 100px;
         }
 
         &.right_sub {
           right: 99px !important;
-          display: inline-block;
           text-align: right;
-          width: 100px;
+          // display: inline-block;
+          // width: 100px;
         }
       }
     }
@@ -132,7 +140,8 @@ div:has(> product-form) {
     .input_type_range_handle {
       position: absolute;
       top: -10px;
-      width: auto;
+      // width: auto;
+      width: max-content;
       padding: 5px;
       line-height: 10px;
       text-transform: uppercase;
