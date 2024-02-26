@@ -97,3 +97,42 @@ export const makeid = (length) => {
     }
     return result;
 }
+
+export const generateVariations = (options) => {
+    const variations = []
+
+    // Helper function to recursively generate variations
+    function generate(currentIndex, currentVariation) {
+      if (currentIndex === options.length) {
+        let variant_title = []
+        const variant_options = currentVariation.map(cv => {
+          variant_title.push(cv.option_value_title)
+          return {
+            option_id: cv.option_id,
+            option_value_id: cv.option_value_id,
+            option_value_title: cv.option_value_title
+          }
+        })
+        variant_title = variant_title.join(' / ')
+        variations.push({
+          variant_title,
+          variant_options,
+          variant_price: ''
+        })
+        return
+      }
+
+      for (const value of options[currentIndex].option_values) {
+        currentVariation.push({
+          option_id: options[currentIndex].option_id,
+          ...value
+        })
+        generate(currentIndex + 1, currentVariation)
+        currentVariation.pop()
+      }
+    }
+
+    generate(0, [])
+
+    return variations
+}

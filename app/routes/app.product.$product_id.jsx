@@ -39,7 +39,7 @@ import {
 } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
-import { deleteFile, makeid } from "../utils";
+import { deleteFile, generateVariations, makeid } from "../utils";
 
 import productStyles from "~/styles/product.css";
 
@@ -241,6 +241,7 @@ export const action = async ({ request }) => {
         const found_product = await Products.findById(document_id)
 
         const updateType = formDataToUpdate.get("update")
+        console.log('updateType', updateType)
 
         if (updateType === 'option') {
 
@@ -360,6 +361,27 @@ export const action = async ({ request }) => {
 
 
           
+        } else if (!!updateType && updateType === 'variants') {
+          const variants = formData.get("variants")
+          console.log('variants', variants)
+
+          const updateVariants = JSON.parse(variants).map(variant => {
+            if (!!variant?.variant_id) {
+              return variant
+            } else {
+              return {
+                ...variant,
+                variant_id: makeid(24)
+              }
+            }
+          })
+
+          const isProductUpdated = await Products.findOneAndUpdate({
+            _id: document_id
+          }, {
+            variants: JSON.parse(variants)
+          })
+
         } else {
           const product_id = formData.get("product_id")
           const product_title = formData.get("product_title")
@@ -1020,69 +1042,69 @@ export default function Product() {
     }
   }
 
-  const generateVariations = (options = []) => {
-    const variations = []
+  // const generateVariations = (options = []) => {
+  //   const variations = []
 
-    // Helper function to recursively generate variations
-    function generate(currentIndex, currentVariation) {
-      if (currentIndex === options.length) {
-        variations.push({...currentVariation})
-        return
-      }
-
-
-      if (!!options[currentIndex]?.option_values) {
-        for ( const option_value of options[currentIndex].option_values ) {
-          currentVariation.push({
-            option_id: options[currentIndex].option_id,
-            option_title: options[currentIndex].option_title,
-            ...option_value
-          })
-          generate(currentIndex + 1, currentVariation)
-          currentVariation.pop()
-        }
-      }
-    }
+  //   // Helper function to recursively generate variations
+  //   function generate(currentIndex, currentVariation) {
+  //     if (currentIndex === options.length) {
+  //       variations.push({...currentVariation})
+  //       return
+  //     }
 
 
-    generate(0, []);
+  //     if (!!options[currentIndex]?.option_values) {
+  //       for ( const option_value of options[currentIndex].option_values ) {
+  //         currentVariation.push({
+  //           option_id: options[currentIndex].option_id,
+  //           option_title: options[currentIndex].option_title,
+  //           ...option_value
+  //         })
+  //         generate(currentIndex + 1, currentVariation)
+  //         currentVariation.pop()
+  //       }
+  //     }
+  //   }
 
 
-    console.log('variations', variations)
+  //   generate(0, []);
 
 
-    const newVariations = []
-    for (let index = 0; index < variations.length; index++) {
-      const variation_options = variations[index]
-      console.log('variation_options', variation_options)
+  //   console.log('variations', variations)
 
-      let variant_title = ''
 
-      console.log('Object.keys(variation_options)', Object.keys(variation_options))
+  //   const newVariations = []
+  //   for (let index = 0; index < variations.length; index++) {
+  //     const variation_options = variations[index]
+  //     console.log('variation_options', variation_options)
 
-      for (const jindex in variation_options) {
-        const variation_option = variation_options[jindex]
-        console.log('variation_option', variation_option)
+  //     let variant_title = ''
 
-        if ((Object.keys(variation_options).length - 1) == jindex) {
-          variant_title += variation_option.option_value_title
-        } else {
-          variant_title += variation_option.option_value_title + ' / '
-        }
-      }
+  //     console.log('Object.keys(variation_options)', Object.keys(variation_options))
 
-      console.log('variant_title', variant_title)
+  //     for (const jindex in variation_options) {
+  //       const variation_option = variation_options[jindex]
+  //       console.log('variation_option', variation_option)
 
-      newVariations.push({
-        id: makeid(24),
-        title: variant_title,
-        price: '',
-        options: variation_options
-      })
-    }
+  //       if ((Object.keys(variation_options).length - 1) == jindex) {
+  //         variant_title += variation_option.option_value_title
+  //       } else {
+  //         variant_title += variation_option.option_value_title + ' / '
+  //       }
+  //     }
 
-    return newVariations
-  }
+  //     console.log('variant_title', variant_title)
+
+  //     newVariations.push({
+  //       id: makeid(24),
+  //       title: variant_title,
+  //       price: '',
+  //       options: variation_options
+  //     })
+  //   }
+
+  //   return newVariations
+  // }
 
   return (
     <Page
@@ -1184,6 +1206,34 @@ export default function Product() {
               <LegacyCard
                 title="Variants"
                 actions={[
+                  {
+                    content: 'Generate Variants',
+                    onAction: () => {
+                      console.log('productData.options', productData.options)
+                      const the_variations = generateVariations(productData.options)
+                      console.log('the_variations', the_variations)
+
+                      console.log('productData.variants', productData.variants)
+
+                      const merged_variants = the_variations.map(the_variation => {
+                        const found_old_variant = productData.variants.find(pdv => pdv.variant_title === the_variation.variant_title)
+                        if (!!found_old_variant) {
+                          return found_old_variant
+                        } else {
+                          return the_variation
+                        }
+                      })
+
+                      console.log('merged_variants', merged_variants)
+
+                      const formData = new FormData()
+                      formData.append("update", "variants")
+                      formData.append("document_id", productData.id)
+                      formData.append("variants", JSON.stringify(merged_variants))
+                      submit(formData, { replace: true, method: "PATCH" })
+                    },
+                    disabled: isLoading
+                  },
                   {
                     content: 'Add Variant',
                     onAction: () => { navigate(`/app/variant/${productData.id}/new`) },
