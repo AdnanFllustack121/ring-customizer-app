@@ -89,6 +89,7 @@ export const action = async ({ request }) => {
           const file_id = formDataToCreate.get("file_id")
   
           const option_value_title = formDataToCreate.get("option_value_title")
+          const option_value_slug = formDataToCreate.get("option_value_slug")
           const option_image_path = formDataToCreate.get("option_image_path")
           const option_value_price = formDataToCreate.get("option_value_price")
           const preview_image_file = formDataToCreate.get("preview_image_file")
@@ -99,7 +100,7 @@ export const action = async ({ request }) => {
             file_id,
             option_value_id: makeid(24),
             option_value_title,
-            option_value_slug: option_value_title.toLowerCase().replace(/ /g,"_"),
+            option_value_slug: !!option_value_slug ? option_value_slug : option_value_title.toLowerCase().replace(/ /g,"_"),
             option_image_path,
             // option_image_path: !!preview_image_file ? `/uploads/files/${preview_image_file.name}` : '',
             option_value_price,
@@ -253,6 +254,7 @@ export const action = async ({ request }) => {
 
           const option_value_id = formDataToUpdate.get("option_value_id")
           const option_value_title = formDataToUpdate.get("option_value_title")
+          const option_value_slug = formDataToUpdate.get("option_value_slug")
           const option_image_path = formDataToUpdate.get("option_image_path")
           const option_value_price = formDataToUpdate.get("option_value_price")
           const preview_image_file = formDataToUpdate.get("preview_image_file")
@@ -263,7 +265,7 @@ export const action = async ({ request }) => {
             file_id,
             option_value_id,
             option_value_title,
-            option_value_slug: option_value_title.toLowerCase().replace(/ /g,"_"),
+            option_value_slug: !!option_value_slug ? option_value_slug : option_value_title.toLowerCase().replace(/ /g,"_"),
             option_image_path,
             option_value_price
           }
@@ -522,6 +524,7 @@ const optionModalReducer = (state, action) => {
           file_id: '',
           option_value_id: '',
           option_value_title: '',
+          option_value_slug: '',
           option_image_path: '',
           option_value_price: '',
           preview_image_file: '',
@@ -537,9 +540,9 @@ const productDataReducer = (state, action) => {
   console.log('productDataReducer state, action', state, action)
   switch (action.type) {
     case "CLEAR":
-      
+
       break;
-  
+
     case "ADD":
       const action_option = action.option
       console.log('action_option', action_option)
@@ -638,6 +641,7 @@ export default function Product() {
     file_id: '',
     option_value_id: '',
     option_value_title: '',
+    option_value_slug: '',
     option_image_path: '',
     option_value_price: '',
     preview_image_file: '',
@@ -679,6 +683,7 @@ export default function Product() {
           file_id: optionObj.file_id,
           option_value_id: option_value_id,
           option_value_title: optionObj.option_value_title,
+          option_value_slug: optionObj.option_value_slug,
           option_image_path: optionObj.option_image_path,
           option_value_price: optionObj.option_value_price,
           preview_image_path: optionObj.preview_image_path
@@ -980,6 +985,7 @@ export default function Product() {
     formData.append("option_id", optionModalData.option_id)
     formData.append("file_id", optionModalData.file_id)
     formData.append("option_value_title", optionModalData.option_value_title)
+    formData.append("option_value_slug", optionModalData.option_value_slug)
     formData.append("option_image_path", optionModalData.option_image_path)
     formData.append("option_value_price", optionModalData.option_value_price)
 
@@ -1350,6 +1356,14 @@ export default function Product() {
               type="text"
               value={optionModalData.option_value_title}
               onChange={val => dispatchOptionModalData({ option_value_title: val })}
+              autoComplete="off"
+            />
+
+            <TextField
+              label="Option Value Short"
+              type="text"
+              value={optionModalData.option_value_slug}
+              onChange={val => dispatchOptionModalData({ option_value_slug: val })}
               autoComplete="off"
             />
 
