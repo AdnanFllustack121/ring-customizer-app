@@ -2,7 +2,7 @@ import { existsSync } from "fs"
 import { unlink, writeFile } from "fs/promises"
 import { apiVersion } from "./shopify.server"
 import axios from "axios"
-
+import optionsJson from "../json/options.json";
 
 
 export const deleteFile = async (filePath) => {
@@ -98,6 +98,7 @@ export const makeid = (length) => {
     return result;
 }
 
+
 export const generateVariations = (options) => {
     const variations = []
 
@@ -113,22 +114,49 @@ export const generateVariations = (options) => {
             option_value_title: cv.option_value_title
           }
         })
-        variant_title = variant_title.join(' / ')
-        variations.push({
-          variant_title,
-          variant_options,
-          variant_price: ''
-        })
+        if (variant_options.length) {
+            variations.push({
+              variant_id: makeid(24),
+              variant_title: variant_title.join(' / '),
+              variant_options,
+              variant_price: ''
+            })
+        }
         return
       }
 
-      for (const value of options[currentIndex].option_values) {
-        currentVariation.push({
-          option_id: options[currentIndex].option_id,
-          ...value
-        })
+      for (const option_value of options[currentIndex].option_values) {
+        // console.log('currentVariation', JSON.stringify(currentVariation))
+        // console.log('options[currentIndex], option_value', options[currentIndex], option_value)
+        
+        // Extra START
+        const showOnlyWhenTesting = optionsJson.find(oj => !!oj?.showOnlyWhen && (oj.slug === options[currentIndex].option_slug))
+        let pushOrNot = true
+        if (!!showOnlyWhenTesting) {
+            const showOnlyWhenOptionSlug = showOnlyWhenTesting.showOnlyWhen.optionSlug
+            const showOnlyWhenOptionValueSlug = showOnlyWhenTesting.showOnlyWhen.optionValueSlug
+            const condition = currentVariation.find(cv => (cv.option_slug === showOnlyWhenOptionSlug && cv.option_value_slug === showOnlyWhenOptionValueSlug))
+            if (!condition) {
+                pushOrNot = false
+            }
+        }
+        // Extra END
+
+
+
+        console.log('before currentVariation', JSON.stringify(currentVariation))
+        if (pushOrNot) {
+            currentVariation.push({
+              option_id: options[currentIndex].option_id,
+              option_slug: options[currentIndex].option_slug,
+              ...option_value
+            })
+        }
         generate(currentIndex + 1, currentVariation)
-        currentVariation.pop()
+        // if (pushOrNot) {
+            currentVariation.pop()
+        // }
+        console.log('after currentVariation', JSON.stringify(currentVariation))
       }
     }
 

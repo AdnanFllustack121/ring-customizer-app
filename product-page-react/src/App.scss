@@ -204,6 +204,8 @@ div:has(> product-form) {
 
     position: relative;
     display: inline-block;
+
+    cursor: pointer;
   }
 
   label:hover .tooltiptext {

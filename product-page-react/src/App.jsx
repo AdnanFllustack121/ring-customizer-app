@@ -16,11 +16,17 @@ function App() {
   const [isDisabled, setIsDisabled] = useState(true)
 
   useEffect(() => {
+    console.log('useEffect getProductById()')
+    getProductById()
+  }, [])
+
+  useEffect(() => {
     console.log('useEffect productInfo', productInfo)
-    if (Object.keys(productInfo).length && ('options' in productInfo)) {
+    if (
+      Object.keys(productInfo).length &&
+      ('options' in productInfo)
+    ) {
       setFilteredOptions([...productInfo.options])
-    } else {
-      getProductById()
     }
   }, [productInfo])
 

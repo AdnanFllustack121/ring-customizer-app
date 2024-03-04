@@ -363,7 +363,7 @@ export const action = async ({ request }) => {
           
         } else if (!!updateType && updateType === 'variants') {
           const variants = formData.get("variants")
-          console.log('variants', variants)
+          // console.log('variants', variants)
 
           const updateVariants = JSON.parse(variants).map(variant => {
             if (!!variant?.variant_id) {
@@ -731,7 +731,7 @@ export default function Product() {
       // const enabledOpsArr = Object.keys(loaderData.product.options).map(opKey => opKey)
 
       // const enabledOps = enabledOpsArr.reduce((a, v) => ({ ...a, [v]: !!loaderData.product.options[v].length ? true : false }), {})
-  
+
       // setEnabledOptions((prevEnabledOptions) => ({
       //   ...prevEnabledOptions,
       //   ...enabledOps
@@ -754,18 +754,6 @@ export default function Product() {
           ...mainImages
         }))
       }
-
-
-      // Setup Variants START
-      console.log('loaderData?.product?.variants?.length', loaderData?.product?.variants?.length)
-      if (!loaderData?.product?.variants?.length) {
-        // const allVariations = generateVariations(loaderData?.product?.options)
-        // console.log('allVariations', allVariations)
-        // dispatchProductData({
-        //   variants: allVariations
-        // })
-      }
-      // Setup Variants END
 
     }
 
@@ -1042,69 +1030,6 @@ export default function Product() {
     }
   }
 
-  // const generateVariations = (options = []) => {
-  //   const variations = []
-
-  //   // Helper function to recursively generate variations
-  //   function generate(currentIndex, currentVariation) {
-  //     if (currentIndex === options.length) {
-  //       variations.push({...currentVariation})
-  //       return
-  //     }
-
-
-  //     if (!!options[currentIndex]?.option_values) {
-  //       for ( const option_value of options[currentIndex].option_values ) {
-  //         currentVariation.push({
-  //           option_id: options[currentIndex].option_id,
-  //           option_title: options[currentIndex].option_title,
-  //           ...option_value
-  //         })
-  //         generate(currentIndex + 1, currentVariation)
-  //         currentVariation.pop()
-  //       }
-  //     }
-  //   }
-
-
-  //   generate(0, []);
-
-
-  //   console.log('variations', variations)
-
-
-  //   const newVariations = []
-  //   for (let index = 0; index < variations.length; index++) {
-  //     const variation_options = variations[index]
-  //     console.log('variation_options', variation_options)
-
-  //     let variant_title = ''
-
-  //     console.log('Object.keys(variation_options)', Object.keys(variation_options))
-
-  //     for (const jindex in variation_options) {
-  //       const variation_option = variation_options[jindex]
-  //       console.log('variation_option', variation_option)
-
-  //       if ((Object.keys(variation_options).length - 1) == jindex) {
-  //         variant_title += variation_option.option_value_title
-  //       } else {
-  //         variant_title += variation_option.option_value_title + ' / '
-  //       }
-  //     }
-
-  //     console.log('variant_title', variant_title)
-
-  //     newVariations.push({
-  //       id: makeid(24),
-  //       title: variant_title,
-  //       price: '',
-  //       options: variation_options
-  //     })
-  //   }
-
-  //   return newVariations
-  // }
 
   return (
     <Page
@@ -1209,11 +1134,14 @@ export default function Product() {
                   {
                     content: 'Generate Variants',
                     onAction: () => {
-                      console.log('productData.options', productData.options)
+                      // console.log('productData.options', productData.options)
                       const the_variations = generateVariations(productData.options)
-                      console.log('the_variations', the_variations)
+                      if (!the_variations.length) {
+                        shopify.toast.show('No variants can be created!')
+                        return
+                      }
 
-                      console.log('productData.variants', productData.variants)
+                      // console.log('productData.variants', productData.variants)
 
                       const merged_variants = the_variations.map(the_variation => {
                         const found_old_variant = productData.variants.find(pdv => pdv.variant_title === the_variation.variant_title)
@@ -1224,7 +1152,7 @@ export default function Product() {
                         }
                       })
 
-                      console.log('merged_variants', merged_variants)
+                      // console.log('merged_variants', merged_variants)
 
                       const formData = new FormData()
                       formData.append("update", "variants")
@@ -1292,12 +1220,25 @@ export default function Product() {
                                     onClick={() => {
                                       navigate(`/app/variant/${productData.id}/${variant_id}`)
                                     }}
+                                    disabled={isLoading}
                                   >
                                     Edit
                                   </Button>
-                                  {/* <Button>
+                                  <Button
+                                    onClick={() => {
+                                      const formData = new FormData()
+                                      formData.append('document_id', productData.id)
+                                      formData.append("variant_id", variant_id)
+                                      submit(formData, {
+                                        action: `/app/variant/${productData.id}/${variant_id}`,
+                                        method: "DELETE",
+                                        replace: true,
+                                      })
+                                    }}
+                                    disabled={isLoading}
+                                  >
                                     <Icon source={DeleteMajor} />
-                                  </Button> */}
+                                  </Button>
                               </ButtonGroup>
                             </div>
                           </IndexTable.Cell>

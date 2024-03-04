@@ -364,7 +364,7 @@ export default function Variant() {
         console.log('handleVariantSaveOrEditEvent productData', productData)
         const formData = new FormData()
 
-        const variant_title = variantData.variant_options.filter(vo => !!vo).map(vo => vo.option_value_title).join(' / ')
+        const variant_title = variantData.variant_options.filter(vo => (!!vo && Object.keys(vo).length)).map(vo => vo.option_value_title).join(' / ')
         console.log('variant_title', variant_title)
 
         if (!!variantData.variant_id) {

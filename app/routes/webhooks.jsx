@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import db, { Products, Session } from "../db.server";
 
-import { makeid } from "../utils";
+import { generateVariations, makeid } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
 import Options from "../../json/options.json"
@@ -48,6 +48,8 @@ export const action = async ({ request }) => {
 
 
 const productsCreateOrUpdatehandler = async (productPayload) => {
+
+  console.log('productsCreateOrUpdatehandler START')
 
   try {
     const productTags = productPayload.tags.split(', ')
@@ -145,17 +147,31 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
     }
 
     if (!!options.length) {
+
+      // const the_variations = generateVariations(options)
+      // console.log('the_variations', the_variations)
+
       await Products.findOneAndUpdate({
         product_id: productPayload.admin_graphql_api_id
       }, {
         options
       })
+
+      // productVariantGenerator(options)
     }
+
+    console.log('productsCreateOrUpdatehandler END')
 
   } catch (error) {
     console.log('productsCreateOrUpdatehandler error', error)
   }
 }
+
+
+const productVariantGenerator = async (options) => {
+  console.log('productVariantGenerator options', options)
+}
+
 
 const productsDeleteHandler = async ({ id }) => {
   console.log('productsDeleteHandler id', id)
