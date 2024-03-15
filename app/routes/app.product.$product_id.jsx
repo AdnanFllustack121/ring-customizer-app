@@ -39,7 +39,7 @@ import {
 } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
-import { deleteFile, generateVariations, makeid } from "../utils";
+import { deleteFile, generateMedias, generateVariations, makeid } from "../utils";
 
 import productStyles from "~/styles/product.css";
 
@@ -153,18 +153,18 @@ export const action = async ({ request }) => {
       } else {
         const formData = await request.formData()
         const createType = formData.get("create")
-  
+
         const product_id = formData.get("document_id")
-  
+
         const product_title = formData.get("product_title")
-  
+
         const foundProduct = await Products.findById(product_id)
-  
-        const categoryTitle = formData.get("option_title")
-        const optionType = formData.get("option_type")
-  
+
+
         if (!!foundProduct) {
           if (createType === "category") {
+            const categoryTitle = formData.get("option_title")
+            const optionType = formData.get("option_type")
   
             const newCategory = {
               option_id: makeid(24),
@@ -197,6 +197,10 @@ export const action = async ({ request }) => {
                 message: "New Option Added!"
               })
             }
+          } else if (createType === "variants") {
+            // console.log('foundProduct', foundProduct)
+            const the_variations = generateVariations(foundProduct.options)
+            console.log('the_variations', the_variations)
           }
         }
   
@@ -327,6 +331,7 @@ export const action = async ({ request }) => {
 
         const formData = await request.formData()
         const document_id = formData.get("document_id")
+        console.log('document_id', document_id)
 
         const found_product = await Products.findById(document_id)
         const updateType = formData.get("update")
@@ -345,7 +350,7 @@ export const action = async ({ request }) => {
                 ...cat,
                 option_title,
                 option_type,
-                option_slug: option_title.toLowerCase().replace(/ /g,"_")
+                option_slug: option_title.toLowerCase().replace(/ /g, "_")
               }
             } else {
               return cat
@@ -384,22 +389,47 @@ export const action = async ({ request }) => {
             variants: JSON.parse(variants)
           })
 
+        } else if (!!updateType && updateType === 'medias') {
+          const medias = formData.get("medias")
+
+          const updateMedias = JSON.parse(medias).map(media => {
+            if (!!media?.media_id) {
+              return media
+            } else {
+              return {
+                ...media,
+                media_id: makeid(24)
+              }
+            }
+          })
+          // console.log('updateMedias', updateMedias)
+
+          const isProductUpdated = await Products.findOneAndUpdate({
+            _id: document_id
+          }, {
+            medias: JSON.parse(medias)
+          })
+          console.log('isProductUpdated', isProductUpdated)
         } else {
           const product_id = formData.get("product_id")
           const product_title = formData.get("product_title")
           const product_image = formData.get("product_image")
           const product_price = formData.get("product_price")
 
-          console.log('product_price', product_price)
-
-          const isProductUpdated = await Products.findOneAndUpdate({
-            _id: document_id
-          }, {
+          const proudct_data = {
             product_id,
             product_title,
             product_image,
             product_price
-          })
+          }
+
+          console.log('document_id', document_id)
+          console.log('proudct_data', proudct_data)
+
+          const isProductUpdated = await Products.findOneAndUpdate({
+            _id: document_id
+          }, proudct_data)
+          console.log('isProductUpdated', isProductUpdated)
 
         }
 
@@ -459,6 +489,8 @@ export const action = async ({ request }) => {
         }, {
           options: productToDeleteOptionColor.options
         })
+
+      } else if ( deleteType === "media" ) {
 
       } else {
         const optionType = formDataToDelete.get("optionType")
@@ -598,6 +630,7 @@ export default function Product() {
     product_image: '',
     product_price: '',
     options: [],
+    medias: [],
     variants: []
   })
   console.log('productData', productData)
@@ -712,8 +745,19 @@ export default function Product() {
   }, [files, productData])
 
   
-  const {selectedResources, allResourcesSelected, handleSelectionChange, clearSelection} = useIndexResourceState(productData.variants, false)
+  const {
+    selectedResources: selectedVariantResources,
+    allResourcesSelected: allVariantResourcesSelected,
+    handleSelectionChange: handleVariantSelectionChange,
+    clearSelection: clearVariantSelection
+  } = useIndexResourceState(productData.variants, false)
 
+  const {
+    selectedResources: selectedMediaResources,
+    allResourcesSelected: allMediaResourcesSelected,
+    handleSelectionChange: handleMediaSelectionChange,
+    clearSelection: clearMediaSelection
+  } = useIndexResourceState(productData.medias, false)
 
   // useEffect(() => {
   //   getColors()
@@ -728,6 +772,7 @@ export default function Product() {
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
+      medias: !!loaderData?.product?.medias ? loaderData.product.medias : [],
       variants: !!loaderData?.product?.variants ? loaderData.product.variants : [],
     })
 
@@ -1018,7 +1063,9 @@ export default function Product() {
   const onProductDataUpdateHandler = () => {
     const formData = new FormData()
 
-    formData.append('id', productData.id)
+    console.log('productData', productData)
+
+    formData.append('document_id', productData.id)
     formData.append('product_id', productData.product_id)
     formData.append('product_title', productData.product_title)
     formData.append('product_image', productData.product_image)
@@ -1140,15 +1187,11 @@ export default function Product() {
                   {
                     content: 'Generate Variants',
                     onAction: () => {
-                      // console.log('productData.options', productData.options)
                       const the_variations = generateVariations(productData.options)
                       if (!the_variations.length) {
                         shopify.toast.show('No variants can be created!')
                         return
                       }
-
-                      // console.log('productData.variants', productData.variants)
-
                       const merged_variants = the_variations.map(the_variation => {
                         const found_old_variant = productData.variants.find(pdv => pdv.variant_title === the_variation.variant_title)
                         if (!!found_old_variant) {
@@ -1157,14 +1200,17 @@ export default function Product() {
                           return the_variation
                         }
                       })
-
-                      // console.log('merged_variants', merged_variants)
-
                       const formData = new FormData()
                       formData.append("update", "variants")
                       formData.append("document_id", productData.id)
                       formData.append("variants", JSON.stringify(merged_variants))
                       submit(formData, { replace: true, method: "PATCH" })
+
+
+                      // const formData = new FormData()
+                      // formData.append("document_id", productData.id)
+                      // formData.append("create", "variants")
+                      // submit(formData, { replace: true, method: "POST" })
                     },
                     disabled: isLoading
                   },
@@ -1185,7 +1231,7 @@ export default function Product() {
                       plural: 'variants'
                     }}
                     itemCount={productData.variants.length}
-                    selectedItemsCount={ allResourcesSelected ? 'All' : selectedResources.length }
+                    selectedItemsCount={ allVariantResourcesSelected ? 'All' : selectedVariantResources.length }
                     onSelectionChange={() => {}}
                     headings={[
                       { title: '' },
@@ -1199,7 +1245,7 @@ export default function Product() {
                         <IndexTable.Row
                           id={variant_id}
                           key={variant_id}
-                          selected={selectedResources.includes(variant_id)}
+                          selected={selectedVariantResources.includes(variant_id)}
                           position={index}
                         >
                           <IndexTable.Cell>
@@ -1222,29 +1268,29 @@ export default function Product() {
                           <IndexTable.Cell>
                             <div className="u9Xhb">
                               <ButtonGroup>
-                                  <Button
-                                    onClick={() => {
-                                      navigate(`/app/variant/${productData.id}/${variant_id}`)
-                                    }}
-                                    disabled={isLoading}
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      const formData = new FormData()
-                                      formData.append('document_id', productData.id)
-                                      formData.append("variant_id", variant_id)
-                                      submit(formData, {
-                                        action: `/app/variant/${productData.id}/${variant_id}`,
-                                        method: "DELETE",
-                                        replace: true,
-                                      })
-                                    }}
-                                    disabled={isLoading}
-                                  >
-                                    <Icon source={DeleteMajor} />
-                                  </Button>
+                                <Button
+                                  onClick={() => {
+                                    navigate(`/app/variant/${productData.id}/${variant_id}`)
+                                  }}
+                                  disabled={isLoading}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    const formData = new FormData()
+                                    formData.append('document_id', productData.id)
+                                    formData.append("variant_id", variant_id)
+                                    submit(formData, {
+                                      action: `/app/variant/${productData.id}/${variant_id}`,
+                                      method: "DELETE",
+                                      replace: true,
+                                    })
+                                  }}
+                                  disabled={isLoading}
+                                >
+                                  <Icon source={DeleteMajor} />
+                                </Button>
                               </ButtonGroup>
                             </div>
                           </IndexTable.Cell>
@@ -1256,6 +1302,125 @@ export default function Product() {
               </LegacyCard>
             </div>
 
+
+            {/* Media START */}
+            <div className="eQ_yd">
+              <LegacyCard
+                title="Media"
+                actions={[
+                  {
+                    content: 'Generate Media Records',
+                    onAction: () => {
+                      const the_medias = generateMedias(productData.options)
+                      if (!the_medias.length) {
+                        shopify.toast.show('No medias can be created!')
+                        return
+                      }
+                      const merged_medias = the_medias.map(the_media => {
+                        const found_old_media = productData.medias.find(pdv => pdv.variant_title === the_media.variant_title)
+                        if (!!found_old_media) {
+                          return found_old_media
+                        } else {
+                          return the_media
+                        }
+                      })
+                      console.log('merged_medias', merged_medias)
+
+                      const formData = new FormData()
+                      formData.append("update", "medias")
+                      formData.append("document_id", productData.id)
+                      formData.append("medias", JSON.stringify(merged_medias))
+                      submit(formData, { replace: true, method: "PATCH" })
+                    },
+                    disabled: isLoading
+                  },
+                  {
+                    content: 'Add Media',
+                    onAction: () => {
+                      // navigate(`/app/media/${productData.id}/new`)
+                    },
+                    disabled: isLoading
+                  }
+                ]}
+              >
+                <div className="gaCeK" style={{ marginBlockStart: 'var(--p-space-400)' }}>
+                  <Divider borderColor="border" />
+                </div>
+                <div className="udaqm">
+                  <IndexTable
+                    resourceName={{
+                      singular: 'media',
+                      plural: 'medias'
+                    }}
+                    itemCount={productData.medias.length}
+                    selectedItemsCount={ allMediaResourcesSelected ? 'All' : selectedMediaResources.length }
+                    onSelectionChange={() => {}}
+                    headings={[
+                      { title: '' },
+                      { title: 'Media' },
+                      { title: 'Action' },
+                    ]}
+                  >
+                    {productData.medias.map(({ media_id, media_title, media_image_path }, index) => {
+                      {console.log('media_id, media_title', media_id, media_title)}
+                      return (
+                        <IndexTable.Row
+                          id={media_id}
+                          key={media_id}
+                          selected={selectedMediaResources.includes(media_id)}
+                          position={index}
+                        >
+                          <IndexTable.Cell>
+                            {
+                              !!media_image_path
+                              ?
+                              <div className="variant-cell">
+                                <Thumbnail
+                                  source={`${media_image_path}`}
+                                />
+                              </div>
+                              :
+                              <Icon source={AddImageMajor} />
+                            }
+                          </IndexTable.Cell>
+                          <IndexTable.Cell>{media_title}</IndexTable.Cell>
+                          <IndexTable.Cell>
+                            <div className="u9Xhb">
+                              <ButtonGroup>
+                                <Button
+                                  onClick={() => {
+                                    navigate(`/app/media/${productData.id}/${media_id}`)
+                                  }}
+                                  disabled={isLoading}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    const formData = new FormData()
+                                    formData.append('document_id', productData.id)
+                                    formData.append("media_id", media_id)
+                                    submit(formData, {
+                                      action: `/app/media/${productData.id}/${media_id}`,
+                                      method: "DELETE",
+                                      replace: true,
+                                    })
+                                  }}
+                                  disabled={isLoading}
+                                >
+                                  <Icon source={DeleteMajor} />
+                                </Button>
+                              </ButtonGroup>
+                            </div>
+                          </IndexTable.Cell>
+                        </IndexTable.Row>
+                      )
+                    })}
+                  </IndexTable>
+                </div>
+              </LegacyCard>
+            </div>
+            {/* Media END */}
 
 
           </Layout.Section>

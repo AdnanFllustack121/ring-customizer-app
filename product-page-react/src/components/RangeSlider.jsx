@@ -13,13 +13,13 @@ const rangeSliderReducer = (state, action) => {
           const newOne = { ...state, ...action }
           return newOne
     }
-  }
+}
 
 function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
 
     const the_value_index = optn.option_values.findIndex(oov => oov.option_value_id === selectedOptions[option_index]?.option_value_id)
     const the_value = optn.option_values[the_value_index]?.option_value_title
-    console.log('the_value', the_value)
+    // console.log('the_value', the_value)
 
     const dividation = 100 / optn.option_values.length
     const dividation_of_single_dividation = dividation / ( optn.option_values.length - 1 )
@@ -36,7 +36,7 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
         }
         return left_value
     })
-
+    console.log('tick_mark_positions', tick_mark_positions)
 
     const [rangeSliderData, dispatchRangeSliderData] = useReducer(rangeSliderReducer, {
         isMouseDown: false,
@@ -44,17 +44,24 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
         pageX: '',
         handlePosition: 0,
     })
+    console.log('rangeSliderData', rangeSliderData)
 
 
     // mousedown mouseup start
     useEffect(() => {
         const handleWindowMouseDown = (mouseDownEvent) => {
-            if (`input_type_range_handle_${optn.option_id}` === mouseDownEvent.target.id) {
+            if (
+                !!mouseDownEvent.target.id &&
+                (`input_type_range_handle_${optn.option_id}` === mouseDownEvent.target.id)
+            ) {
                 dispatchRangeSliderData({ isMouseDown: true, isMouseMove: false, pageX: mouseDownEvent.pageX })
             }
         }
 
         const handleWindowMouseUp = (mouseUpEvent) => {
+            console.log('handleWindowMouseUp rangeSliderData', rangeSliderData)
+            if (rangeSliderData.isMouseDown) {
+            }
             dispatchRangeSliderData({ isMouseDown: false, pageX: mouseUpEvent.pageX })
         }
 

@@ -99,7 +99,93 @@ export const makeid = (length) => {
 }
 
 
-export const generateVariations = (options) => {
+export const generateMedias = (productOptions) => {
+
+    // 
+    const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
+    // 
+
+    const variations = []
+
+    // Helper function to recursively generate variations
+    function generate(currentIndex, currentVariation) {
+      if (currentIndex === options.length) {
+        let variant_title = []
+        const product_options = currentVariation.map(cv => {
+          variant_title.push(cv.option_value_title)
+          return {
+            option_id: cv.option_id,
+            option_value_id: cv.option_value_id,
+            option_value_title: cv.option_value_title
+          }
+        })
+        if (product_options.length) {
+            variations.push({
+              media_id: makeid(24),
+              media_title: variant_title.join(' / '),
+              product_options,
+            //   variant_price: ''
+            })
+        }
+        return
+      }
+
+      if (!options?.[currentIndex]?.option_values?.length) {
+        return
+      }
+
+      for (const option_value of options[currentIndex].option_values) {
+        // console.log('currentVariation', JSON.stringify(currentVariation))
+        // console.log('options[currentIndex], option_value', options[currentIndex], option_value)
+
+        // Extra START
+        const showOnlyWhenTesting = optionsJson.find(oj => !!oj?.showOnlyWhen && (oj.slug === options[currentIndex].option_slug))
+        let pushOrNot = true
+        if (!!showOnlyWhenTesting) {
+            const showOnlyWhenOptionSlug = showOnlyWhenTesting.showOnlyWhen.optionSlug
+            const showOnlyWhenOptionValueSlug = showOnlyWhenTesting.showOnlyWhen.optionValueSlug
+            const condition = currentVariation.find(cv => (cv.option_slug === showOnlyWhenOptionSlug && cv.option_value_slug === showOnlyWhenOptionValueSlug))
+            if (!condition) {
+                pushOrNot = false
+            }
+        }
+        // Extra END
+
+
+        // console.log('before currentVariation', JSON.stringify(currentVariation))
+
+
+        if (pushOrNot) {
+            currentVariation.push({
+              option_id: options[currentIndex].option_id,
+              option_slug: options[currentIndex].option_slug,
+              ...option_value
+            })
+        }
+        generate(currentIndex + 1, currentVariation)
+        // if (pushOrNot) {
+            currentVariation.pop()
+        // }
+        // console.log('after currentVariation', JSON.stringify(currentVariation))
+      }
+
+    }
+
+    generate(0, [])
+
+    // console.log('variations', variations)
+
+    return variations
+}
+
+
+
+export const generateVariations = (productOptions) => {
+
+    // 
+    const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
+    // 
+
     const variations = []
 
     // Helper function to recursively generate variations
@@ -115,6 +201,7 @@ export const generateVariations = (options) => {
           }
         })
         if (variant_options.length) {
+            // console.log('variant_options', variant_options)
             variations.push({
               variant_id: makeid(24),
               variant_title: variant_title.join(' / '),
@@ -125,10 +212,14 @@ export const generateVariations = (options) => {
         return
       }
 
+      if (!options?.[currentIndex]?.option_values?.length) {
+        return
+      }
+
       for (const option_value of options[currentIndex].option_values) {
         // console.log('currentVariation', JSON.stringify(currentVariation))
         // console.log('options[currentIndex], option_value', options[currentIndex], option_value)
-        
+
         // Extra START
         const showOnlyWhenTesting = optionsJson.find(oj => !!oj?.showOnlyWhen && (oj.slug === options[currentIndex].option_slug))
         let pushOrNot = true
@@ -143,8 +234,9 @@ export const generateVariations = (options) => {
         // Extra END
 
 
+        // console.log('before currentVariation', JSON.stringify(currentVariation))
 
-        console.log('before currentVariation', JSON.stringify(currentVariation))
+
         if (pushOrNot) {
             currentVariation.push({
               option_id: options[currentIndex].option_id,
@@ -156,11 +248,14 @@ export const generateVariations = (options) => {
         // if (pushOrNot) {
             currentVariation.pop()
         // }
-        console.log('after currentVariation', JSON.stringify(currentVariation))
+        // console.log('after currentVariation', JSON.stringify(currentVariation))
       }
+
     }
 
     generate(0, [])
+
+    // console.log('variations', variations)
 
     return variations
 }

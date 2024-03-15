@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "Jewelry Builder App Local"
+client_id = "09310e3f895d88fe1c103f62df951647"
+application_url = "https://issued-acre-terrorist-sun.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://issued-acre-terrorist-sun.trycloudflare.com/auth/callback",
+  "https://issued-acre-terrorist-sun.trycloudflare.com/auth/shopify/callback",
+  "https://issued-acre-terrorist-sun.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[app_proxy]
+url = "https://issued-acre-terrorist-sun.trycloudflare.com"
+subpath = "jewelry-builder-app"
+prefix = "apps"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "codem-test-store.myshopify.com"
