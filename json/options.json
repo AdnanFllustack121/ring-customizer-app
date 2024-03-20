@@ -3,6 +3,7 @@
     "name": "Center Stone Type",
     "slug": "center_stone_type",
     "ProductType": "all",
+    "changeMedia": true,
     "values": [
       {
         "optionValueTitle": "Diamond",

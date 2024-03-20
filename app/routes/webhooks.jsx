@@ -157,7 +157,6 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
         options
       })
 
-      // productVariantGenerator(options)
     }
 
     console.log('productsCreateOrUpdatehandler END')
@@ -165,11 +164,6 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
   } catch (error) {
     console.log('productsCreateOrUpdatehandler error', error)
   }
-}
-
-
-const productVariantGenerator = async (options) => {
-  console.log('productVariantGenerator options', options)
 }
 
 

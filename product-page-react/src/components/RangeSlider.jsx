@@ -49,6 +49,8 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
 
     // mousedown mouseup start
     useEffect(() => {
+        console.log('useEffect mousedown mouseup optn.option_title', optn.option_title)
+
         const handleWindowMouseDown = (mouseDownEvent) => {
             if (
                 !!mouseDownEvent.target.id &&
@@ -78,6 +80,8 @@ function RangeSlider({ optn, option_index, selectedOptions, onSelectOption }) {
 
     // mousemove
     useEffect(() => {
+        console.log('useEffect mousemove optn.option_title', optn.option_title)
+
         const handleWindowMouseMove = (onMouseMoveEvent) => {
             if (rangeSliderData.isMouseDown) {
                 const input_type_range_tick_marks = document.querySelectorAll(`#input_type_range_${optn.option_id} span.input_type_range_tick_mark`)

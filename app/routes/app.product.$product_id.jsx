@@ -1336,9 +1336,7 @@ export default function Product() {
                   },
                   {
                     content: 'Add Media',
-                    onAction: () => {
-                      // navigate(`/app/media/${productData.id}/new`)
-                    },
+                    onAction: () => { navigate(`/app/media/${productData.id}/new`) },
                     disabled: isLoading
                   }
                 ]}

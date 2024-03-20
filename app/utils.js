@@ -103,6 +103,7 @@ export const generateMedias = (productOptions) => {
 
     // 
     const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
+    console.log('options', options)
     // 
 
     const variations = []
