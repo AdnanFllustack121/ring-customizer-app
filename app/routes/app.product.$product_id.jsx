@@ -772,7 +772,12 @@ export default function Product() {
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
-      medias: !!loaderData?.product?.medias ? loaderData.product.medias : [],
+      medias: !!loaderData?.product?.medias ? loaderData.product.medias.map(md => {
+        return {
+          id: md.media_id,
+          ...md
+        }
+      }) : [],
       variants: !!loaderData?.product?.variants ? loaderData.product.variants : [],
     })
 
@@ -902,8 +907,6 @@ export default function Product() {
   }
 
   const CpcustomHolder = ({ categoryIndex, option_id, option_title, option_type, category_options }) => {
-
-    console.log('CpcustomHolder categoryIndex, option_id, option_title, option_type, category_options', categoryIndex, option_id, option_title, option_type, category_options)
 
     return (
       <LegacyCard
@@ -1352,15 +1355,32 @@ export default function Product() {
                     }}
                     itemCount={productData.medias.length}
                     selectedItemsCount={ allMediaResourcesSelected ? 'All' : selectedMediaResources.length }
-                    onSelectionChange={() => {}}
+                    onSelectionChange={handleMediaSelectionChange}
                     headings={[
                       { title: '' },
                       { title: 'Media' },
                       { title: 'Action' },
                     ]}
+                    promotedBulkActions={[
+                      {
+                        content: 'Bulk Delete',
+                        onAction: () => {
+
+                          console.log('selectedMediaResources', selectedMediaResources)
+
+                          const formData = new FormData()
+                          formData.append('document_id', productData.id)
+                          formData.append("media_id", JSON.stringify(selectedMediaResources))
+                          submit(formData, {
+                            action: `/app/media/${productData.id}/all`,
+                            method: "DELETE",
+                            replace: true,
+                          })
+                        }
+                      }
+                    ]}
                   >
                     {productData.medias.map(({ media_id, media_title, media_image_path }, index) => {
-                      {console.log('media_id, media_title', media_id, media_title)}
                       return (
                         <IndexTable.Row
                           id={media_id}

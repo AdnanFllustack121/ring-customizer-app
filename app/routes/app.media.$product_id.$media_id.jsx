@@ -35,7 +35,7 @@ import optionsJson from "../../json/options.json";
 
 export const links = () => [
     { rel: "stylesheet", href: variantStyles },
-];
+]
 
 
 export const loader = async ({ params, request }) => {
@@ -58,7 +58,7 @@ export const loader = async ({ params, request }) => {
 }
 
 
-export const action = async ({ request }) => {
+export const action = async ({ params, request }) => {
     const { admin } = await authenticate.admin(request)
 
     try {
@@ -93,28 +93,28 @@ export const action = async ({ request }) => {
                 const foundProduct = await Products.findById(document_id)
                 console.log('foundProduct', foundProduct)
 
-                const existingVariants = !!foundProduct?.medias ? foundProduct.medias : []
-                console.log('existingVariants', existingVariants)
+                const existingMedias = !!foundProduct?.medias ? foundProduct.medias : []
+                console.log('existingMedias', existingMedias)
 
-                const newVariant = {
+                const newMedia = {
                     media_id,
                     media_title,
                     product_options
                 }
 
                 if (!!media_image_file && media_image_file != 'null') {
-                    newVariant.variant_image_path = `/uploads/files/${media_image_file.name}`
+                    newMedia.media_image_path = `/uploads/files/${media_image_file.name}`
                 }
 
-                const newVariants = [
-                    ...existingVariants,
-                    newVariant
+                const newMedias = [
+                    ...existingMedias,
+                    newMedia
                 ]
 
                 const isProductUpdated = await Products.findOneAndUpdate({
                     _id: document_id
                   }, {
-                    medias: newVariants
+                    medias: newMedias
                 })
                 console.log('isProductUpdated', isProductUpdated)
 
@@ -140,8 +140,8 @@ export const action = async ({ request }) => {
                 )
 
                 const document_id_to_update = formDataToUpdate.get("document_id")
-                const variant_id_to_update = formDataToUpdate.get("media_id")
-                const variant_title_to_update = formDataToUpdate.get("media_title")
+                const media_id_to_update = formDataToUpdate.get("media_id")
+                const media_title_to_update = formDataToUpdate.get("media_title")
                 let product_options_to_update = formDataToUpdate.get("product_options")
                 product_options_to_update = JSON.parse(product_options_to_update)
                 const media_image_file_to_update = formDataToUpdate.get('media_image_file')
@@ -149,38 +149,38 @@ export const action = async ({ request }) => {
                 const foundProductToUpdate = await Products.findById(document_id_to_update)
                 // console.log('foundProductToUpdate', foundProductToUpdate)
 
-                const existingVariantsToUpdate = !!foundProductToUpdate?.medias ? foundProductToUpdate.medias : []
-                // console.log('existingVariantsToUpdate', existingVariantsToUpdate)
+                const existingMediasToUpdate = !!foundProductToUpdate?.medias ? foundProductToUpdate.medias : []
+                // console.log('existingMediasToUpdate', existingMediasToUpdate)
                 
-                const foundProductVariantIndex = existingVariantsToUpdate.findIndex(vrnt => vrnt.media_id == variant_id_to_update)
-                // console.log('foundProductVariantIndex', foundProductVariantIndex)
+                const foundProductMediaIndex = existingMediasToUpdate.findIndex(vrnt => vrnt.media_id == media_id_to_update)
+                // console.log('foundProductMediaIndex', foundProductMediaIndex)
 
-                // console.log('existingVariantsToUpdate[foundProductVariantIndex].variant_image_path', existingVariantsToUpdate[foundProductVariantIndex].variant_image_path)
-                const newVariantToUpdate = {
-                    media_id: variant_id_to_update,
-                    media_title: variant_title_to_update,
+                // console.log('existingMediasToUpdate[foundProductMediaIndex].media_image_path', existingMediasToUpdate[foundProductMediaIndex].media_image_path)
+                const newMediaToUpdate = {
+                    media_id: media_id_to_update,
+                    media_title: media_title_to_update,
                     product_options: product_options_to_update,
-                    variant_image_path: existingVariantsToUpdate[foundProductVariantIndex].variant_image_path,
+                    media_image_path: existingMediasToUpdate[foundProductMediaIndex].media_image_path,
                 }
 
                 if (!!media_image_file_to_update && media_image_file_to_update != 'null') {
                     console.log('media_image_file_to_update', typeof media_image_file_to_update, media_image_file_to_update)
-                    newVariantToUpdate.variant_image_path = `/uploads/files/${media_image_file_to_update.name}`
+                    newMediaToUpdate.media_image_path = `/uploads/files/${media_image_file_to_update.name}`
                 }
 
                 const newMediasUpdated = [
-                    ...existingVariantsToUpdate,
+                    ...existingMediasToUpdate,
                 ]
-                newMediasUpdated[foundProductVariantIndex] = newVariantToUpdate
+                newMediasUpdated[foundProductMediaIndex] = newMediaToUpdate
 
                 console.log('newMediasUpdated', newMediasUpdated)
 
-                const isProductUpdatedVariants = await Products.findOneAndUpdate({
+                const isProductUpdatedMedias = await Products.findOneAndUpdate({
                     _id: document_id_to_update
                   }, {
                     medias: newMediasUpdated
                 })
-                // console.log('isProductUpdatedVariants', isProductUpdatedVariants)
+                // console.log('isProductUpdatedMedias', isProductUpdatedMedias)
                 return redirect(`/app/product/${foundProductToUpdate._id}`)
                 break;
 
@@ -188,20 +188,42 @@ export const action = async ({ request }) => {
                 const formDataToDelete = await request.formData()
 
                 const document_id_to_delete = formDataToDelete.get("document_id")
+                console.log('document_id_to_delete', document_id_to_delete)
+
                 const media_id_to_delete = formDataToDelete.get("media_id")
+                console.log('media_id_to_delete', media_id_to_delete)
 
                 const foundProductToDelete = await Products.findById(document_id_to_delete)
 
-                const foundMediaToDelete = foundProductToDelete.medias.find(md => md.media_id === media_id_to_delete)
-                deleteFile(foundMediaToDelete.variant_image_path)
+                if (params.media_id === 'all') {
+                    const media_ids_to_delete = JSON.parse(media_id_to_delete)
+                    console.log('media_ids_to_delete', media_ids_to_delete)
+                    const foundMediasToDelete = foundProductToDelete.medias.filter(md => media_ids_to_delete.includes(md.media_id))
+                    console.log('foundMediasToDelete', foundMediasToDelete)
 
-                const new_Medias = foundProductToDelete.medias.filter(md => md.media_id != media_id_to_delete)
+                    foundMediasToDelete.forEach(foundMediaToDelete => {
+                        if (!!foundMediaToDelete?.media_image_path) {
+                            deleteFile(foundMediaToDelete?.media_image_path)
+                        }
+                    })
 
-                const isMediaDeleted = await Products.findOneAndUpdate({
-                    _id: document_id_to_delete
-                  }, {
-                    medias: new_Medias
-                })
+                    const new_Medias = foundProductToDelete.medias.filter(md => !media_ids_to_delete.includes(md.media_id))
+                    const isMediaDeleted = await Products.findOneAndUpdate({
+                        _id: document_id_to_delete
+                      }, {
+                        medias: new_Medias
+                    })
+                } else {
+                    const foundMediaToDelete = foundProductToDelete.medias.find(md => md.media_id === media_id_to_delete)
+                    deleteFile(foundMediaToDelete.media_image_path)
+                    const new_Medias = foundProductToDelete.medias.filter(md => md.media_id != media_id_to_delete)
+                    const isMediaDeleted = await Products.findOneAndUpdate({
+                        _id: document_id_to_delete
+                      }, {
+                        medias: new_Medias
+                    })
+                }
+
 
                 return redirect(`/app/product/${foundProductToDelete._id}`)
 
@@ -275,7 +297,7 @@ const mediaDataReducer = (state, action) => {
 }
 
 
-export default function Variant() {
+export default function Media() {
 
     const navigate = useNavigate()
     const params = useParams()
@@ -298,7 +320,7 @@ export default function Variant() {
         media_id: '',
         product_options: [],
         media_image_file: null,
-        variant_image_path: '',
+        media_image_path: '',
     })
 
     const handleDropZoneDrop = useCallback(
@@ -330,26 +352,26 @@ export default function Variant() {
     }, [loaderData])
 
 
-    const handleVariantSelectOptionChange = (optn_index, selected_option) => {
-        console.log('handleVariantSelectOptionChange optn_index, selected_option', optn_index, selected_option)
+    const handleMediaSelectOptionChange = (optn_index, selected_option) => {
+        console.log('handleMediaSelectOptionChange optn_index, selected_option', optn_index, selected_option)
 
-        const newVariantData = {
+        const newMediaData = {
             ...mediaData
         }
 
         if (!!selected_option) {
-            newVariantData.product_options[optn_index] = {
+            newMediaData.product_options[optn_index] = {
                 option_id: selected_option.optn.option_id,
                 option_value_id: selected_option.value,
                 option_value_title: selected_option.label
             }
         } else {
-            newVariantData.product_options[optn_index] = {}
+            newMediaData.product_options[optn_index] = {}
         }
 
-        console.log('newVariantData.product_options', newVariantData.product_options)
+        console.log('newMediaData.product_options', newMediaData.product_options)
 
-        dispatchMediaData(newVariantData)
+        dispatchMediaData(newMediaData)
     }
 
 
@@ -363,7 +385,7 @@ export default function Variant() {
 
         if (!!mediaData.media_id) {
             if (productData.medias.find(md => ((md.media_title === media_title) && (md.media_id !== mediaData.media_id)))) {
-                shopify.toast.show("Variant Already Exists!")
+                shopify.toast.show("Media Already Exists!")
             } else {
                 formData.append('document_id', productData.id)
                 formData.append('media_id', mediaData.media_id)
@@ -374,7 +396,7 @@ export default function Variant() {
             }
         } else {
             if (productData.medias.find(md => md.media_title === media_title)) {
-                shopify.toast.show("Variant Already Exists!")
+                shopify.toast.show("Media Already Exists!")
             } else {
                 formData.append('document_id', productData.id)
                 formData.append('media_title', media_title)
@@ -447,7 +469,7 @@ export default function Variant() {
                                                             label: mediaData?.product_options[optn_index]?.option_value_title,
                                                         }}
                                                         onChange={(selected_option) => {
-                                                            handleVariantSelectOptionChange(optn_index, selected_option)
+                                                            handleMediaSelectOptionChange(optn_index, selected_option)
                                                         }}
                                                         isLoading={false}
                                                         isClearable
@@ -471,7 +493,7 @@ export default function Variant() {
                                         onDrop={handleDropZoneDrop}
                                     >
                                         {
-                                            (!!mediaData.media_image_file || !!mediaData.variant_image_path) &&
+                                            (!!mediaData.media_image_file || !!mediaData.media_image_path) &&
                                             <LegacyStack>
                                                 <LegacyStack.Item>
                                                     <Thumbnail
@@ -486,7 +508,7 @@ export default function Variant() {
                                                                 ''
                                                             )
                                                             :
-                                                            mediaData.variant_image_path
+                                                            mediaData.media_image_path
                                                         }
                                                         size="large"
                                                     />
@@ -519,7 +541,7 @@ export default function Variant() {
                                             // </div>
                                         }
                                         {
-                                            !mediaData.media_image_file && !mediaData.variant_image_path &&
+                                            !mediaData.media_image_file && !mediaData.media_image_path &&
                                             <DropZone.FileUpload />
                                         }
                                     </DropZone>

@@ -16,7 +16,9 @@ function App() {
   const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
   const [quantity, setQuantity] = useState(1)
-  const [] = useState(null)
+
+  const [featuredMedia, setFeaturedMedia] = useState(null)
+
   const [isDisabled, setIsDisabled] = useState(true)
 
 
@@ -101,7 +103,9 @@ function App() {
           option_value_id: mainOptionValue.option_value_id,
           option_value_price: mainOptionValue.option_value_price,
           option_value_title: mainOptionValue.option_value_title,
-          option_value_slug: mainOptionValue.option_value_slug
+          option_value_slug: mainOptionValue.option_value_slug,
+
+          change_media: !!foundOptionInJson?.changeMedia ? true : false
         }
         initiallySelectedOptions[initiallySelectedOptionIndex] = option_with_value
 
@@ -212,12 +216,6 @@ function App() {
     if (!!Object.keys(selectedOptions).length) {
 
 
-
-      // Change Media START
-
-      // Change Media END
-
-
       // Set Filtered Options START
       let availableOptionInputsValues = []
       for (let index = 0; index < Object.values(selectedOptions).length; index++) {
@@ -236,6 +234,19 @@ function App() {
       }
       setFilteredOptions(availableOptionInputsValues)
       // Set Filtered Options END
+
+      // Change Media START
+      
+      const selectedOptionString = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media).map(selectedOption => selectedOption.option_value_title).join(' / ')
+      if (!!selectedOptionString) {
+        const selectedMedia = productInfo.medias.find(medaa => medaa.media_title === selectedOptionString)
+        if (!!selectedMedia) {
+          setFeaturedMedia(selectedMedia.media_image_path)
+        } else {
+          setFeaturedMedia(null)
+        }
+      }
+      // Change Media END
     }
 
     /*
@@ -294,6 +305,16 @@ function App() {
   }, [selectedOptions])
 
 
+  useEffect(() => {
+    if (!!featuredMedia) {
+      console.log('useEffect featuredMedia', featuredMedia)
+      document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'none'
+    } else {
+      document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
+    }
+  }, [featuredMedia])
+
+
   const onSelectOption = (option_index, optn, option_value) => {
     // console.log('onSelectOption, option_index, optn, option_value', option_index, optn, option_value)
     // console.log('onSelectOption optionsJson', optionsJson)
@@ -330,7 +351,11 @@ function App() {
         }
   
         if ( option_with_value.option_slug === productInfoOption.option_slug ) {
-          newSelectedOptions[selectedIndex] = option_with_value
+          const foundOptionFromJson = optionsJson.find(singleOptionFromJson => singleOptionFromJson.slug === productInfoOption.option_slug)
+          newSelectedOptions[selectedIndex] = {
+            ...option_with_value,
+            change_media: !!foundOptionFromJson?.changeMedia ? true : false
+          }
         } else {
           const foundOptionFromJson = optionsJson.find(singleOptionFromJson => singleOptionFromJson.slug === productInfoOption.option_slug)
 
@@ -370,7 +395,9 @@ function App() {
               option_value_id: productInfoOption.option_values[0].option_value_id,
               option_value_price: productInfoOption.option_values[0].option_value_price,
               option_value_title: productInfoOption.option_values[0].option_value_title,
-              option_value_slug: productInfoOption.option_values[0].option_value_slug
+              option_value_slug: productInfoOption.option_values[0].option_value_slug,
+
+              change_media: !!foundOptionFromJson?.changeMedia ? true : false
             }
           }
 
@@ -416,11 +443,12 @@ function App() {
     }
   }
 
+
   return (
     <>
-      {createPortal(
+      {!!featuredMedia && createPortal(
         <img
-          // src="//codem-test-store.myshopify.com/cdn/shop/files/115500_ri_ww_04_rd-di_na-na_na-na_01.jpg"
+          src={`/apps/jewelry-builder-app${featuredMedia}`}
           dataSelectedOptions={JSON.stringify(selectedOptions)}
           style={{
             width: '100%',
