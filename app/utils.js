@@ -2,6 +2,8 @@ import { existsSync } from "fs"
 import { unlink, writeFile } from "fs/promises"
 import { apiVersion } from "./shopify.server"
 import axios from "axios"
+
+import productTypes from "../json/productTypes.json";
 import optionsJson from "../json/options.json";
 
 
@@ -99,17 +101,19 @@ export const makeid = (length) => {
 }
 
 
-export const generateMedias = (productOptions) => {
+export const generateMedias = (productOptions, productSku) => {
+    console.log('productOptions', productOptions)
 
     // 
     const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
     console.log('options', options)
     // 
 
-    const variations = []
+    const mediaRecords = []
 
-    // Helper function to recursively generate variations
+    // Helper function to recursively generate mediaRecords
     function generate(currentIndex, currentVariation) {
+        console.log('currentVariation', JSON.stringify(currentVariation))
       if (currentIndex === options.length) {
         let variant_title = []
         const product_options = currentVariation.map(cv => {
@@ -121,10 +125,81 @@ export const generateMedias = (productOptions) => {
           }
         })
         if (product_options.length) {
-            variations.push({
+
+            // 
+            let media_image_path = ''
+            if (!!productSku) {
+                const productSkuWithSlash = productSku.replace('_', '/')
+                const productSkuArr = productSku.split('_')
+
+                const onlyProductTypeLower = productSkuArr[0]
+                const onlySkuNumber = productSkuArr[1]
+
+                const productType = onlyProductTypeLower.charAt(0).toUpperCase() + onlyProductTypeLower.slice(1)
+                const productTypeObj = productTypes.find(pt => pt.productType === productType)
+                console.log('productTypeObj', productTypeObj)
+
+                if (productTypeObj) {
+                    let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productSkuWithSlash}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+
+                    console.log('final_media_url', final_media_url, product_options)
+
+                    const option_value_titles = product_options.map(po => po.option_value_title)
+                    console.log('option_value_titles', option_value_titles)
+
+                    const metalTypeObj = optionsJson.find(oj => oj.slug === 'metal_type')
+                    const metalTypeValueObj = metalTypeObj.values.find(metalTypeValue => option_value_titles.includes(metalTypeValue.optionValueTitle))
+
+                    if (metalTypeValueObj) {
+                        final_media_url += `${metalTypeValueObj.optionValue_4Pic}_04_`
+
+                        // Center Stone Shape
+                        const centerStoneShapeObj = optionsJson.find(oj => oj.slug === 'center_stone_shape')
+                        const centerStoneShapeValueObj = centerStoneShapeObj.values.find(centerStoneShapeValue => option_value_titles.includes(centerStoneShapeValue.optionValueTitle))
+                        final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+
+                        // Center Stone Type
+                        const centerStoneTypeObj = optionsJson.find(oj => oj.slug === 'center_stone_type')
+                        const centerStoneTypeValueObj = centerStoneTypeObj.values.find(centerStoneTypeValue => option_value_titles.includes(centerStoneTypeValue.optionValueTitle))
+                        final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                        
+                        ////////////////////////
+
+                        // Side Stone Shape
+                        // const sideStoneShapeObj = optionsJson.find(oj => oj.slug === 'side_stone_shape')
+                        // const sideStoneShapeValueObj = sideStoneShapeObj.values.find(sideStoneShapeValue => option_value_titles.includes(sideStoneShapeValue.optionValueTitle))
+                        // console.log('sideStoneShapeValueObj', sideStoneShapeValueObj)
+                        // final_media_url += `${sideStoneShapeValueObj.optionValue_Short}-`
+                        
+                        // Side Stone Type
+                        
+                        final_media_url += 'na-na_'
+                        ////////////////////////
+
+                        // Small Stone Shape
+
+                        // Small Stone Type
+
+                        final_media_url += 'na-na_'
+                        ////////////////////////
+
+                        final_media_url += '01.jpg'
+                        console.log('final_media_url', final_media_url)
+
+                        media_image_path = final_media_url
+                    }
+
+                    // let metal_type_4_pic_short = 
+                }
+            }
+            // 
+
+
+            mediaRecords.push({
               media_id: makeid(24),
               media_title: variant_title.join(' / '),
               product_options,
+              media_image_path
             //   variant_price: ''
             })
         }
@@ -174,9 +249,9 @@ export const generateMedias = (productOptions) => {
 
     generate(0, [])
 
-    // console.log('variations', variations)
+    // console.log('mediaRecords', mediaRecords)
 
-    return variations
+    return mediaRecords
 }
 
 

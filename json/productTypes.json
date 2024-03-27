@@ -1,17 +1,17 @@
 [
   {
     "productType": "Ring",
-    "productType_Short": "ri",
+    "ProductType_Short": "ri",
     "shopify_Tag": "ProductType_Ring"
   },
   {
     "productType": "Earrings",
-    "productType_Short": "er",
+    "ProductType_Short": "er",
     "shopify_Tag": "ProductType_Earrings"
   },
   {
     "productType": "Pendant",
-    "productType_Short": "pn",
+    "ProductType_Short": "pn",
     "shopify_Tag": "ProductType_Pendant"
   }
 ]

@@ -404,6 +404,7 @@
     "name": "Side Stone Type",
     "slug": "side_stone_type",
     "ProductType": "all",
+    "changeMedia": true,
     "values": [
       {
         "optionValueTitle": "Diamond",
@@ -501,6 +502,7 @@
     "name": "Side Stone Shape",
     "slug": "side_stone_shape",
     "ProductType": "ProductType_Ring",
+    "changeMedia": true,
     "values": [
       {
         "optionValueTitle": "Round",
@@ -560,6 +562,7 @@
     "name": "Small Stone Type",
     "slug": "small_stone_type",
     "ProductType": "all",
+    "changeMedia": true,
     "values": [
       {
         "optionValueTitle": "Diamond and Emerald",
@@ -645,6 +648,7 @@
     "name": "Small Stone Shape",
     "slug": "small_stone_shape",
     "ProductType": "all",
+    "changeMedia": true,
     "values": [
       {
         "optionValueTitle": "Round",

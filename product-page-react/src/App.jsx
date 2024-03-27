@@ -448,8 +448,10 @@ function App() {
     <>
       {!!featuredMedia && createPortal(
         <img
-          src={`/apps/jewelry-builder-app${featuredMedia}`}
-          dataSelectedOptions={JSON.stringify(selectedOptions)}
+          src={
+            featuredMedia.includes('http') ? featuredMedia : `/apps/jewelry-builder-app${featuredMedia}`
+          }
+          dataSelectedOptions={JSON.stringify(featuredMedia)}
           style={{
             width: '100%',
             height: '100%'

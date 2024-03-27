@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
 
 const productsCreateOrUpdatehandler = async (productPayload) => {
 
-  console.log('productsCreateOrUpdatehandler START')
+  console.log('productsCreateOrUpdatehandler START', productPayload)
 
   try {
     const productTags = productPayload.tags.split(', ')
@@ -73,7 +73,8 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       productData = await Products.create({
         product_id: productPayload.admin_graphql_api_id,
         product_title: productPayload.title,
-        product_image: !!productPayload.image?.src ? productPayload.image.src : null
+        product_image: !!productPayload.image?.src ? productPayload.image.src : null,
+        product_sku: !!productPayload.variants?.[0]?.sku
       })
       if (!productData) {
         return

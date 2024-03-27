@@ -415,12 +415,14 @@ export const action = async ({ request }) => {
           const product_title = formData.get("product_title")
           const product_image = formData.get("product_image")
           const product_price = formData.get("product_price")
+          const product_sku = formData.get("product_sku")
 
           const proudct_data = {
             product_id,
             product_title,
             product_image,
-            product_price
+            product_price,
+            product_sku
           }
 
           console.log('document_id', document_id)
@@ -629,6 +631,7 @@ export default function Product() {
     product_title: '',
     product_image: '',
     product_price: '',
+    product_sku: '',
     options: [],
     medias: [],
     variants: []
@@ -771,6 +774,7 @@ export default function Product() {
       id: loaderData.product._id,
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
+      product_sku: loaderData.product.product_sku,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
       medias: !!loaderData?.product?.medias ? loaderData.product.medias.map(md => {
         return {
@@ -873,7 +877,8 @@ export default function Product() {
         product_id: selected?.[0]?.id,
         product_title: selected?.[0]?.title,
         product_image: !!selected?.[0]?.images?.[0]?.originalSrc ? selected[0].images[0].originalSrc : "",
-        product_price: selected?.[0]?.variants?.[0]?.price
+        product_price: selected?.[0]?.variants?.[0]?.price,
+        product_sku: selected?.[0]?.variants?.[0]?.sku
       })
     }
   }
@@ -1073,6 +1078,7 @@ export default function Product() {
     formData.append('product_title', productData.product_title)
     formData.append('product_image', productData.product_image)
     formData.append('product_price', productData.product_price)
+    formData.append('product_sku', productData.product_sku)
 
     submit(formData, { replace: true, method: "PATCH" })
   }
@@ -1085,6 +1091,10 @@ export default function Product() {
       dispatchOptionModalData({ file_id: null })
     }
   }
+
+
+
+  const mediaRowMarkup = Object.keys({})
 
 
   return (
@@ -1314,7 +1324,7 @@ export default function Product() {
                   {
                     content: 'Generate Media Records',
                     onAction: () => {
-                      const the_medias = generateMedias(productData.options)
+                      const the_medias = generateMedias(productData.options, productData?.product_sku)
                       if (!the_medias.length) {
                         shopify.toast.show('No medias can be created!')
                         return
@@ -1365,9 +1375,6 @@ export default function Product() {
                       {
                         content: 'Bulk Delete',
                         onAction: () => {
-
-                          console.log('selectedMediaResources', selectedMediaResources)
-
                           const formData = new FormData()
                           formData.append('document_id', productData.id)
                           formData.append("media_id", JSON.stringify(selectedMediaResources))
@@ -1376,6 +1383,7 @@ export default function Product() {
                             method: "DELETE",
                             replace: true,
                           })
+                          clearMediaSelection()
                         }
                       }
                     ]}
@@ -1423,6 +1431,7 @@ export default function Product() {
                                       method: "DELETE",
                                       replace: true,
                                     })
+                                    clearMediaSelection()
                                   }}
                                   disabled={isLoading}
                                 >
