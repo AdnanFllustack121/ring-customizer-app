@@ -101,8 +101,8 @@ export const makeid = (length) => {
 }
 
 
-export const generateMedias = (productOptions, productSku) => {
-    console.log('productOptions', productOptions)
+export const generateMedias = ({ options: productOptions, product_sku: productSku, product_type }) => {
+    console.log('generateMedias productOptions, productSku, product_type', productOptions, productSku, product_type)
 
     // 
     const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
@@ -129,18 +129,13 @@ export const generateMedias = (productOptions, productSku) => {
             // 
             let media_image_path = ''
             if (!!productSku) {
-                const productSkuWithSlash = productSku.replace('_', '/')
-                const productSkuArr = productSku.split('_')
+                const onlySkuNumber = productSku
 
-                const onlyProductTypeLower = productSkuArr[0]
-                const onlySkuNumber = productSkuArr[1]
-
-                const productType = onlyProductTypeLower.charAt(0).toUpperCase() + onlyProductTypeLower.slice(1)
-                const productTypeObj = productTypes.find(pt => pt.productType === productType)
+                const productTypeObj = productTypes.find(pt => pt.productType === product_type)
                 console.log('productTypeObj', productTypeObj)
 
                 if (productTypeObj) {
-                    let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productSkuWithSlash}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
 
                     console.log('final_media_url', final_media_url, product_options)
 
@@ -156,12 +151,20 @@ export const generateMedias = (productOptions, productSku) => {
                         // Center Stone Shape
                         const centerStoneShapeObj = optionsJson.find(oj => oj.slug === 'center_stone_shape')
                         const centerStoneShapeValueObj = centerStoneShapeObj.values.find(centerStoneShapeValue => option_value_titles.includes(centerStoneShapeValue.optionValueTitle))
-                        final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+                        if (centerStoneShapeValueObj) {
+                            final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+                        } else {
+                            final_media_url += `na-`
+                        }
 
                         // Center Stone Type
                         const centerStoneTypeObj = optionsJson.find(oj => oj.slug === 'center_stone_type')
                         const centerStoneTypeValueObj = centerStoneTypeObj.values.find(centerStoneTypeValue => option_value_titles.includes(centerStoneTypeValue.optionValueTitle))
-                        final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                        if (centerStoneTypeValueObj) {
+                            final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                        } else {
+                            final_media_url += `na_`
+                        }
                         
                         ////////////////////////
 

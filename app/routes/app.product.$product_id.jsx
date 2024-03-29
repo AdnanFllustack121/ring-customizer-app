@@ -416,13 +416,15 @@ export const action = async ({ request }) => {
           const product_image = formData.get("product_image")
           const product_price = formData.get("product_price")
           const product_sku = formData.get("product_sku")
+          const product_type = formData.get("product_type")
 
           const proudct_data = {
             product_id,
             product_title,
             product_image,
             product_price,
-            product_sku
+            product_sku,
+            product_type
           }
 
           console.log('document_id', document_id)
@@ -632,6 +634,7 @@ export default function Product() {
     product_image: '',
     product_price: '',
     product_sku: '',
+    product_type: '',
     options: [],
     medias: [],
     variants: []
@@ -775,6 +778,7 @@ export default function Product() {
       product_id: loaderData.product.product_id,
       product_title: loaderData.product.product_title,
       product_sku: loaderData.product.product_sku,
+      product_type: loaderData.product.product_type,
       options: !!loaderData?.product?.options ? loaderData.product.options : [],
       medias: !!loaderData?.product?.medias ? loaderData.product.medias.map(md => {
         return {
@@ -873,12 +877,22 @@ export default function Product() {
     const selected = await shopify.resourcePicker(resourcePickerOptions)
     console.log('selected', selected)
     if (!!selected) {
+
+      let product_type = ''
+      if (selected[0].tags.length) {
+        const found_product_type = selected[0].tags.find(tag => tag.includes('ProductType_'))
+        if (found_product_type) {
+          product_type = found_product_type.split('_')?.[1]
+        }
+      }
+
       dispatchProductData({
         product_id: selected?.[0]?.id,
         product_title: selected?.[0]?.title,
         product_image: !!selected?.[0]?.images?.[0]?.originalSrc ? selected[0].images[0].originalSrc : "",
         product_price: selected?.[0]?.variants?.[0]?.price,
-        product_sku: selected?.[0]?.variants?.[0]?.sku
+        product_sku: selected?.[0]?.variants?.[0]?.sku,
+        product_type: !!product_type ? product_type : undefined
       })
     }
   }
@@ -1079,6 +1093,7 @@ export default function Product() {
     formData.append('product_image', productData.product_image)
     formData.append('product_price', productData.product_price)
     formData.append('product_sku', productData.product_sku)
+    formData.append('product_type', productData.product_type)
 
     submit(formData, { replace: true, method: "PATCH" })
   }
@@ -1324,7 +1339,7 @@ export default function Product() {
                   {
                     content: 'Generate Media Records',
                     onAction: () => {
-                      const the_medias = generateMedias(productData.options, productData?.product_sku)
+                      const the_medias = generateMedias(productData)
                       if (!the_medias.length) {
                         shopify.toast.show('No medias can be created!')
                         return

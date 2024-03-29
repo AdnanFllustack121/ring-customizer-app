@@ -78,12 +78,12 @@ export const action = async ({ request }) => {
     case "POST":
       const formData = await request.formData()
       console.log('formData', formData)
-      const product_id = formData.get("product_id")
+      const product_id    = formData.get("product_id")
       const product_title = formData.get("product_title")
       const product_image = formData.get("product_image")
-
-      console.log('product_id', product_id)
-      console.log('product_title', product_title)
+      const product_price = formData.get("product_price")
+      const product_sku   = formData.get("product_sku")
+      const product_type  = formData.get("product_type")
 
       const doExists = await Products.findOne({ product_id })
       if (doExists) {
@@ -95,7 +95,10 @@ export const action = async ({ request }) => {
         const isProductCreated = await Products.create({
           product_id,
           product_title,
-          product_image
+          product_image,
+          product_price,
+          product_sku,
+          product_type
         })
 
         if (!!isProductCreated && !!isProductCreated?._id) {
@@ -201,6 +204,18 @@ export default function Index() {
           formData.append('product_image', productImage.originalSrc)
         }
       }
+
+      formData.append('product_price', productInfo?.variants?.[0]?.price)
+      formData.append('product_sku', productInfo?.variants?.[0]?.sku)
+
+      let product_type = ''
+      if (productInfo.tags.length) {
+        const found_product_type = productInfo.tags.find(tag => tag.includes('ProductType_'))
+        product_type = found_product_type.split('_')?.[1]
+      }
+      formData.append('product_type', product_type)
+
+      console.log('formData', formData)
   
       submit(formData, { replace: true, method: "POST" })
     }

@@ -70,11 +70,14 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
     })
 
     if (!productData) {
+
       productData = await Products.create({
         product_id: productPayload.admin_graphql_api_id,
         product_title: productPayload.title,
         product_image: !!productPayload.image?.src ? productPayload.image.src : null,
-        product_sku: !!productPayload.variants?.[0]?.sku
+        product_price: productPayload.variants?.[0]?.price,
+        product_sku: productPayload.variants?.[0]?.sku,
+        product_type: whichProductType.split('_')?.[1]
       })
       if (!productData) {
         return
@@ -110,7 +113,8 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
         continue;
       }
 
-      options.push({
+
+      const option_to_push = {
         option_id: makeid(24),
         option_title: option.name,
         option_type: 'swatch',
@@ -144,7 +148,11 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
             option_value_price: ''
           }
         })
-      })
+      }
+
+      options.push(option_to_push)
+
+
     }
 
     if (!!options.length) {
