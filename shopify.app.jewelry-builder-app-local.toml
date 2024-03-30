@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://cashiers-dollar-annotated-expensive.trycloudflare.com"
+application_url = "https://ready-establish-row-diet.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://cashiers-dollar-annotated-expensive.trycloudflare.com/auth/callback",
-  "https://cashiers-dollar-annotated-expensive.trycloudflare.com/auth/shopify/callback",
-  "https://cashiers-dollar-annotated-expensive.trycloudflare.com/api/auth/callback"
+  "https://ready-establish-row-diet.trycloudflare.com/auth/callback",
+  "https://ready-establish-row-diet.trycloudflare.com/auth/shopify/callback",
+  "https://ready-establish-row-diet.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://cashiers-dollar-annotated-expensive.trycloudflare.com"
+url = "https://ready-establish-row-diet.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

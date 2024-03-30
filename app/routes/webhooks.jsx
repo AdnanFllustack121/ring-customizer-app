@@ -4,7 +4,7 @@ import db, { Products, Session } from "../db.server";
 import { generateVariations, makeid } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
-import Options from "../../json/options.json"
+import optionsJson from "../../json/options.json"
 import { existsSync } from "fs";
 
 export const action = async ({ request }) => {
@@ -86,16 +86,32 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
     let options = []
 
-    for (let index = 0; index < Options.length; index++) {
-      const option = Options[index]
-      const option_values = option.values
+    for (let index = 0; index < optionsJson.length; index++) {
+      const optionJsonSingle = optionsJson[index]
+
+
+      if (optionJsonSingle?.addOnlyWhen) {
+        console.log('optionJsonSingle.addOnlyWhen', optionJsonSingle.addOnlyWhen)
+
+        if (typeof optionJsonSingle.addOnlyWhen === "string") {
+          if (!options.find(option => option.option_slug === optionJsonSingle.addOnlyWhen)) {
+            continue;
+          }
+        } else {
+
+        }
+
+      }
+
+
+      const option_values = optionJsonSingle.values
 
       let found_option_values = []
 
       if (
         (
-          ( option.ProductType === 'all' ) ||
-          ( option.ProductType === whichProductType )
+          ( optionJsonSingle.ProductType === 'all' ) ||
+          ( optionJsonSingle.ProductType === whichProductType )
         )
         &&
         !!option_values.length
@@ -116,12 +132,12 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
       const option_to_push = {
         option_id: makeid(24),
-        option_title: option.name,
+        option_title: optionJsonSingle.name,
         option_type: 'swatch',
-        option_slug: option.slug,
-        option_display_when: !!option?.showOnlyWhen ? {
-          option_slug: option.showOnlyWhen.optionSlug,
-          option_value_slug: option.showOnlyWhen.optionValueSlug
+        option_slug: optionJsonSingle.slug,
+        option_display_when: !!optionJsonSingle?.showOnlyWhen ? {
+          option_slug: optionJsonSingle.showOnlyWhen.optionSlug,
+          option_value_slug: optionJsonSingle.showOnlyWhen.optionValueSlug
         } : null,
         option_values: found_option_values.filter(found_option_value => {
           if (!!found_option_value?.ProductType) {
@@ -141,7 +157,9 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
             file_id: '',
             option_value_id: makeid(24),
             option_value_title: !!found_option_value?.optionValueTitle ? found_option_value.optionValueTitle : found_option_value,
-            option_value_slug: !!found_option_value?.optionValue_Short ? found_option_value.optionValue_Short : found_option_value,
+            option_value_slug: !!found_option_value?.optionValue_Short ? found_option_value.optionValue_Short : (
+              !!found_option_value?.optionValueTitle ? found_option_value.optionValueTitle : found_option_value
+            ),
             option_image_path: (
               !!found_option_value?.optionValue_PicPath && existsSync(`${__dirname}/../public/options/${found_option_value.optionValue_PicPath}`)
             ) ? `/options/${found_option_value.optionValue_PicPath}` : null,

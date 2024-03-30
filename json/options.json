@@ -184,6 +184,7 @@
     "name": "Center Stone Weight",
     "slug": "center_stone_weight",
     "ProductType": "all",
+    "addOnlyWhen": "center_stone_type",
     "values": [
       {
         "optionValueTitle": "0.10",
@@ -381,6 +382,10 @@
     "name": "Center Stone Color",
     "slug": "center_stone_color",
     "ProductType": "all",
+    "addOnlyWhen": {
+      "optionSlug": "center_stone_type",
+      "optionValueSlug": "di"
+    },
     "showOnlyWhen": {
       "optionSlug": "center_stone_type",
       "optionValueSlug": "di"
@@ -392,11 +397,51 @@
     "name": "Center Stone Clarity",
     "slug": "center_stone_clarity",
     "ProductType": "all",
+    "addOnlyWhen": "center_stone_type",
     "showOnlyWhen": {
       "optionSlug": "center_stone_type",
       "optionValueSlug": "di"
     },
     "values": ["FL", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2", "I3"]
+  },
+
+
+  {
+    "name": "Center Stone Lab Diamond Quality",
+    "slug": "center_stone_lab_diamond_quality",
+    "ProductType": "all",
+    "addOnlyWhen": "center_stone_type",
+    "showOnlyWhen": {
+      "optionSlug": "center_stone_type",
+      "optionValueSlug": "ld"
+    },
+    "values": [
+      {
+        "optionValueTitle": "Good (F, SI1)",
+        "optionValue_Short": "Good"
+      },
+      {
+        "optionValueTitle": "Excellent (F, VS2)",
+        "optionValue_Short": "Excellent"
+      },
+      {
+        "optionValueTitle": "Best (F, VVS1)",
+        "optionValue_Short": "Best"
+      }
+    ]
+  },
+
+
+  {
+    "name": "Center Stone Gem Quality",
+    "slug": "center_stone_gem_quality",
+    "ProductType": "all",
+    "addOnlyWhen": "center_stone_type",
+    "hideOnlyWhen": {
+      "optionSlug": "center_stone_type",
+      "optionValueSlug": ["di", "ld"]
+    },
+    "values": ["Good", "Excellent", "Best"]
   },
 
 
@@ -701,43 +746,6 @@
         "Shopify_Tag": "Small_StoneShape_ra"
       }
     ]
-  },
-
-
-  {
-    "name": "Center Stone Lab Diamond Quality",
-    "slug": "center_stone_lab_diamond_quality",
-    "ProductType": "all",
-    "showOnlyWhen": {
-      "optionSlug": "center_stone_type",
-      "optionValueSlug": "ld"
-    },
-    "values": [
-      {
-        "optionValueTitle": "Good (F, SI1)",
-        "optionValue_Short": "Good"
-      },
-      {
-        "optionValueTitle": "Excellent (F, VS2)",
-        "optionValue_Short": "Excellent"
-      },
-      {
-        "optionValueTitle": "Best (F, VVS1)",
-        "optionValue_Short": "Best"
-      }
-    ]
-  },
-
-
-  {
-    "name": "Center Stone Gem Quality",
-    "slug": "center_stone_gem_quality",
-    "ProductType": "all",
-    "hideOnlyWhen": {
-      "optionSlug": "center_stone_type",
-      "optionValueSlug": ["di", "ld"]
-    },
-    "values": ["Good", "Excellent", "Best"]
   },
 
 

@@ -238,7 +238,7 @@ function App() {
       // Change Media START
       
       const selectedOptionString = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media).map(selectedOption => selectedOption.option_value_title).join(' / ')
-      if (!!selectedOptionString) {
+      if (!!selectedOptionString && !!productInfo?.medias?.length) {
         const selectedMedia = productInfo.medias.find(medaa => medaa.media_title === selectedOptionString)
         if (!!selectedMedia) {
           setFeaturedMedia(selectedMedia.media_image_path)

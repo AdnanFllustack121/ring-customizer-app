@@ -1208,7 +1208,7 @@ export default function Product() {
 
 
 
-            <div className="eQ_yd">
+            {/* <div className="eQ_yd">
               <LegacyCard
                 title="Variants"
                 actions={[
@@ -1328,7 +1328,7 @@ export default function Product() {
                   </IndexTable>
                 </div>
               </LegacyCard>
-            </div>
+            </div> */}
 
 
             {/* Media START */}
