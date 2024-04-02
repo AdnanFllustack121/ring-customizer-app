@@ -101,6 +101,11 @@ export const makeid = (length) => {
 }
 
 
+export const saveTheProductBasicData = () => {
+
+}
+
+
 export const generateMedias = ({ options: productOptions, product_sku: productSku, product_type }) => {
     console.log('generateMedias productOptions, productSku, product_type', productOptions, productSku, product_type)
 
@@ -118,8 +123,12 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
         let variant_title = []
         const product_options = currentVariation.map(cv => {
           variant_title.push(cv.option_value_title)
+
+            console.log('cv', cv)
+
           return {
             option_id: cv.option_id,
+            option_slug: cv.option_slug,
             option_value_id: cv.option_value_id,
             option_value_title: cv.option_value_title
           }
@@ -135,55 +144,130 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
                 console.log('productTypeObj', productTypeObj)
 
                 if (productTypeObj) {
+                    //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
                     let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
 
                     console.log('final_media_url', final_media_url, product_options)
 
                     const option_value_titles = product_options.map(po => po.option_value_title)
-                    console.log('option_value_titles', option_value_titles)
+                    // console.log('option_value_titles', option_value_titles)
 
                     const metalTypeObj = optionsJson.find(oj => oj.slug === 'metal_type')
-                    const metalTypeValueObj = metalTypeObj.values.find(metalTypeValue => option_value_titles.includes(metalTypeValue.optionValueTitle))
+                    const metal_type_product_option = product_options.find(po => po.option_slug === 'metal_type')
+                    const metalTypeValueObj = metalTypeObj.values.find(metalTypeValue => {
+                        return metalTypeValue.optionValueTitle === metal_type_product_option.option_value_title
+                    })
+                    // console.log('metalTypeValueObj', metalTypeValueObj)
 
                     if (metalTypeValueObj) {
                         final_media_url += `${metalTypeValueObj.optionValue_4Pic}_04_`
 
                         // Center Stone Shape
                         const centerStoneShapeObj = optionsJson.find(oj => oj.slug === 'center_stone_shape')
-                        const centerStoneShapeValueObj = centerStoneShapeObj.values.find(centerStoneShapeValue => option_value_titles.includes(centerStoneShapeValue.optionValueTitle))
-                        if (centerStoneShapeValueObj) {
-                            final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+                        const center_stone_shape_product_option = product_options.find(po => po.option_slug === 'center_stone_shape')
+                        if (center_stone_shape_product_option) {                            
+                            const centerStoneShapeValueObj = centerStoneShapeObj.values.find(centerStoneShapeValue => {
+                                return centerStoneShapeValue.optionValueTitle === center_stone_shape_product_option.option_value_title
+                            })
+                            if (centerStoneShapeValueObj) {
+                                final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+                            } else {
+                                final_media_url += `na-`
+                            }
                         } else {
                             final_media_url += `na-`
                         }
+                        // Center Stone Shape END
 
                         // Center Stone Type
                         const centerStoneTypeObj = optionsJson.find(oj => oj.slug === 'center_stone_type')
-                        const centerStoneTypeValueObj = centerStoneTypeObj.values.find(centerStoneTypeValue => option_value_titles.includes(centerStoneTypeValue.optionValueTitle))
-                        if (centerStoneTypeValueObj) {
-                            final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                        const center_stone_type_product_option = product_options.find(po => po.option_slug === 'center_stone_type')
+                        if (center_stone_type_product_option) {
+                            const centerStoneTypeValueObj = centerStoneTypeObj.values.find(centerStoneTypeValue => {
+                                return centerStoneTypeValue.optionValueTitle === center_stone_type_product_option.option_value_title
+                            })
+                            if (centerStoneTypeValueObj) {
+                                final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                            } else {
+                                final_media_url += `na_`
+                            }
                         } else {
                             final_media_url += `na_`
                         }
+                        // Center Stone Type END
                         
                         ////////////////////////
 
                         // Side Stone Shape
-                        // const sideStoneShapeObj = optionsJson.find(oj => oj.slug === 'side_stone_shape')
-                        // const sideStoneShapeValueObj = sideStoneShapeObj.values.find(sideStoneShapeValue => option_value_titles.includes(sideStoneShapeValue.optionValueTitle))
-                        // console.log('sideStoneShapeValueObj', sideStoneShapeValueObj)
-                        // final_media_url += `${sideStoneShapeValueObj.optionValue_Short}-`
-                        
+                        const sideStoneShapeObj = optionsJson.find(oj => oj.slug === 'side_stone_shape')
+                        const side_stone_shape_product_option = product_options.find(po => po.option_slug === 'side_stone_shape')
+                        if (side_stone_shape_product_option) {
+                            const sideStoneShapeValueObj = sideStoneShapeObj.values.find(sideStoneShapeValue => {
+                                return sideStoneShapeValue.optionValueTitle === side_stone_shape_product_option.option_value_title
+                            })
+                            if (sideStoneShapeValueObj) {
+                                final_media_url += `${sideStoneShapeValueObj.optionValue_Short}-`
+                            } else {
+                                final_media_url += `na-`
+                            }
+                        } else {
+                            final_media_url += `na-`
+                        }
+                        // Side Stone Shape END
+
                         // Side Stone Type
-                        
-                        final_media_url += 'na-na_'
+                        const sideStoneTypeObj = optionsJson.find(oj => oj.slug === 'side_stone_type')
+                        const side_stone_type_product_option = product_options.find(po => po.option_slug === 'side_stone_type')
+                        if (side_stone_type_product_option) {
+                            const sideStoneTypeValueObj = sideStoneTypeObj.values.find(sideStoneTypeValue => {
+                                return sideStoneTypeValue.optionValueTitle === side_stone_type_product_option.option_value_title
+                            })
+                            if (sideStoneTypeValueObj) {
+                                final_media_url += `${sideStoneTypeValueObj.optionValue_4Pic}_`
+                            } else {
+                                final_media_url += `na_`
+                            }
+                        } else {
+                            final_media_url += `na_`
+                        }
+                        // Side Stone Type END
+
                         ////////////////////////
 
                         // Small Stone Shape
+                        const smallStoneShapeObj = optionsJson.find(oj => oj.slug === 'small_stone_shape')
+                        const small_stone_shape_product_option = product_options.find(po => po.option_slug === 'small_stone_shape')
+                        if (small_stone_shape_product_option) {
+                            const smallStoneShapeValueObj = smallStoneShapeObj.values.find(smallStoneShapeValue => {
+                                return smallStoneShapeValue.optionValueTitle === small_stone_shape_product_option.option_value_title
+                            })
+                            if (smallStoneShapeValueObj) {
+                                final_media_url += `${smallStoneShapeValueObj.optionValue_Short}-`
+                            } else {
+                                final_media_url += `na-`
+                            }
+                        } else {
+                            final_media_url += `na-`
+                        }
+                        // Small Stone Shape END
 
                         // Small Stone Type
+                        const smallStoneTypeObj = optionsJson.find(oj => oj.slug === 'small_stone_type')
+                        const small_stone_type_product_option = product_options.find(po => po.option_slug === 'small_stone_type')
+                        if (small_stone_type_product_option) {
+                            const smallStoneTypeValueObj = smallStoneTypeObj.values.find(smallStoneTypeValue => {
+                                return smallStoneTypeValue.optionValueTitle === small_stone_type_product_option.option_value_title
+                            })
+                            if (smallStoneTypeValueObj) {
+                                final_media_url += `${smallStoneTypeValueObj.optionValue_4Pic}_`
+                            } else {
+                                final_media_url += `na_`
+                            }
+                        } else {
+                            final_media_url += `na_`
+                        }
+                        // Small Stone Type END
 
-                        final_media_url += 'na-na_'
                         ////////////////////////
 
                         final_media_url += '01.jpg'
@@ -191,8 +275,6 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
                         media_image_path = final_media_url
                     }
-
-                    // let metal_type_4_pic_short = 
                 }
             }
             // 

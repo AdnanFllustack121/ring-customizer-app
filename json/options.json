@@ -112,6 +112,7 @@
       }
     ]
   },
+
   {
     "name": "Center Stone Shape",
     "slug": "center_stone_shape",
@@ -180,6 +181,7 @@
       }
     ]
   },
+
   {
     "name": "Center Stone Weight",
     "slug": "center_stone_weight",
@@ -405,7 +407,6 @@
     "values": ["FL", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "SI3", "I1", "I2", "I3"]
   },
 
-
   {
     "name": "Center Stone Lab Diamond Quality",
     "slug": "center_stone_lab_diamond_quality",
@@ -430,7 +431,6 @@
       }
     ]
   },
-
 
   {
     "name": "Center Stone Gem Quality",
@@ -543,6 +543,7 @@
       }
     ]
   },
+
   {
     "name": "Side Stone Shape",
     "slug": "side_stone_shape",
@@ -609,6 +610,96 @@
     "ProductType": "all",
     "changeMedia": true,
     "values": [
+      {
+        "optionValueTitle": "Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "di",
+        "Shopify_Tag": "Small_StoneType_di"
+      },
+      {
+        "optionValueTitle": "Lab Diamond",
+        "optionValue_4Pic": "di",
+        "optionValue_Short": "ld",
+        "Shopify_Tag": "Small_StoneType_ld"
+      },
+      {
+        "optionValueTitle": "Emerald",
+        "optionValue_4Pic": "em",
+        "optionValue_Short": "em",
+        "Shopify_Tag": "Small_StoneType_em"
+      },
+      {
+        "optionValueTitle": "Ruby",
+        "optionValue_4Pic": "ru",
+        "optionValue_Short": "ru",
+        "Shopify_Tag": "Small_StoneType_ru"
+      },
+      {
+        "optionValueTitle": "Blue Sapphire",
+        "optionValue_4Pic": "bs",
+        "optionValue_Short": "bs",
+        "Shopify_Tag": "Small_StoneType_bs"
+      },
+      {
+        "optionValueTitle": "Pink Sapphire",
+        "optionValue_4Pic": "ps",
+        "optionValue_Short": "ps",
+        "Shopify_Tag": "Small_StoneType_ps"
+      },
+      {
+        "optionValueTitle": "Green Sapphire",
+        "optionValue_4Pic": "gs",
+        "optionValue_Short": "gs",
+        "Shopify_Tag": "Small_StoneType_gs"
+      },
+      {
+        "optionValueTitle": "Orange Sapphire",
+        "optionValue_4Pic": "os",
+        "optionValue_Short": "os",
+        "Shopify_Tag": "Small_StoneType_os"
+      },
+      {
+        "optionValueTitle": "Red Sapphire",
+        "optionValue_4Pic": "rs",
+        "optionValue_Short": "rs",
+        "Shopify_Tag": "Small_StoneType_rs"
+      },
+      {
+        "optionValueTitle": "Yellow Sapphire",
+        "optionValue_4Pic": "ys",
+        "optionValue_Short": "ys",
+        "Shopify_Tag": "Small_StoneType_ys"
+      },
+      {
+        "optionValueTitle": "Amethyst",
+        "optionValue_4Pic": "am",
+        "optionValue_Short": "am",
+        "Shopify_Tag": "Small_StoneType_am"
+      },
+      {
+        "optionValueTitle": "Aquamarine",
+        "optionValue_4Pic": "aq",
+        "optionValue_Short": "aq",
+        "Shopify_Tag": "Small_StoneType_aq"
+      },
+      {
+        "optionValueTitle": "Citrine",
+        "optionValue_4Pic": "ci",
+        "optionValue_Short": "ci",
+        "Shopify_Tag": "Small_StoneType_ci"
+      },
+      {
+        "optionValueTitle": "Blue Topaz",
+        "optionValue_4Pic": "bt",
+        "optionValue_Short": "bt",
+        "Shopify_Tag": "Small_StoneType_bt"
+      },
+      {
+        "optionValueTitle": "Tanzanite",
+        "optionValue_4Pic": "ta",
+        "optionValue_Short": "ta",
+        "Shopify_Tag": "Small_StoneType_ta"
+      },
       {
         "optionValueTitle": "Diamond and Emerald",
         "optionValue_4Pic": "de",
@@ -689,6 +780,7 @@
       }
     ]
   },
+
   {
     "name": "Small Stone Shape",
     "slug": "small_stone_shape",
