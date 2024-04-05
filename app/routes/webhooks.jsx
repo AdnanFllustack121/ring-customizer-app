@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import db, { Products, Session } from "../db.server";
 
-import { generateVariations, makeid } from "../utils";
+import { generateMedias, generateVariations, makeid } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
 import optionsJson from "../../json/options.json"
@@ -183,6 +183,25 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       }, {
         options
       })
+
+
+      // Media START
+      let product = await Products.findOne({
+        product_id: productPayload.admin_graphql_api_id
+      })
+      console.log('productsCreateOrUpdatehandler product', product)
+
+
+      const the_medias = generateMedias(product)
+      console.log('productsCreateOrUpdatehandler the_medias', the_medias)
+
+
+      await Products.findOneAndUpdate({
+        product_id: productPayload.admin_graphql_api_id
+      }, {
+        medias: the_medias
+      })
+      // Media END
 
     }
 
