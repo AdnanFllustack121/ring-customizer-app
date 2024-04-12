@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://bb-if-nba-micro.trycloudflare.com"
+application_url = "https://via-differences-commander-conscious.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://bb-if-nba-micro.trycloudflare.com/auth/callback",
-  "https://bb-if-nba-micro.trycloudflare.com/auth/shopify/callback",
-  "https://bb-if-nba-micro.trycloudflare.com/api/auth/callback"
+  "https://via-differences-commander-conscious.trycloudflare.com/auth/callback",
+  "https://via-differences-commander-conscious.trycloudflare.com/auth/shopify/callback",
+  "https://via-differences-commander-conscious.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://bb-if-nba-micro.trycloudflare.com"
+url = "https://via-differences-commander-conscious.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

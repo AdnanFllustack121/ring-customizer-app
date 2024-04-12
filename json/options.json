@@ -547,7 +547,10 @@
   {
     "name": "Side Stone Shape",
     "slug": "side_stone_shape",
-    "ProductType": "ProductType_Ring",
+    "ProductType": [
+      "ProductType_Ring",
+      "ProductType_Pendant"
+    ],
     "changeMedia": true,
     "values": [
       {

@@ -17,7 +17,8 @@ function App() {
   const [selectedOptions, setSelectedOptions] = useState({})
   const [quantity, setQuantity] = useState(1)
 
-  const [featuredMedia, setFeaturedMedia] = useState(null)
+  const [featuredMediaIndex, setFeaturedMediaIndex] = useState(null)
+  const [allMedias, setAllMedias] = useState(null)
 
   const [isDisabled, setIsDisabled] = useState(true)
 
@@ -32,21 +33,25 @@ function App() {
 
 
   useEffect(() => {
-    console.log('useEffect productInfo', productInfo)
+    // console.log('useEffect productInfo', productInfo)
     if (
       Object.keys(productInfo).length &&
       ('options' in productInfo)
     ) {
-      // console.log('useEffect productInfo.options', productInfo.options)
+      console.log('useEffect productInfo', productInfo)
       setFilteredOptions([...productInfo.options])
     }
   }, [productInfo])
 
 
   useEffect(() => {
-    // console.log('useEffect filteredOptions', filteredOptions)
 
     if ( !Object.keys(selectedOptions).length && !!filteredOptions.length ) {
+      console.log('useEffect filteredOptions', filteredOptions)
+
+      const searchParams = new URLSearchParams(window.location.search)
+      console.log('searchParams', window.location.search, JSON.stringify(searchParams))
+
       // console.log('productInfo?.variants?.length', productInfo?.variants?.length)
       // console.log('productInfo.options', productInfo.options)
 
@@ -211,9 +216,9 @@ function App() {
 
 
   useEffect(() => {
-    // console.log('useEffect selectedOptions', selectedOptions)
 
     if (!!Object.keys(selectedOptions).length) {
+      console.log('useEffect selectedOptions', selectedOptions)
 
 
       // Set Filtered Options START
@@ -241,9 +246,9 @@ function App() {
       if (!!selectedOptionString && !!productInfo?.medias?.length) {
         const selectedMedia = productInfo.medias.find(medaa => medaa.media_title === selectedOptionString)
         if (!!selectedMedia) {
-          setFeaturedMedia(selectedMedia.media_image_path)
+          setAllMedias(selectedMedia.media_image_paths)
         } else {
-          setFeaturedMedia(null)
+          setAllMedias(null)
         }
       }
       // Change Media END
@@ -290,29 +295,37 @@ function App() {
     */
 
     // 
-    // const params = new URLSearchParams(window.location.search)
-    const params = new URLSearchParams()
-    Object.keys(selectedOptions).forEach((index) => {
-      params.set(
-        selectedOptions[index].option_slug,
-        selectedOptions[index].option_value_slug
-      )
-    })
-    // console.log('params', params)
-    window.history.replaceState("", "", "?" + params.toString())
+    const existingParams = new URLSearchParams(window.location.search)
+    console.log('existingParams', existingParams)
+
+    // if (!!Object.keys(selectedOptions).length) {
+      console.info('Cleaning Params')
+      const params = new URLSearchParams()
+      Object.keys(selectedOptions).forEach((index) => {
+        params.set(
+          selectedOptions[index].option_slug,
+          selectedOptions[index].option_value_slug
+        )
+      })
+      // console.log('params', params)
+      window.history.replaceState("", "", "?" + params.toString())
+      console.log('Setting Params')
+    // }
     // 
 
   }, [selectedOptions])
 
 
   useEffect(() => {
-    if (!!featuredMedia) {
-      console.log('useEffect featuredMedia', featuredMedia)
+    console.log('useEffect allMedias', allMedias)
+
+    if (!!allMedias && !!allMedias?.length) {
       document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'none'
+      setFeaturedMediaIndex(0)
     } else {
       document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
     }
-  }, [featuredMedia])
+  }, [allMedias])
 
 
   const onSelectOption = (option_index, optn, option_value) => {
@@ -446,17 +459,66 @@ function App() {
 
   return (
     <>
-      {!!featuredMedia && createPortal(
-        <img
-          src={
-            featuredMedia.includes('http') ? featuredMedia : `/apps/jewelry-builder-app${featuredMedia}`
+      {console.log('allMedias?.length', allMedias?.length, featuredMediaIndex)}
+
+      {!!allMedias?.length && (featuredMediaIndex !== null)  && createPortal(
+        <>
+
+          {
+            allMedias[featuredMediaIndex].includes('mp4')
+            ?
+            <video class="video-player" id="myVideo" width="100%" height="100%" autoplay="autoplay" loop="loop">
+              <source src={allMedias[featuredMediaIndex]} type="video/mp4" />
+            </video>
+            :
+            <img
+              src={
+                allMedias[featuredMediaIndex].includes('http') ? allMedias[featuredMediaIndex] : `/apps/jewelry-builder-app${allMedias[featuredMediaIndex]}`
+              }
+              dataSelectedOptions={JSON.stringify(allMedias[featuredMediaIndex])}
+              style={{
+                width: '100%',
+                height: '100%'
+              }}
+            />
           }
-          dataSelectedOptions={JSON.stringify(featuredMedia)}
-          style={{
-            width: '100%',
-            height: '100%'
-          }}
-        />,
+
+          <ul className="product-image-thumbs">
+            {allMedias.map((singleMedia, singleMediaIndex) => {
+              return (
+                <>
+                  {
+                    !singleMedia.includes('mp4')
+                    ?
+                    <li>
+                      <a
+                        className="thumb-link"
+                        title=""
+                        data-image-index={singleMediaIndex}
+                        onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
+                      >
+                        <img src={singleMedia} width="75" height="75" alt="" />
+                      </a>
+                    </li>
+                    :
+                    <li
+                      className="video-thumb-container"
+                      style={{ position: 'relative' }}
+                      onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
+                    >
+                      <div className="video-thumb-overlay" style={{ width: '70px', height: '70px' }}></div>
+                      <img src={allMedias[0]} style={{
+                        width: '70px',
+                        height: '70px'
+                      }} />
+                    </li>
+                  }
+                </>
+              )
+            })}
+
+          </ul>
+        </>,
         document.querySelector('#jewelry-builder-app-media-wrapper')
       )}
 

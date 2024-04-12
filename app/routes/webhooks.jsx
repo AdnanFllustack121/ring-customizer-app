@@ -111,7 +111,8 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       if (
         (
           ( optionJsonSingle.ProductType === 'all' ) ||
-          ( optionJsonSingle.ProductType === whichProductType )
+          ( optionJsonSingle.ProductType === whichProductType ) ||
+          optionJsonSingle.ProductType.includes(whichProductType)
         )
         &&
         !!option_values.length

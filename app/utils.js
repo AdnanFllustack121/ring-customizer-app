@@ -135,6 +135,8 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
         })
         if (product_options.length) {
 
+            let media_image_paths = []
+
             // 
             let media_image_path = ''
             if (!!productSku) {
@@ -270,21 +272,33 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
                         ////////////////////////
 
+
+                        // All 6 images
+                        for (let index = 1; index <= 6; index++) {
+                            media_image_paths.push(`${final_media_url}0${index}.jpg`)
+                        }
+
+
+                        // Video START
+                        media_image_paths.push(`${final_media_url}36.mp4`)
+                        // Video END
+
+
                         final_media_url += '01.jpg'
                         console.log('final_media_url', final_media_url)
-
+    
                         media_image_path = final_media_url
                     }
                 }
             }
             // 
 
-
             mediaRecords.push({
               media_id: makeid(24),
               media_title: variant_title.join(' / '),
               product_options,
-              media_image_path
+              media_image_path,
+              media_image_paths
             //   variant_price: ''
             })
         }

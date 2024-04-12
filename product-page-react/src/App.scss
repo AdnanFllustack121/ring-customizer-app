@@ -267,3 +267,47 @@ div:has(> product-form) {
     }
   }
 }
+
+ul.product-image-thumbs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    &:first-child {
+      margin-left: -1px;
+    }
+
+    display: inline-block;
+
+    .video-thumb-overlay {
+      display: block;
+      background-size: cover;
+      background-color: transparent !important;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-image: url("https://kattdiamonds.com/skin/frontend/novel/default/images/play.png");
+      z-index: 2;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+  }
+
+  a:hover {
+    border-color: #c7c7c7;
+  }
+
+  a {
+    display: inline-block;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  img {
+    width: 70px;
+    height: 70px;
+  }
+
+}
