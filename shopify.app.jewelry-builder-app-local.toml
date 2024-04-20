@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://via-differences-commander-conscious.trycloudflare.com"
+application_url = "https://shaped-handbags-brake-lm.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://via-differences-commander-conscious.trycloudflare.com/auth/callback",
-  "https://via-differences-commander-conscious.trycloudflare.com/auth/shopify/callback",
-  "https://via-differences-commander-conscious.trycloudflare.com/api/auth/callback"
+  "https://shaped-handbags-brake-lm.trycloudflare.com/auth/callback",
+  "https://shaped-handbags-brake-lm.trycloudflare.com/auth/shopify/callback",
+  "https://shaped-handbags-brake-lm.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://via-differences-commander-conscious.trycloudflare.com"
+url = "https://shaped-handbags-brake-lm.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

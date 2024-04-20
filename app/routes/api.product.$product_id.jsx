@@ -29,10 +29,11 @@ export const action = async ({ params, request }) => {
         let image_path = ''
         if (!!payload?.image) {
             // image_path = await createFile('image_path.png', payload.image)
-            image_path = payload.image.replace(/^data:image\/png;base64,/, "")
+            // image_path = payload.image.replace(/^data:image\/png;base64,/, "")
+            image_path = payload.image
         }
 
-        if (!!image_path) {
+        // if (!!image_path) {
             const shop_domain = request.headers.get('x-shop-domain')
             const session = await Session.findOne({ shop: shop_domain })
 
@@ -56,22 +57,26 @@ export const action = async ({ params, request }) => {
                 // console.log('payload.options', payload.options)
                 let options_price = 0
 
-                const payload_options = Object.keys(payload.options)
-                for (let index = 0; index < payload_options.length; index++) {
-                    const payload_option = payload.options[payload_options[index]]
+                // const payload_options = Object.keys(payload.options)
+                // for (let index = 0; index < payload_options.length; index++) {
+                //     const payload_option = payload.options[payload_options[index]]
 
-                    const category = productCustomizationData.categories.find(cat => cat.category_id === payload_option.category_id)
+                //     const category = productCustomizationData.categories.find(cat => cat.category_id === payload_option.category_id)
 
-                    const option = category.options.find(opt => opt.option_id === payload_option.option_id)
+                //     const option = category.options.find(opt => opt.option_id === payload_option.option_id)
 
-                    options_price += +option.option_price
+                //     options_price += +option.option_price
 
-                }
+                // }
                 console.log('options_price', options_price)
 
-                const total_price = parseFloat(+product_data.variants[0].price + options_price).toFixed(2)
+                // const total_price = parseFloat(+product_data.variants[0].price + options_price).toFixed(2)
+                const total_price = parseFloat(+product_data.variants[0].price).toFixed(2)
 
                 console.log('total_price', total_price)
+                // return json({
+                //     success: false
+                // })
 
                 const productCreateResponse = await shopifyRest({
                     session,
@@ -86,7 +91,8 @@ export const action = async ({ params, request }) => {
                             // "status": "draft"
                             "tags": `related_to_${product_data.id}`,
                             "images": [{
-                                "attachment": image_path
+                                // "attachment": image_path
+                                "src": image_path
                             }],
                             "metafields": [{
                                 "key": "hidden",
@@ -117,7 +123,7 @@ export const action = async ({ params, request }) => {
 
             }
 
-        }
+        // }
 
 
         //   const formData = await request.formData()

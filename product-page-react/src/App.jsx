@@ -11,6 +11,9 @@ import { createPortal } from 'react-dom';
 import "./App.scss";
 import './App.css'
 
+
+const proxyBaseUrl = `/apps/jewelry-builder-app`
+
 function App() {
   const [productInfo, setProductInfo] = useState({})
   const [filteredOptions, setFilteredOptions] = useState([])
@@ -20,7 +23,7 @@ function App() {
   const [featuredMediaIndex, setFeaturedMediaIndex] = useState(null)
   const [allMedias, setAllMedias] = useState(null)
 
-  const [isDisabled, setIsDisabled] = useState(true)
+  const [isDisabled, setIsDisabled] = useState(false)
 
 
   useEffect(() => {
@@ -456,6 +459,76 @@ function App() {
     }
   }
 
+  const handleAddToCart = async (event) => {
+    console.log('handleAddToCart')
+
+    // setIsAddToCartLoading(true)
+
+    event.preventDefault()
+
+    const line_item_properties = {}
+    const formData = {
+      options: {}
+    }
+
+    console.log('selectedOptions', selectedOptions)
+
+    Object.values(selectedOptions).forEach(selected_Option => {
+      line_item_properties[selected_Option.option_title] = selected_Option.option_value_title
+    })
+
+    for (const key in selectedOptions) {
+      const selected_Option = selectedOptions[key]
+      if (!!selected_Option) {
+        // formData.options[selected_Option.option_title] = {
+        //   category_id: selected_Option.category_id,
+        //   option_id: selected_Option.option_id
+        // }
+
+        formData.options[selected_Option.option_title] = selected_Option.option_value_title
+      }
+    }
+
+    console.log('line_item_properties', line_item_properties)
+
+    if (Object.keys(formData).length) {
+  
+      // const dataURL = document.querySelector('canvas#fishing-reel-customizer').toDataURL()
+      formData.image = allMedias[0]
+
+      console.log('formData', formData)
+  
+      const productResponse = await fetch(`${proxyBaseUrl}/api/product/${ShopifyAnalytics.meta.product.id}`, {
+        method: "POST",
+        body: JSON.stringify(formData)
+      }).then((response) => response.json())
+      if (
+        !!productResponse.success &&
+        !!productResponse.data
+      ) {
+        const ajaxResponse = await fetch(window.Shopify.routes.root + `cart/add.js`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            'items': [{
+              id: productResponse.data,
+              quantity: 1,
+              properties: line_item_properties
+            }]
+          })
+        }).then((response) => response.json())
+
+        window.location = '/cart'
+        // setIsAddToCartLoading(false)
+      } else {
+        // setIsAddToCartLoading(false)
+      }
+    }
+
+
+  }
 
   return (
     <>
@@ -485,33 +558,60 @@ function App() {
 
           <ul className="product-image-thumbs">
             {allMedias.map((singleMedia, singleMediaIndex) => {
+
+              console.log('singleMedia', singleMedia)
+
               return (
                 <>
                   {
-                    !singleMedia.includes('mp4')
+                    !singleMedia
                     ?
-                    <li>
-                      <a
-                        className="thumb-link"
-                        title=""
-                        data-image-index={singleMediaIndex}
+                    <></>
+                    :
+                    (
+                      !singleMedia.includes('mp4')
+                      ?
+                      <li>
+                        <a
+                          className="thumb-link"
+                          title=""
+                          data-image-index={singleMediaIndex}
+                          onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
+                        >
+                          <img
+                            src={singleMedia}
+                            width="75"
+                            height="75"
+                            alt=""
+                            onLoad={(event) => {
+                              console.log('onLoad event', event)
+                            }}
+                            onError={(event) => {
+                              console.log('onError singleMediaIndex, event', singleMediaIndex, event)
+                              setAllMedias(prevMedias => {
+                                const newMedias = [...prevMedias]
+                                newMedias[singleMediaIndex] = ""
+                                return [
+                                  ...newMedias
+                                ]
+                              })
+                            }}
+                          />
+                        </a>
+                      </li>
+                      :
+                      <li
+                        className="video-thumb-container"
+                        style={{ position: 'relative' }}
                         onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                       >
-                        <img src={singleMedia} width="75" height="75" alt="" />
-                      </a>
-                    </li>
-                    :
-                    <li
-                      className="video-thumb-container"
-                      style={{ position: 'relative' }}
-                      onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
-                    >
-                      <div className="video-thumb-overlay" style={{ width: '70px', height: '70px' }}></div>
-                      <img src={allMedias[0]} style={{
-                        width: '70px',
-                        height: '70px'
-                      }} />
-                    </li>
+                        <div className="video-thumb-overlay" style={{ width: '70px', height: '70px' }}></div>
+                        <img src={allMedias[0]} style={{
+                          width: '70px',
+                          height: '70px'
+                        }} />
+                      </li>
+                    )
                   }
                 </>
               )
@@ -576,7 +676,7 @@ function App() {
       </fieldset>
 
       <fieldset>
-        <button type="submit" disabled={isDisabled}>
+        <button type="submit" disabled={isDisabled} onClick={handleAddToCart}>
           Add to cart
         </button>
       </fieldset>
