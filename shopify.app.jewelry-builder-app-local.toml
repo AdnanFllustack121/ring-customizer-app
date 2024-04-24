@@ -2,25 +2,25 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://shaped-handbags-brake-lm.trycloudflare.com"
+application_url = "https://referenced-diameter-bmw-oriental.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://shaped-handbags-brake-lm.trycloudflare.com/auth/callback",
-  "https://shaped-handbags-brake-lm.trycloudflare.com/auth/shopify/callback",
-  "https://shaped-handbags-brake-lm.trycloudflare.com/api/auth/callback"
+  "https://referenced-diameter-bmw-oriental.trycloudflare.com/auth/callback",
+  "https://referenced-diameter-bmw-oriental.trycloudflare.com/auth/shopify/callback",
+  "https://referenced-diameter-bmw-oriental.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://shaped-handbags-brake-lm.trycloudflare.com"
+url = "https://referenced-diameter-bmw-oriental.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

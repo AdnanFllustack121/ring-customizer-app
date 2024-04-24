@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import db, { Products, Session } from "../db.server";
 
-import { generateMedias, generateVariations, makeid } from "../utils";
+import { generateMedias, generateVariations, makeid, shopifyRest } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
 import optionsJson from "../../json/options.json"
@@ -34,11 +34,18 @@ export const action = async ({ request }) => {
     case "PRODUCTS_CREATE":
     case "PRODUCTS_UPDATE":
       // throw new Response()
-      productsCreateOrUpdatehandler(payload)
+      productsCreateOrUpdateHandler(payload)
       break;
     case "PRODUCTS_DELETE":
       productsDeleteHandler(payload)
       break;
+
+
+    case "ORDERS_CREATE":
+      ordersCreateHandler(payload)
+      break;
+
+
     default:
       throw new Response("Unhandled webhook topic", { status: 404 });
   }
@@ -47,9 +54,9 @@ export const action = async ({ request }) => {
 };
 
 
-const productsCreateOrUpdatehandler = async (productPayload) => {
+const productsCreateOrUpdateHandler = async (productPayload) => {
 
-  console.log('productsCreateOrUpdatehandler START', productPayload)
+  // console.log('productsCreateOrUpdateHandler START', productPayload)
 
   try {
     const productTags = productPayload.tags.split(', ')
@@ -91,7 +98,7 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
 
       if (optionJsonSingle?.addOnlyWhen) {
-        console.log('optionJsonSingle.addOnlyWhen', optionJsonSingle.addOnlyWhen)
+        // console.log('optionJsonSingle.addOnlyWhen', optionJsonSingle.addOnlyWhen)
 
         if (typeof optionJsonSingle.addOnlyWhen === "string") {
           if (!options.find(option => option.option_slug === optionJsonSingle.addOnlyWhen)) {
@@ -190,11 +197,11 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
       let product = await Products.findOne({
         product_id: productPayload.admin_graphql_api_id
       })
-      console.log('productsCreateOrUpdatehandler product', product)
+      // console.log('productsCreateOrUpdateHandler product', product)
 
 
       const the_medias = generateMedias(product)
-      console.log('productsCreateOrUpdatehandler the_medias', the_medias)
+      // console.log('productsCreateOrUpdateHandler the_medias', the_medias)
 
 
       await Products.findOneAndUpdate({
@@ -206,10 +213,10 @@ const productsCreateOrUpdatehandler = async (productPayload) => {
 
     }
 
-    console.log('productsCreateOrUpdatehandler END')
+    // console.log('productsCreateOrUpdateHandler END')
 
   } catch (error) {
-    console.log('productsCreateOrUpdatehandler error', error)
+    console.log('productsCreateOrUpdateHandler error', error)
   }
 }
 
@@ -223,4 +230,35 @@ const productsDeleteHandler = async ({ id }) => {
   })
   console.log('productDataDelete', productDataDelete)
 
+}
+
+
+const ordersCreateHandler = async (orderPayload) => {
+  console.log('ordersCreateHandler START orderPayload', orderPayload)
+
+  const custom_product_ids = []
+
+  orderPayload.line_items.forEach((line_item) => {
+
+    if (line_item.vendor.includes('related_to_')) {
+      custom_product_ids.push(line_item.product_id)
+    }
+
+  })
+
+  console.log('custom_product_ids', custom_product_ids)
+
+  const session = await Session.findOne()
+
+  custom_product_ids.forEach(async custom_product_id => {
+    const deleteProduct = await shopifyRest({
+      session,
+      method: "DELETE",
+      path: `products/${custom_product_id}.json`,
+    })
+    console.log('deleteProduct')
+  })
+
+
+  console.log('ordersCreateHandler END')
 }

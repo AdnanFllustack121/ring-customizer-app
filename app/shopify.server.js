@@ -42,6 +42,11 @@ const shopify = shopifyApp({
     PRODUCTS_DELETE: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: "/webhooks",
+    },
+
+    ORDERS_CREATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks",
     }
   },
   hooks: {
