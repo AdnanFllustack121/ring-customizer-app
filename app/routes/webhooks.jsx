@@ -98,8 +98,6 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
 
 
       if (optionJsonSingle?.addOnlyWhen) {
-        // console.log('optionJsonSingle.addOnlyWhen', optionJsonSingle.addOnlyWhen)
-
         if (typeof optionJsonSingle.addOnlyWhen === "string") {
           if (!options.find(option => option.option_slug === optionJsonSingle.addOnlyWhen)) {
             continue;
@@ -107,7 +105,6 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
         } else {
 
         }
-
       }
 
 
@@ -143,10 +140,6 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
         option_title: optionJsonSingle.name,
         option_type: 'swatch',
         option_slug: optionJsonSingle.slug,
-        option_display_when: !!optionJsonSingle?.showOnlyWhen ? {
-          option_slug: optionJsonSingle.showOnlyWhen.optionSlug,
-          option_value_slug: optionJsonSingle.showOnlyWhen.optionValueSlug
-        } : null,
         option_values: found_option_values.filter(found_option_value => {
           if (!!found_option_value?.ProductType) {
             if (

@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://referenced-diameter-bmw-oriental.trycloudflare.com"
+application_url = "https://cfr-automobile-persons-sake.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://referenced-diameter-bmw-oriental.trycloudflare.com/auth/callback",
-  "https://referenced-diameter-bmw-oriental.trycloudflare.com/auth/shopify/callback",
-  "https://referenced-diameter-bmw-oriental.trycloudflare.com/api/auth/callback"
+  "https://cfr-automobile-persons-sake.trycloudflare.com/auth/callback",
+  "https://cfr-automobile-persons-sake.trycloudflare.com/auth/shopify/callback",
+  "https://cfr-automobile-persons-sake.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://referenced-diameter-bmw-oriental.trycloudflare.com"
+url = "https://cfr-automobile-persons-sake.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

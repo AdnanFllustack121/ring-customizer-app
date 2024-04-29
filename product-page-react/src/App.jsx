@@ -11,7 +11,6 @@ import { createPortal } from 'react-dom';
 import "./App.scss";
 import './App.css'
 
-
 const proxyBaseUrl = `/apps/jewelry-builder-app`
 
 function App() {
@@ -22,6 +21,7 @@ function App() {
 
   const [featuredMediaIndex, setFeaturedMediaIndex] = useState(null)
   const [allMedias, setAllMedias] = useState(null)
+  const [isFirstUnavailable, setIsFirstUnavailable] = useState(false)
 
   const [isDisabled, setIsDisabled] = useState(false)
 
@@ -53,7 +53,7 @@ function App() {
       console.log('useEffect filteredOptions', filteredOptions)
 
       const searchParams = new URLSearchParams(window.location.search)
-      console.log('searchParams', window.location.search, JSON.stringify(searchParams))
+      console.log('searchParams', searchParams, window.location.search, JSON.stringify(searchParams))
 
       // console.log('productInfo?.variants?.length', productInfo?.variants?.length)
       // console.log('productInfo.options', productInfo.options)
@@ -63,14 +63,21 @@ function App() {
 
       for ( let index = 0; index < filteredOptions.length; index++ ) {
         const mainOption = filteredOptions[index]
-        // console.log('mainOption.option_slug', mainOption.option_slug)
+        console.log('mainOption.option_slug', mainOption.option_slug)
 
         if (!mainOption?.option_values?.length) {
           continue
         }
 
-        const mainOptionValue = mainOption.option_values[0]
-        // console.log('mainOptionValue', mainOptionValue)
+        let mainOptionValue = mainOption.option_values[0]
+
+        if (!!searchParams.size && searchParams.has(mainOption.option_slug)) {
+          const searchParamsoption_slug = searchParams.get(mainOption.option_slug)
+          const foundOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === searchParamsoption_slug)
+          if (foundOptionValue) {
+            mainOptionValue = foundOptionValue
+          }
+        }
 
         // 
         const foundOptionInJson = optionsJson.find(ojOption => ojOption.slug === mainOption.option_slug)
@@ -100,6 +107,7 @@ function App() {
         }
         // 
 
+
         const option_with_value = {
           option_id: mainOption.option_id,
           option_title: mainOption.option_title,
@@ -115,12 +123,13 @@ function App() {
 
           change_media: !!foundOptionInJson?.changeMedia ? true : false
         }
+
         initiallySelectedOptions[initiallySelectedOptionIndex] = option_with_value
 
         ++initiallySelectedOptionIndex
       }
 
-      // console.log('initiallySelectedOptions', initiallySelectedOptions)
+      console.log('initiallySelectedOptions', initiallySelectedOptions)
 
       setSelectedOptions(initiallySelectedOptions)
     }
@@ -244,7 +253,7 @@ function App() {
       // Set Filtered Options END
 
       // Change Media START
-      
+
       const selectedOptionString = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media).map(selectedOption => selectedOption.option_value_title).join(' / ')
       if (!!selectedOptionString && !!productInfo?.medias?.length) {
         const selectedMedia = productInfo.medias.find(medaa => medaa.media_title === selectedOptionString)
@@ -301,8 +310,8 @@ function App() {
     const existingParams = new URLSearchParams(window.location.search)
     console.log('existingParams', existingParams)
 
-    // if (!!Object.keys(selectedOptions).length) {
-      console.info('Cleaning Params')
+    if (!!Object.keys(selectedOptions).length) {
+      console.log('Cleaning Params')
       const params = new URLSearchParams()
       Object.keys(selectedOptions).forEach((index) => {
         params.set(
@@ -313,13 +322,14 @@ function App() {
       // console.log('params', params)
       window.history.replaceState("", "", "?" + params.toString())
       console.log('Setting Params')
-    // }
+    }
     // 
 
   }, [selectedOptions])
 
 
   useEffect(() => {
+    // console.log('productInfo.medias', productInfo.medias)
     console.log('useEffect allMedias', allMedias)
 
     if (!!allMedias && !!allMedias?.length) {
@@ -329,6 +339,39 @@ function App() {
       document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
     }
   }, [allMedias])
+
+
+  useEffect(() => {
+    if (isFirstUnavailable) {
+      console.log('useEffect isFirstUnavailable', isFirstUnavailable, selectedOptions, filteredOptions)
+
+      const metalTypeOption = filteredOptions.find(filteredOption => filteredOption.option_slug === 'metal_type')
+      if (metalTypeOption) {
+        const selectedOptionsHavingMedia = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media && selectedOption.option_slug != "metal_type")
+
+        const metalTypeOptionValue = metalTypeOption.option_values.find(metalOptionValue => metalOptionValue.option_value_slug.includes('_ww'))
+
+        const mergedMediaOptions = [...selectedOptionsHavingMedia, metalTypeOptionValue]
+        const mediaOptionTitle = mergedMediaOptions.map(mergedMediaOption => mergedMediaOption.option_value_title).join(' / ')
+
+        if (!!productInfo?.medias?.length) {
+          const initial_media_image_paths = productInfo.medias.find(media => media.media_title === mediaOptionTitle).media_image_paths
+          console.log('initial_media_image_paths', initial_media_image_paths)
+          setAllMedias(prevMedias => {
+            const newMedias = [...prevMedias]
+            for (let index = 1; index <= 5; index++) {
+              const initial_media_image_path = initial_media_image_paths[index];
+              newMedias[index] = initial_media_image_path
+            }
+            return [
+              ...newMedias
+            ]
+          })
+        }
+      }
+    }
+    setIsFirstUnavailable(false)
+  }, [isFirstUnavailable])
 
 
   const onSelectOption = (option_index, optn, option_value) => {
@@ -351,7 +394,7 @@ function App() {
     }
     // console.log('option_with_value', option_with_value)
 
-    
+
     setSelectedOptions(prevSelectedOptions => {
 
       // console.log('prevSelectedOptions', prevSelectedOptions)
@@ -419,7 +462,7 @@ function App() {
 
           newSelectedOptions[selectedIndex] = previousOpton
         }
-  
+
         ++selectedIndex
       })
       // console.log('newSelectedOptions', newSelectedOptions)
@@ -442,14 +485,12 @@ function App() {
     })
   }
 
-
   const getProductById = async () => {
     const productResponse = await fetch(`/apps/jewelry-builder-app/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
     if (!!productResponse && !!productResponse.success) {
       setProductInfo(productResponse.data)
     }
   }
-
 
   const setQuantityInput = (valueAsNumber) => {
     if ( typeof valueAsNumber === "number" && valueAsNumber > 0 ) {
@@ -460,6 +501,8 @@ function App() {
   }
 
   const handleAddToCart = async (event) => {
+    setIsDisabled(true)
+
     console.log('handleAddToCart')
 
     // setIsAddToCartLoading(true)
@@ -530,10 +573,9 @@ function App() {
 
   }
 
+
   return (
     <>
-      {console.log('allMedias?.length', allMedias?.length, featuredMediaIndex)}
-
       {!!allMedias?.length && (featuredMediaIndex !== null)  && createPortal(
         <>
 
@@ -559,7 +601,7 @@ function App() {
           <ul className="product-image-thumbs">
             {allMedias.map((singleMedia, singleMediaIndex) => {
 
-              console.log('singleMedia', singleMedia)
+              // console.log('singleMedia', singleMedia)
 
               return (
                 <>
@@ -584,17 +626,24 @@ function App() {
                             height="75"
                             alt=""
                             onLoad={(event) => {
-                              console.log('onLoad event', event)
+                              // console.log('onLoad event', event)
                             }}
                             onError={(event) => {
-                              console.log('onError singleMediaIndex, event', singleMediaIndex, event)
-                              setAllMedias(prevMedias => {
-                                const newMedias = [...prevMedias]
-                                newMedias[singleMediaIndex] = ""
-                                return [
-                                  ...newMedias
-                                ]
-                              })
+                              // console.log('onError singleMediaIndex, event', singleMediaIndex, event)
+                              // console.log('onError selectedOptions', selectedOptions)
+                              if (singleMediaIndex === 1) {
+                                setIsFirstUnavailable(true)
+                              }
+                              else {
+                                // console.log('Before setting media isFirstUnavailable', isFirstUnavailable)
+                                setAllMedias(prevMedias => {
+                                  const newMedias = [...prevMedias]
+                                  newMedias[singleMediaIndex] = ""
+                                  return [
+                                    ...newMedias
+                                  ]
+                                })
+                              }
                             }}
                           />
                         </a>
@@ -602,10 +651,9 @@ function App() {
                       :
                       <li
                         className="video-thumb-container"
-                        style={{ position: 'relative' }}
                         onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                       >
-                        <div className="video-thumb-overlay" style={{ width: '70px', height: '70px' }}></div>
+                        <div className="video-thumb-overlay"></div>
                         <img src={allMedias[0]} style={{
                           width: '70px',
                           height: '70px'

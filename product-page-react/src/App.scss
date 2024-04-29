@@ -280,18 +280,24 @@ ul.product-image-thumbs {
 
     display: inline-block;
 
-    .video-thumb-overlay {
-      display: block;
-      background-size: cover;
-      background-color: transparent !important;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-image: url("https://kattdiamonds.com/skin/frontend/novel/default/images/play.png");
-      z-index: 2;
-      position: absolute;
-      top: 0;
-      left: 0;
-      cursor: pointer;
+    &.video-thumb-container {
+      position: relative;
+
+      .video-thumb-overlay {
+        display: block;
+        background-size: cover;
+        background-color: transparent !important;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-image: url("play.png");
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        width: 70px;
+        height: 70px;
+      }
     }
   }
 
