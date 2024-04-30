@@ -237,23 +237,61 @@ function App() {
       let availableOptionInputsValues = []
       for (let index = 0; index < Object.values(selectedOptions).length; index++) {
         const selectedOption = Object.values(selectedOptions)[index]
-        // console.log('selectedOption', selectedOption)
+        console.log('selectedOption', selectedOption)
 
         const productInfo_found_option = productInfo.options.find(productInfo_option => productInfo_option.option_slug === selectedOption.option_slug)
+
+        let new_option_values = productInfo_found_option.option_values
+
+        // Special condition for center_stone_weight START
+        if (productInfo_found_option.option_slug === 'center_stone_weight') {
+          const center_stone_weights = optionsJson.find(optionFromJson => optionFromJson.slug === 'center_stone_weight')
+
+          const center_stone_type_with_value = Object.values(selectedOptions).find(selectedOption_option_slug => selectedOption_option_slug.option_slug === 'center_stone_type')
+
+          new_option_values = productInfo_found_option.option_values.filter(found_option_value => {
+
+            const center_stone_weight_value_from_option_json = center_stone_weights.values.find(center_stone_weight_value_from_option_json => center_stone_weight_value_from_option_json.optionValueTitle === found_option_value.option_value_slug)
+            console.log('center_stone_weight_value_from_option_json', center_stone_weight_value_from_option_json)
+            
+            if (!!center_stone_weight_value_from_option_json?.hideOnlyWhen) {
+
+              if ( !!center_stone_weight_value_from_option_json.hideOnlyWhen?.ProductType ) {
+
+                if ( center_stone_weight_value_from_option_json.hideOnlyWhen.ProductType === productInfo.product_type && center_stone_type_with_value.option_value_slug === "ld" ) {
+                  return false
+                } else {
+                  return true
+                }
+
+              }
+
+
+              if (center_stone_type_with_value.option_value_slug === "ld") {
+                return false
+              }
+
+            }
+
+
+            return true
+          })
+        }
+        // Special condition for center_stone_weight END
 
         availableOptionInputsValues.push({
           option_id: productInfo_found_option.option_id,
           option_title: productInfo_found_option.option_title,
           option_slug: productInfo_found_option.option_slug,
           option_type: productInfo_found_option.option_type,
-          option_values: productInfo_found_option.option_values
+          option_values: new_option_values
         })
       }
       setFilteredOptions(availableOptionInputsValues)
       // Set Filtered Options END
 
-      // Change Media START
 
+      // Change Media START
       const selectedOptionString = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media).map(selectedOption => selectedOption.option_value_title).join(' / ')
       if (!!selectedOptionString && !!productInfo?.medias?.length) {
         const selectedMedia = productInfo.medias.find(medaa => medaa.media_title === selectedOptionString)
@@ -307,8 +345,8 @@ function App() {
     */
 
     // 
-    const existingParams = new URLSearchParams(window.location.search)
-    console.log('existingParams', existingParams)
+    // const existingParams = new URLSearchParams(window.location.search)
+    // console.log('existingParams', existingParams)
 
     if (!!Object.keys(selectedOptions).length) {
       console.log('Cleaning Params')
@@ -587,14 +625,10 @@ function App() {
             </video>
             :
             <img
+              id='image-main'
               src={
                 allMedias[featuredMediaIndex].includes('http') ? allMedias[featuredMediaIndex] : `/apps/jewelry-builder-app${allMedias[featuredMediaIndex]}`
               }
-              dataSelectedOptions={JSON.stringify(allMedias[featuredMediaIndex])}
-              style={{
-                width: '100%',
-                height: '100%'
-              }}
             />
           }
 
@@ -654,10 +688,7 @@ function App() {
                         onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                       >
                         <div className="video-thumb-overlay"></div>
-                        <img src={allMedias[0]} style={{
-                          width: '70px',
-                          height: '70px'
-                        }} />
+                        <img src={allMedias[0]} />
                       </li>
                     )
                   }

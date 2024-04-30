@@ -190,54 +190,104 @@
     "values": [
       {
         "optionValueTitle": "0.10",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.15",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.25",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.33",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.40",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.45",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.50",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld",
+          "ProductType": "Earrings"
+        }
       },
       {
         "optionValueTitle": "0.60",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.66",
-        "ProductType": "ProductType_Earrings"
+        "ProductType": "ProductType_Earrings",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.75",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld",
+          "ProductType": "Earrings"
+        }
       },
       {
         "optionValueTitle": "0.80",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "0.90",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.00",
@@ -245,15 +295,27 @@
       },
       {
         "optionValueTitle": "1.10",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.25",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.35",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.50",
@@ -261,19 +323,35 @@
       },
       {
         "optionValueTitle": "1.60",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.75",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.80",
-        "ProductType": "ProductType_Earrings"
+        "ProductType": "ProductType_Earrings",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "1.90",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.00",
@@ -281,37 +359,65 @@
       },
       {
         "optionValueTitle": "2.10",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.25",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.40",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.50",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.60",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.75",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "2.90",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "3.00",
@@ -319,15 +425,27 @@
       },
       {
         "optionValueTitle": "3.25",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "3.50",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "3.75",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "4.00",
@@ -338,40 +456,69 @@
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "4.50",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "4.75",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "5.00",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld",
+          "ProductType": "Earrings"
+        }
       },
       {
         "optionValueTitle": "5.25",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "5.50",
-        "ProductType": "all"
+        "ProductType": "all",
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "5.75",
         "ProductType": [
           "ProductType_Ring",
           "ProductType_Pendant"
-        ]
+        ],
+        "hideOnlyWhen": {
+          "optionSlug": "center_stone_type",
+          "optionValueSlug": "ld"
+        }
       },
       {
         "optionValueTitle": "6.00",

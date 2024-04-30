@@ -6,6 +6,10 @@ div:has(> product-form) {
   display: none;
 }
 
+#jewelry-builder-app-media-wrapper #image-main {
+  width: 100%;
+  height: 100%;
+}
 
 [id*="shopify-block-"] {
   -webkit-user-select: none; /* Safari */
