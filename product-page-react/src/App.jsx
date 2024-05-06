@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 
 import "./App.scss";
 import './App.css'
+import { RingBuilderPriceCall } from './priceCalculator';
 
 const proxyBaseUrl = `/apps/jewelry-builder-app`
 
@@ -25,9 +26,26 @@ function App() {
 
   const [isDisabled, setIsDisabled] = useState(false)
 
+  const [metaFieldData, setMetaFieldData] = useState({})
+
+  const [finalProductPrice, setFinalProductPrice] = useState(0)
+
+
+  useEffect(() => {
+    console.log('useEffect metaFieldData', metaFieldData)
+  }, [metaFieldData])
+
 
   useEffect(() => {
     console.log('useEffect getProductById()')
+
+    // 
+    const jewelrybuilderapp_script_tag = document.querySelector('#jewelrybuilderapp')
+    if (!!jewelrybuilderapp_script_tag && !!jewelrybuilderapp_script_tag?.text) {
+      const jewelrybuilderapp_json = JSON.parse(jewelrybuilderapp_script_tag.text)
+      setMetaFieldData(jewelrybuilderapp_json)
+    }
+    // 
 
     // console.log('optionsJson', optionsJson)
 
@@ -252,7 +270,7 @@ function App() {
           new_option_values = productInfo_found_option.option_values.filter(found_option_value => {
 
             const center_stone_weight_value_from_option_json = center_stone_weights.values.find(center_stone_weight_value_from_option_json => center_stone_weight_value_from_option_json.optionValueTitle === found_option_value.option_value_slug)
-            console.log('center_stone_weight_value_from_option_json', center_stone_weight_value_from_option_json)
+            // console.log('center_stone_weight_value_from_option_json', center_stone_weight_value_from_option_json)
             
             if (!!center_stone_weight_value_from_option_json?.hideOnlyWhen) {
 
@@ -362,6 +380,13 @@ function App() {
       console.log('Setting Params')
     }
     // 
+
+    if (!!Object.keys(selectedOptions).length) {
+      const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData, selectedOptions)
+      console.log('final_product_price', final_product_price)
+      setFinalProductPrice(final_product_price)
+    }
+
 
   }, [selectedOptions])
 
@@ -540,20 +565,27 @@ function App() {
 
   const handleAddToCart = async (event) => {
     setIsDisabled(true)
-
-    console.log('handleAddToCart')
-
-    // setIsAddToCartLoading(true)
-
+    
     event.preventDefault()
+    
+    // setIsAddToCartLoading(true)
+    
+    console.log('handleAddToCart metaFieldData', metaFieldData)
 
+    
     const line_item_properties = {}
     const formData = {
       options: {}
     }
+    
 
     console.log('selectedOptions', selectedOptions)
 
+
+    formData.final_product_price = finalProductPrice
+
+    // return
+    
     Object.values(selectedOptions).forEach(selected_Option => {
       line_item_properties[selected_Option.option_title] = selected_Option.option_value_title
     })
@@ -700,6 +732,10 @@ function App() {
         </>,
         document.querySelector('#jewelry-builder-app-media-wrapper')
       )}
+
+      <fieldset>
+        Price: {finalProductPrice}
+      </fieldset>
 
       {
         !!filteredOptions.length &&

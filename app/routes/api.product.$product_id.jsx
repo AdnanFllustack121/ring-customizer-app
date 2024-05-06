@@ -1,11 +1,18 @@
 import { json } from "@remix-run/node"
 import { Products, Session } from "../db.server"
 import { authenticateProxyRoute, createFile, makeid, shopifyRest } from "../utils"
-import { apiVersion } from "../shopify.server"
+import { apiVersion, authenticate } from "../shopify.server"
 
 export const loader = async ({ params, request }) => {
 
-    await authenticateProxyRoute(request)
+    // await authenticateProxyRoute(request)
+    const { storefront, liquid } = await authenticate.public.appProxy(request)
+
+    console.log('storefront', storefront)
+
+    if (!storefront) {
+        return new Response();
+    }
 
     const product = await Products.findOne({
         product_id: `gid://shopify/Product/${params.product_id}`
@@ -19,7 +26,14 @@ export const loader = async ({ params, request }) => {
 
 export const action = async ({ params, request }) => {
 
-    await authenticateProxyRoute(request)
+    // await authenticateProxyRoute(request)
+    const appProxyVars = await authenticate.public.appProxy(request)
+    console.log('appProxyVars', appProxyVars)
+
+    const { session, storefront, liquid } = appProxyVars
+    if (!storefront) {
+        return new Response();
+    }
 
     switch (request.method) {
         case "POST":
@@ -34,13 +48,15 @@ export const action = async ({ params, request }) => {
         }
 
         // if (!!image_path) {
-            const shop_domain = request.headers.get('x-shop-domain')
-            const session = await Session.findOne({ shop: shop_domain })
+            // const shop_domain = request.headers.get('x-shop-domain')
+            // console.log('shop_domain', shop_domain)
+            // const session = await Session.findOne({ shop: shop_domain })
 
             const getProduct = await shopifyRest({
                 session,
                 path: `products/${params.product_id}.json`,
             })
+            console.log('getProduct', getProduct)
 
             const productCustomizationData = await Products.findOne({
                 product_id: `gid://shopify/Product/${params.product_id}`
@@ -71,7 +87,8 @@ export const action = async ({ params, request }) => {
                 console.log('options_price', options_price)
 
                 // const total_price = parseFloat(+product_data.variants[0].price + options_price).toFixed(2)
-                const total_price = parseFloat(+product_data.variants[0].price).toFixed(2)
+                // const total_price = parseFloat(+product_data.variants[0].price).toFixed(2)
+                const total_price = parseFloat(+payload.final_product_price).toFixed(2)
 
                 console.log('total_price', total_price)
                 // return json({
@@ -106,6 +123,7 @@ export const action = async ({ params, request }) => {
                         }
                     }
                 })
+                console.log('productCreateResponse', productCreateResponse)
 
                 if (
                     'product' in productCreateResponse &&
