@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://nor-acknowledge-names-awarded.trycloudflare.com"
+application_url = "https://vector-subsidiaries-prescribed-translate.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://nor-acknowledge-names-awarded.trycloudflare.com/auth/callback",
-  "https://nor-acknowledge-names-awarded.trycloudflare.com/auth/shopify/callback",
-  "https://nor-acknowledge-names-awarded.trycloudflare.com/api/auth/callback"
+  "https://vector-subsidiaries-prescribed-translate.trycloudflare.com/auth/callback",
+  "https://vector-subsidiaries-prescribed-translate.trycloudflare.com/auth/shopify/callback",
+  "https://vector-subsidiaries-prescribed-translate.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://nor-acknowledge-names-awarded.trycloudflare.com"
+url = "https://vector-subsidiaries-prescribed-translate.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 
