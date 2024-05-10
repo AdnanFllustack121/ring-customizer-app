@@ -134,11 +134,11 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
         continue;
       }
 
-
+      // select
       const option_to_push = {
         option_id: makeid(24),
         option_title: optionJsonSingle.name,
-        option_type: 'swatch',
+        option_type: optionJsonSingle.slug === "ring_size" ? 'select' : 'swatch',
         option_slug: optionJsonSingle.slug,
         option_values: found_option_values.filter(found_option_value => {
           if (!!found_option_value?.ProductType) {
