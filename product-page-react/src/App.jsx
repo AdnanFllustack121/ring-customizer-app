@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom';
+import { useI18n } from '@shopify/react-i18n';
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import Swatches from './components/Swatches'
@@ -6,13 +8,13 @@ import DropDown from './components/DropDown'
 import RangeSlider from './components/RangeSlider'
 
 import optionsJson from "../../json/options.json";
-import { createPortal } from 'react-dom';
+import { RingBuilderPriceCall } from './priceCalculator';
 
 import "./App.scss";
 import './App.css'
-import { RingBuilderPriceCall } from './priceCalculator';
 
 const proxyBaseUrl = `/apps/jewelry-builder-app`
+const currency = !!window?.Shopify?.currency?.active ? window.Shopify.currency.active : 'USD'
 
 function App() {
   const [productInfo, setProductInfo] = useState({})
@@ -29,6 +31,10 @@ function App() {
   const [metaFieldData, setMetaFieldData] = useState({})
 
   const [finalProductPrice, setFinalProductPrice] = useState(0)
+
+  console.log('useI18n', useI18n)
+  const [i18n] = useI18n()
+  console.log('i18n', i18n)
 
 
   useEffect(() => {
@@ -652,7 +658,7 @@ function App() {
           {
             allMedias[featuredMediaIndex].includes('mp4')
             ?
-            <video class="video-player" id="myVideo" width="100%" height="100%" autoplay="autoplay" loop="loop">
+            <video className="video-player" id="myVideo" width="100%" height="100%" autoplay="autoplay" loop="loop">
               <source src={allMedias[featuredMediaIndex]} type="video/mp4" />
             </video>
             :
@@ -734,7 +740,20 @@ function App() {
       )}
 
       <fieldset>
-        Price: {finalProductPrice}
+        <div className="price price--large price--sold-out price--show-badge">
+          <div className="price__container">
+            <div className="price__regular">
+              <span className="visually-hidden visually-hidden--inline">Regular price</span>
+              <span className="price-item price-item--regular">
+                {/* Rs. {finalProductPrice} */}
+                Price: {i18n.formatCurrency(finalProductPrice, {
+                  currency: currency,
+                  form: 'explicit',
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
       </fieldset>
 
       {

@@ -1,7 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+
+import { I18nContext, I18nManager } from "@shopify/react-i18n";
+
 import App from './App.jsx'
 import './index.css'
+
+
+// 
+const locale = !!window?.Shopify?.locale ? window.Shopify.locale : "en"
+const i18nManager = new I18nManager({
+  locale,
+  onError(error) {
+    console.error(error);
+  }
+});
+// 
 
 
 // Media
@@ -13,6 +27,8 @@ document.querySelector('.grid__item.product__media-wrapper').appendChild(div)
 // App
 ReactDOM.createRoot(document.querySelector('[id*="shopify-block-"][data-block-handle="product_options"]')).render(
   <React.StrictMode>
-    <App />
+    <I18nContext.Provider value={i18nManager}>
+      <App />
+    </I18nContext.Provider>
   </React.StrictMode>,
 )
