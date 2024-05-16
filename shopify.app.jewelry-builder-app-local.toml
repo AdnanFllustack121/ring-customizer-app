@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://ringtone-serves-depression-punch.trycloudflare.com"
+application_url = "https://wind-sheep-worse-rendering.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://ringtone-serves-depression-punch.trycloudflare.com/auth/callback",
-  "https://ringtone-serves-depression-punch.trycloudflare.com/auth/shopify/callback",
-  "https://ringtone-serves-depression-punch.trycloudflare.com/api/auth/callback"
+  "https://wind-sheep-worse-rendering.trycloudflare.com/auth/callback",
+  "https://wind-sheep-worse-rendering.trycloudflare.com/auth/shopify/callback",
+  "https://wind-sheep-worse-rendering.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://ringtone-serves-depression-punch.trycloudflare.com"
+url = "https://wind-sheep-worse-rendering.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

@@ -16,7 +16,7 @@ import './App.css'
 const proxyBaseUrl = `/apps/jewelry-builder-app`
 const currency = !!window?.Shopify?.currency?.active ? window.Shopify.currency.active : 'USD'
 
-function App() {
+function App({ mediaSelector }) {
   const [productInfo, setProductInfo] = useState({})
   const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
@@ -402,10 +402,12 @@ function App() {
     console.log('useEffect allMedias', allMedias)
 
     if (!!allMedias && !!allMedias?.length) {
-      document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'none'
+      // document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'none'
+      document.querySelector(mediaSelector).style.display = 'none'
       setFeaturedMediaIndex(0)
     } else {
-      document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
+      // document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
+      document.querySelector(mediaSelector).style.display = 'block'
     }
   }, [allMedias])
 

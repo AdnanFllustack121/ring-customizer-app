@@ -14,21 +14,23 @@ const i18nManager = new I18nManager({
   onError(error) {
     console.error(error);
   }
-});
+})
 // 
 
 
 // Media
+const mediaSelector = '[id*="Media"][id*="-template--"][id*="__main"]'
 const div = document.createElement('div')
 div.id = 'jewelry-builder-app-media-wrapper'
-document.querySelector('.grid__item.product__media-wrapper').appendChild(div)
+console.log('document.querySelector(mediaSelector)', document.querySelector(mediaSelector))
+document.querySelector(mediaSelector).parentNode.appendChild(div)
 // ReactDOM.createRoot(div)
 
 // App
 ReactDOM.createRoot(document.querySelector('[id*="shopify-block-"][data-block-handle="product_options"]')).render(
   <React.StrictMode>
     <I18nContext.Provider value={i18nManager}>
-      <App />
+      <App mediaSelector={mediaSelector} />
     </I18nContext.Provider>
   </React.StrictMode>,
 )
