@@ -489,7 +489,8 @@ function App({ mediaSelector }) {
         } else {
           const foundOptionFromJson = optionsJson.find(singleOptionFromJson => singleOptionFromJson.slug === productInfoOption.option_slug)
 
-          let shouldWeAddThisOption = true
+          // filteredOptions
+
           if (foundOptionFromJson?.showOnlyWhen) {
             const showOnlyWhenOptionSlug = foundOptionFromJson.showOnlyWhen.optionSlug
             const showOnlyWhenOptionValueSlug = foundOptionFromJson.showOnlyWhen.optionValueSlug
@@ -519,7 +520,7 @@ function App({ mediaSelector }) {
               option_title: productInfoOption.option_title,
               option_slug: productInfoOption.option_slug,
               option_type: productInfoOption.option_type,
-        
+
               file_id: productInfoOption.option_values[0].file_id,
               option_image_path: productInfoOption.option_values[0].option_image_path,
               option_value_id: productInfoOption.option_values[0].option_value_id,
@@ -536,7 +537,7 @@ function App({ mediaSelector }) {
 
         ++selectedIndex
       })
-      // console.log('newSelectedOptions', newSelectedOptions)
+      console.log('newSelectedOptions', newSelectedOptions)
       // New logic END
 
       return newSelectedOptions

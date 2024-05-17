@@ -22,12 +22,11 @@ const i18nManager = new I18nManager({
 const mediaSelector = '[id*="Media"][id*="-template--"][id*="__main"]'
 const div = document.createElement('div')
 div.id = 'jewelry-builder-app-media-wrapper'
-console.log('document.querySelector(mediaSelector)', document.querySelector(mediaSelector))
 document.querySelector(mediaSelector).parentNode.appendChild(div)
 // ReactDOM.createRoot(div)
 
 // App
-ReactDOM.createRoot(document.querySelector('[id*="shopify-block-"][data-block-handle="product_options"]')).render(
+ReactDOM.createRoot(document.querySelector('[id*="shopify-block-jewelry_builder_app"][id*="product_options"][class="shopify-block shopify-app-block"]')).render(
   <React.StrictMode>
     <I18nContext.Provider value={i18nManager}>
       <App mediaSelector={mediaSelector} />
