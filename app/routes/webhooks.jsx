@@ -84,7 +84,8 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
         product_image: !!productPayload.image?.src ? productPayload.image.src : null,
         product_price: productPayload.variants?.[0]?.price,
         product_sku: productPayload.variants?.[0]?.sku,
-        product_type: whichProductType.split('_')?.[1]
+        product_type: whichProductType.split('_')?.[1],
+        product_vendor: productPayload.vendor
       })
       if (!productData) {
         return

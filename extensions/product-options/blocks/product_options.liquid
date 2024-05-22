@@ -12,7 +12,15 @@
 
 
 <script id="jewelrybuilderapp" type="application/json">
-{{ product.metafields.jewelrybuilderapp | json }}
+{
+  "content": "{{ product.content }}",
+  "description": "{{ product.description }}",
+  "featured_image": "{{ product.featured_image }}",
+  "featured_media": "{{ product.featured_media }}",
+  "title": "{{ product.title }}",
+  "vendor": "{{ product.vendor }}",
+  "metafields": {{ product.metafields.jewelrybuilderapp | json }}
+}
 </script>
 
 {% schema %}

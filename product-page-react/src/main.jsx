@@ -20,9 +20,9 @@ const i18nManager = new I18nManager({
 
 // Media
 const mediaSelector = '[id*="Media"][id*="-template--"][id*="__main"]'
-const div = document.createElement('div')
-div.id = 'jewelry-builder-app-media-wrapper'
-document.querySelector(mediaSelector).parentNode.appendChild(div)
+// const div = document.createElement('div')
+// div.id = 'jewelry-builder-app-media-wrapper'
+// document.querySelector(mediaSelector).parentNode.appendChild(div)
 // ReactDOM.createRoot(div)
 
 // App

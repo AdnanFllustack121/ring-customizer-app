@@ -388,7 +388,7 @@ function App({ mediaSelector }) {
     // 
 
     if (!!Object.keys(selectedOptions).length) {
-      const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData, selectedOptions)
+      const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
       console.log('final_product_price', final_product_price)
       setFinalProductPrice(final_product_price)
     }
@@ -402,12 +402,10 @@ function App({ mediaSelector }) {
     console.log('useEffect allMedias', allMedias)
 
     if (!!allMedias && !!allMedias?.length) {
-      // document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'none'
-      document.querySelector(mediaSelector).style.display = 'none'
+      // document.querySelector(mediaSelector).style.display = 'none'
       setFeaturedMediaIndex(0)
     } else {
-      // document.querySelector('media-gallery[id*="MediaGallery-template--"][id*="__main"]').style.display = 'block'
-      document.querySelector(mediaSelector).style.display = 'block'
+      // document.querySelector(mediaSelector).style.display = 'block'
     }
   }, [allMedias])
 
@@ -614,8 +612,7 @@ function App({ mediaSelector }) {
     console.log('line_item_properties', line_item_properties)
 
     if (Object.keys(formData).length) {
-  
-      // const dataURL = document.querySelector('canvas#fishing-reel-customizer').toDataURL()
+
       formData.image = allMedias[0]
 
       console.log('formData', formData)
@@ -654,170 +651,215 @@ function App({ mediaSelector }) {
 
 
   return (
-    <>
-      {!!allMedias?.length && (featuredMediaIndex !== null)  && createPortal(
-        <>
+    <div className="product_parent">
 
-          {
-            allMedias[featuredMediaIndex].includes('mp4')
-            ?
-            <video className="video-player" id="myVideo" width="100%" height="100%" autoplay="autoplay" loop="loop">
-              <source src={allMedias[featuredMediaIndex]} type="video/mp4" />
-            </video>
-            :
-            <img
-              id='image-main'
-              src={
-                allMedias[featuredMediaIndex].includes('http') ? allMedias[featuredMediaIndex] : `/apps/jewelry-builder-app${allMedias[featuredMediaIndex]}`
-              }
-            />
-          }
+      <div id="jewelry-builder-app-media-wrapper">
+        {
+          // !!allMedias?.length && (featuredMediaIndex !== null)  && createPortal(
+          !!allMedias?.length && (featuredMediaIndex !== null)  &&
+          <>
 
-          <ul className="product-image-thumbs">
-            {allMedias.map((singleMedia, singleMediaIndex) => {
+            {
+              allMedias[featuredMediaIndex].includes('mp4')
+              ?
+              <video className="video-player" id="myVideo" width="100%" height="100%" autoplay="autoplay" loop="loop">
+                <source src={allMedias[featuredMediaIndex]} type="video/mp4" />
+              </video>
+              :
+              <img
+                id='image-main'
+                src={
+                  allMedias[featuredMediaIndex].includes('http') ? allMedias[featuredMediaIndex] : `/apps/jewelry-builder-app${allMedias[featuredMediaIndex]}`
+                }
+              />
+            }
 
-              // console.log('singleMedia', singleMedia)
+            <ul className="product-image-thumbs">
+              {allMedias.map((singleMedia, singleMediaIndex) => {
 
-              return (
-                <>
-                  {
-                    !singleMedia
-                    ?
-                    <></>
-                    :
-                    (
-                      !singleMedia.includes('mp4')
+                // console.log('singleMedia', singleMedia)
+
+                return (
+                  <>
+                    {
+                      !singleMedia
                       ?
-                      <li>
-                        <a
-                          className="thumb-link"
-                          title=""
-                          data-image-index={singleMediaIndex}
+                      <></>
+                      :
+                      (
+                        !singleMedia.includes('mp4')
+                        ?
+                        <li>
+                          <a
+                            className="thumb-link"
+                            title=""
+                            data-image-index={singleMediaIndex}
+                            onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
+                          >
+                            <img
+                              src={singleMedia}
+                              width="75"
+                              height="75"
+                              alt=""
+                              onLoad={(event) => {
+                                // console.log('onLoad event', event)
+                              }}
+                              onError={(event) => {
+                                // console.log('onError singleMediaIndex, event', singleMediaIndex, event)
+                                // console.log('onError selectedOptions', selectedOptions)
+                                if (singleMediaIndex === 1) {
+                                  setIsFirstUnavailable(true)
+                                }
+                                else {
+                                  // console.log('Before setting media isFirstUnavailable', isFirstUnavailable)
+                                  setAllMedias(prevMedias => {
+                                    const newMedias = [...prevMedias]
+                                    newMedias[singleMediaIndex] = ""
+                                    return [
+                                      ...newMedias
+                                    ]
+                                  })
+                                }
+                              }}
+                            />
+                          </a>
+                        </li>
+                        :
+                        <li
+                          className="video-thumb-container"
                           onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                         >
-                          <img
-                            src={singleMedia}
-                            width="75"
-                            height="75"
-                            alt=""
-                            onLoad={(event) => {
-                              // console.log('onLoad event', event)
-                            }}
-                            onError={(event) => {
-                              // console.log('onError singleMediaIndex, event', singleMediaIndex, event)
-                              // console.log('onError selectedOptions', selectedOptions)
-                              if (singleMediaIndex === 1) {
-                                setIsFirstUnavailable(true)
-                              }
-                              else {
-                                // console.log('Before setting media isFirstUnavailable', isFirstUnavailable)
-                                setAllMedias(prevMedias => {
-                                  const newMedias = [...prevMedias]
-                                  newMedias[singleMediaIndex] = ""
-                                  return [
-                                    ...newMedias
-                                  ]
-                                })
-                              }
-                            }}
-                          />
-                        </a>
-                      </li>
-                      :
-                      <li
-                        className="video-thumb-container"
-                        onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
-                      >
-                        <div className="video-thumb-overlay"></div>
-                        <img src={allMedias[0]} />
-                      </li>
-                    )
-                  }
-                </>
-              )
-            })}
+                          <div className="video-thumb-overlay"></div>
+                          <img src={allMedias[0]} />
+                        </li>
+                      )
+                    }
+                  </>
+                )
+              })}
 
-          </ul>
-        </>,
-        document.querySelector('#jewelry-builder-app-media-wrapper')
-      )}
+            </ul>
+          </>
+          // ,
+          // document.querySelector('#jewelry-builder-app-media-wrapper')
+          // )
+        }
+      </div>
 
-      <fieldset>
-        <div className="price price--large price--sold-out price--show-badge">
-          <div className="price__container">
-            <div className="price__regular">
-              <span className="visually-hidden visually-hidden--inline">Regular price</span>
-              <span className="price-item price-item--regular">
-                {/* Rs. {finalProductPrice} */}
-                Price: {i18n.formatCurrency(finalProductPrice, {
-                  currency: currency,
-                  form: 'explicit',
-                })}
-              </span>
+      <div id="jewelry-builder-app-product-options-wrapper">
+
+        {/* Vendor */}
+        {
+          !!productInfo?.product_vendor &&
+          <p>{productInfo.product_vendor}</p>
+        }
+
+        {/* Title */}
+        <h1>{productInfo.product_title}</h1>
+
+        <fieldset>
+          <div className="price price--large price--sold-out price--show-badge">
+            <div className="price__container">
+              <div className="price__regular">
+                <span className="visually-hidden visually-hidden--inline">Regular price</span>
+                <span className="price-item price-item--regular">
+                  {/* Rs. {finalProductPrice} */}
+                  Price: {i18n.formatCurrency(finalProductPrice, {
+                    currency: currency,
+                    form: 'explicit',
+                  })}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      {
-        !!filteredOptions.length &&
-        filteredOptions.map((optn, option_index) => {
+        {
+          !!filteredOptions.length &&
+          filteredOptions.map((optn, option_index) => {
 
-          // console.log('optn, optn.option_type', optn, optn.option_type)
+            // console.log('optn, optn.option_type', optn, optn.option_type)
 
-          let OptionComponent
+            let OptionComponent
 
-          switch (optn.option_type) {
-            case 'swatch':
-              OptionComponent = Swatches
-              break;
-            case 'range':
-              OptionComponent = RangeSlider
-              break;
-            case 'select':
-              OptionComponent = DropDown
-              break;
-            default:
-              OptionComponent = Swatches
-              break;
-          }
+            switch (optn.option_type) {
+              case 'swatch':
+                OptionComponent = Swatches
+                break;
+              case 'range':
+                OptionComponent = RangeSlider
+                break;
+              case 'select':
+                OptionComponent = DropDown
+                break;
+              default:
+                OptionComponent = Swatches
+                break;
+            }
 
-          return (
-            !!optn?.option_values?.length
-            ?
-            <fieldset id={`fieldset_${optn.option_id}`}>
-              <OptionComponent optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
-            </fieldset>
-            :
-            <></>
-          )
-        })
-      }
-      <fieldset>
-        <legend>Quantity:</legend>
-        <div className='quantity-input'>
-          <button type="button" onClick={() => setQuantityInput(quantity - 1)} disabled={(quantity === 1) ? true : false}>-</button>
-          <input
-            type="number"
-            name="quantity"
-            id=""
-            value={quantity}
-            min={1}
-            step={1}
-            inputMode='numeric'
-            pattern='\d*'
-            onChange={(event) => setQuantityInput(event.target.valueAsNumber)}
-          />
-          <button type="button" onClick={() => setQuantityInput(quantity + 1)}>+</button>
-        </div>
-      </fieldset>
+            return (
+              !!optn?.option_values?.length
+              ?
+              <fieldset id={`fieldset_${optn.option_id}`}>
+                <OptionComponent optn={optn} option_index={option_index} selectedOptions={selectedOptions} onSelectOption={onSelectOption} />
+              </fieldset>
+              :
+              <></>
+            )
+          })
+        }
+        <fieldset>
+          <legend>Quantity:</legend>
+          <div className='quantity-input'>
+            <button type="button" onClick={() => setQuantityInput(quantity - 1)} disabled={(quantity === 1) ? true : false}>-</button>
+            <input
+              type="number"
+              name="quantity"
+              id=""
+              value={quantity}
+              min={1}
+              step={1}
+              inputMode='numeric'
+              pattern='\d*'
+              onChange={(event) => setQuantityInput(event.target.valueAsNumber)}
+            />
+            <button type="button" onClick={() => setQuantityInput(quantity + 1)}>+</button>
+          </div>
+        </fieldset>
 
-      <fieldset>
-        <button type="submit" disabled={isDisabled} onClick={handleAddToCart}>
-          Add to cart
-        </button>
-      </fieldset>
-    </>
+        <fieldset>
+          <button type="submit" disabled={isDisabled} onClick={handleAddToCart}>
+            Add to cart
+          </button>
+        </fieldset>
+
+        {
+          !!metaFieldData && !!metaFieldData?.content &&
+          <fieldset dangerouslySetInnerHTML={{ __html: metaFieldData.content }}>
+          </fieldset>
+        }
+
+        <fieldset>
+          <button className="rca-share__button" onClick={() => {
+            navigator.share({
+              url: location.href,
+              title: document.title
+            })
+          }}>
+            <svg width="13" height="12" viewBox="0 0 13 12" class="icon icon-share" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M1.625 8.125V10.2917C1.625 10.579 1.73914 10.8545 1.9423 11.0577C2.14547 11.2609 2.42102 11.375 2.70833 11.375H10.2917C10.579 11.375 10.8545 11.2609 11.0577 11.0577C11.2609 10.8545 11.375 10.579 11.375 10.2917V8.125" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14775 1.27137C6.34301 1.0761 6.65959 1.0761 6.85485 1.27137L9.56319 3.9797C9.75845 4.17496 9.75845 4.49154 9.56319 4.6868C9.36793 4.88207 9.05135 4.88207 8.85609 4.6868L6.5013 2.33203L4.14652 4.6868C3.95126 4.88207 3.63468 4.88207 3.43942 4.6868C3.24415 4.49154 3.24415 4.17496 3.43942 3.9797L6.14775 1.27137Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.5 1.125C6.77614 1.125 7 1.34886 7 1.625V8.125C7 8.40114 6.77614 8.625 6.5 8.625C6.22386 8.625 6 8.40114 6 8.125V1.625C6 1.34886 6.22386 1.125 6.5 1.125Z" fill="currentColor"></path>
+            </svg>
+            Share
+          </button>
+        </fieldset>
+      </div>
+
+
+
+
+    </div>
   )
 }
 

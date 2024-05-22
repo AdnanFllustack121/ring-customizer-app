@@ -1,3 +1,38 @@
+@media screen and (min-width: 750px) {
+  .product_parent {
+    display: flex;
+    max-width: 1200px;
+    padding: 0 20px;
+    grid-gap: 20px;
+    align-items: flex-start;
+    margin: 0 auto;
+  }
+  div#jewelry-builder-app-product-options-wrapper {
+    width: 30%;
+  }
+  div#jewelry-builder-app-media-wrapper {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .product_parent {
+    padding: 0 20px;
+  }
+}
+
+div#jewelry-builder-app-product-options-wrapper h1 {
+  margin-top: 0;
+}
+
+div#jewelry-builder-app-product-options-wrapper p {
+  margin-bottom: 0;
+}
+
+
+// 
+
+
 div.product-form__input.product-form__quantity {
   display: none;
 }
@@ -65,13 +100,25 @@ div:has(> product-form) {
     // background: red;
   }
   input[type="range"] {
-    &::-webkit-slider-runnable-track { @include track }
-    &::-moz-range-track { @include track }
-    &::-ms-track { @include track }
+    &::-webkit-slider-runnable-track {
+      @include track;
+    }
+    &::-moz-range-track {
+      @include track;
+    }
+    &::-ms-track {
+      @include track;
+    }
 
-    &::-webkit-slider-thumb { @include thumb }
-    &::-moz-range-thumb { @include thumb }
-    &::-ms-thumb { @include thumb }
+    &::-webkit-slider-thumb {
+      @include thumb;
+    }
+    &::-moz-range-thumb {
+      @include thumb;
+    }
+    &::-ms-thumb {
+      @include thumb;
+    }
 
     width: 100%;
     // display: none;
@@ -84,11 +131,11 @@ div:has(> product-form) {
     // padding: 0 .45em;
 
     option {
-        // padding: 0;
+      // padding: 0;
     }
 
     option:not(:first-child):not(:last-child) {
-        display: none;
+      display: none;
     }
   }
   // Input Type Range END
@@ -151,7 +198,7 @@ div:has(> product-form) {
       text-transform: uppercase;
       font-size: 13px;
       height: 20px;
-      
+
       border: 1px solid #c5c5c5;
       background: white;
       font-weight: normal;
@@ -160,7 +207,6 @@ div:has(> product-form) {
       z-index: 1;
     }
   }
-
 
   // Custom Input type range end
 
@@ -183,20 +229,17 @@ div:has(> product-form) {
     }
 
     button {
-        cursor: pointer;
+      cursor: pointer;
     }
 
     input,
     button {
-        height: 100%;
-        width: 47px;
-        border: none;
-        background: none;
+      height: 100%;
+      width: 47px;
+      border: none;
+      background: none;
     }
   }
-
-
-
 
   label {
     outline: 1px solid #d8d8d8;
@@ -267,7 +310,31 @@ div:has(> product-form) {
 
     &:disabled {
       cursor: not-allowed;
-      opacity: .5;
+      opacity: 0.5;
+    }
+  }
+
+  .rca-share__button {
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    color: rgb(var(--color-link));
+    margin-left: 0;
+    padding-left: 0;
+    min-height: 4.4rem;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: .3rem;
+    }
+
+    svg {
+      height: 1.2rem;
+      margin-right: 1rem;
+      min-width: 1.3rem;
     }
   }
 }
@@ -319,5 +386,4 @@ ul.product-image-thumbs {
     width: 70px;
     height: 70px;
   }
-
 }
