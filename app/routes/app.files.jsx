@@ -381,6 +381,7 @@ export default function ColorsPage() {
                     disabled: false,
                     loading: false,
                 }}
+
                 tabs={tabs}
                 selected={selectedTab}
                 onSelect={setSelectedTab}
