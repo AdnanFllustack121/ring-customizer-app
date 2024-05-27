@@ -16,7 +16,8 @@ import './App.css'
 const proxyBaseUrl = `/apps/jewelry-builder-app`
 const currency = !!window?.Shopify?.currency?.active ? window.Shopify.currency.active : 'USD'
 
-function App({ mediaSelector }) {
+// function App({ mediaSelector }) {
+function App() {
   const [productInfo, setProductInfo] = useState({})
   const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
