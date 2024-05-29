@@ -33,9 +33,9 @@ function App() {
 
   const [finalProductPrice, setFinalProductPrice] = useState(0)
 
-  console.log('useI18n', useI18n)
+  // console.log('useI18n', useI18n)
   const [i18n] = useI18n()
-  console.log('i18n', i18n)
+  // console.log('i18n', i18n)
 
 
   useEffect(() => {
@@ -276,7 +276,9 @@ function App() {
 
           new_option_values = productInfo_found_option.option_values.filter(found_option_value => {
 
-            const center_stone_weight_value_from_option_json = center_stone_weights.values.find(center_stone_weight_value_from_option_json => center_stone_weight_value_from_option_json.optionValueTitle === found_option_value.option_value_slug)
+            const center_stone_weight_value_from_option_json = center_stone_weights.values.find(center_stone_weight_value_from_option_json => {
+              return center_stone_weight_value_from_option_json.optionValueTitle === found_option_value.option_value_slug
+            })
             // console.log('center_stone_weight_value_from_option_json', center_stone_weight_value_from_option_json)
             
             if (!!center_stone_weight_value_from_option_json?.hideOnlyWhen) {
@@ -312,6 +314,7 @@ function App() {
           option_values: new_option_values
         })
       }
+      console.log('useEffect selectedOptions availableOptionInputsValues', availableOptionInputsValues)
       setFilteredOptions(availableOptionInputsValues)
       // Set Filtered Options END
 
@@ -445,7 +448,7 @@ function App() {
 
 
   const onSelectOption = (option_index, optn, option_value) => {
-    // console.log('onSelectOption, option_index, optn, option_value', option_index, optn, option_value)
+    // console.log('onSelectOption option_index, optn, option_value', option_index, optn, option_value)
     // console.log('onSelectOption optionsJson', optionsJson)
     // console.log('onSelectOption productInfo.options', productInfo.options)
 
@@ -478,7 +481,7 @@ function App() {
         if (!productInfoOption?.option_values?.length) {
           return
         }
-  
+
         if ( option_with_value.option_slug === productInfoOption.option_slug ) {
           const foundOptionFromJson = optionsJson.find(singleOptionFromJson => singleOptionFromJson.slug === productInfoOption.option_slug)
           newSelectedOptions[selectedIndex] = {
@@ -487,8 +490,6 @@ function App() {
           }
         } else {
           const foundOptionFromJson = optionsJson.find(singleOptionFromJson => singleOptionFromJson.slug === productInfoOption.option_slug)
-
-          // filteredOptions
 
           if (foundOptionFromJson?.showOnlyWhen) {
             const showOnlyWhenOptionSlug = foundOptionFromJson.showOnlyWhen.optionSlug
@@ -513,6 +514,7 @@ function App() {
           }
 
           let previousOpton = Object.values(prevSelectedOptions).find(prevSelectedOption => prevSelectedOption.option_slug === productInfoOption.option_slug)
+
           if (!previousOpton) {
             previousOpton = {
               option_id: productInfoOption.option_id,
@@ -529,6 +531,67 @@ function App() {
 
               change_media: !!foundOptionFromJson?.changeMedia ? true : false
             }
+          } else {
+
+            // Special condition for center_stone_weight START
+            if ( previousOpton.option_slug === "center_stone_weight" ) {
+              console.log('onSelectOption previousOpton old', previousOpton)
+
+              const productInfo_found_option = productInfo.options.find(productInfo_option => productInfo_option.option_slug === "center_stone_weight")
+              let new_option_values = productInfo_found_option.option_values
+              const center_stone_weights = optionsJson.find(optionFromJson => optionFromJson.slug === 'center_stone_weight')
+              const center_stone_type_with_value = Object.values(newSelectedOptions).find(newSelectedOption_option_slug => newSelectedOption_option_slug.option_slug === 'center_stone_type')
+              new_option_values = productInfo_found_option.option_values.filter(found_option_value => {
+
+                const center_stone_weight_value_from_option_json = center_stone_weights.values.find(center_stone_weight_value_from_option_json => {
+                  return center_stone_weight_value_from_option_json.optionValueTitle === found_option_value.option_value_slug
+                })
+                // console.log('center_stone_weight_value_from_option_json', center_stone_weight_value_from_option_json)
+                
+                if (!!center_stone_weight_value_from_option_json?.hideOnlyWhen) {
+    
+                  if ( !!center_stone_weight_value_from_option_json.hideOnlyWhen?.ProductType ) {
+    
+                    if ( center_stone_weight_value_from_option_json.hideOnlyWhen.ProductType === productInfo.product_type && center_stone_type_with_value.option_value_slug === "ld" ) {
+                      return false
+                    } else {
+                      return true
+                    }
+    
+                  }
+    
+    
+                  if (center_stone_type_with_value.option_value_slug === "ld") {
+                    return false
+                  }
+    
+                }
+    
+    
+                return true
+              })
+              const foundOptionValueInNewOptionValues = new_option_values.find(new_option_value => new_option_value.option_value_slug === previousOpton.option_value_slug)
+              if (!foundOptionValueInNewOptionValues) {
+                previousOpton = {
+                  option_id: productInfoOption.option_id,
+                  option_title: productInfoOption.option_title,
+                  option_slug: productInfoOption.option_slug,
+                  option_type: productInfoOption.option_type,
+    
+                  file_id: new_option_values[0].file_id,
+                  option_image_path: new_option_values[0].option_image_path,
+                  option_value_id: new_option_values[0].option_value_id,
+                  option_value_price: new_option_values[0].option_value_price,
+                  option_value_title: new_option_values[0].option_value_title,
+                  option_value_slug: new_option_values[0].option_value_slug,
+    
+                  change_media: !!foundOptionFromJson?.changeMedia ? true : false
+                }
+                console.log('onSelectOption previousOpton', previousOpton)
+              }
+            }
+            // Special condition for center_stone_weight END
+
           }
 
           newSelectedOptions[selectedIndex] = previousOpton
@@ -536,7 +599,7 @@ function App() {
 
         ++selectedIndex
       })
-      console.log('newSelectedOptions', newSelectedOptions)
+      console.log('onSelectOption newSelectedOptions', newSelectedOptions)
       // New logic END
 
       return newSelectedOptions
