@@ -34,7 +34,7 @@ export const action = async ({ request }) => {
     case "PRODUCTS_CREATE":
     case "PRODUCTS_UPDATE":
       // throw new Response()
-      productsCreateOrUpdateHandler(payload)
+      productsCreateOrUpdateHandler(shop, payload)
       break;
     case "PRODUCTS_DELETE":
       productsDeleteHandler(payload)
@@ -54,7 +54,7 @@ export const action = async ({ request }) => {
 };
 
 
-const productsCreateOrUpdateHandler = async (productPayload) => {
+const productsCreateOrUpdateHandler = async (shop, productPayload) => {
 
   // console.log('productsCreateOrUpdateHandler START', productPayload)
 
@@ -79,6 +79,7 @@ const productsCreateOrUpdateHandler = async (productPayload) => {
     if (!productData) {
 
       productData = await Products.create({
+        shop,
         product_id: productPayload.admin_graphql_api_id,
         product_title: productPayload.title,
         product_image: !!productPayload.image?.src ? productPayload.image.src : null,

@@ -15,23 +15,29 @@ import {
   IndexTable,
   useIndexResourceState,
   Thumbnail,
+  Pagination,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { Products } from "../db.server";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request)
 
-  const products = await Products.find()
+  const products = await Products.find({
+    $or: [
+      { shop: { $exists: false } },
+      { shop: session.shop }
+    ]
+  })
 
   return json({
     success: true,
     products: products
   })
-};
+}
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
 
   // const color = ["Red", "Orange", "Yellow", "Green"][
   //   Math.floor(Math.random() * 4)
@@ -93,6 +99,7 @@ export const action = async ({ request }) => {
         })
       } else {
         const isProductCreated = await Products.create({
+          shop: session.shop,
           product_id,
           product_title,
           product_image,
@@ -473,6 +480,27 @@ export default function Index() {
           ),
         )}
       </IndexTable>
+      <div
+        style={{
+          width: 'fit-content',
+          margin: 'auto',
+          marginTop: '2em'
+        }}
+      >
+        <Pagination
+          // hasPrevious={pageInfo.hasPreviousPage}
+          // hasNext={pageInfo.hasNextPage}
+          onPrevious={() => {
+            console.log('Previous')
+            // fetcher.load(`?query=${queryValue}&type=${tabName}`)
+            // fetcher.load(`?prevOrNext=prev&cursor=${pageInfo.startCursor}`)
+          }}
+          onNext={() => {
+            console.log('Next')
+            // fetcher.load(`?prevOrNext=next&cursor=${pageInfo.endCursor}`)
+          }}
+        />
+      </div>
     </Page>
   );
 }

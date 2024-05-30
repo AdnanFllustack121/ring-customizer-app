@@ -898,8 +898,8 @@ function App() {
         </fieldset>
 
         {
-          !!metaFieldData && !!metaFieldData?.content &&
-          <fieldset dangerouslySetInnerHTML={{ __html: metaFieldData.content }}>
+          !!metaFieldData && !!metaFieldData?.description &&
+          <fieldset dangerouslySetInnerHTML={{ __html: metaFieldData.description }}>
           </fieldset>
         }
 

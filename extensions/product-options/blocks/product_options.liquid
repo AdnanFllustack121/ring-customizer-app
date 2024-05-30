@@ -11,13 +11,12 @@
 {%- endcomment -%}
 
 <div id="jewelry-builder-app-root"></div>
-<script id="jewelrybuilderapp" type="application/json">
+<script id="jewelrybuilderapp" type="application/ld+json">
 {
-  "content": "{{ product.content }}",
-  "description": "{{ product.description }}",
+  "title": "{{ product.title }}",
+  "description": {{ product.description | json }},
   "featured_image": "{{ product.featured_image }}",
   "featured_media": "{{ product.featured_media }}",
-  "title": "{{ product.title }}",
   "vendor": "{{ product.vendor }}",
   "metafields": {{ product.metafields.jewelrybuilderapp | json }}
 }
