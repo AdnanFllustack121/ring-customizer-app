@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { json, redirect } from "@remix-run/node";
-import { useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
+import { useActionData, useFetcher, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -23,16 +23,34 @@ import { Products } from "../db.server";
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request)
 
-  const products = await Products.find({
-    $or: [
-      { shop: { $exists: false } },
-      { shop: session.shop }
-    ]
-  })
+  const url = new URL(request.url)
+  const prevOrNext = url.searchParams.get("prevOrNext")
+  const cursor = url.searchParams.get("cursor")
+  console.log('searchParams', prevOrNext, cursor)
+
+  const products = await Products.find(
+    {
+      $or: [
+        { shop: { $exists: false } },
+        { shop: session.shop }
+      ]
+    },
+    "_id product_id product_title product_image product_price product_sku product_type",
+    // {
+    //   skip: 0,
+    //   limit: 5
+    // }
+  )
 
   return json({
     success: true,
-    products: products
+    products: products,
+    pageInfo: {
+      hasPreviousPage: true,
+      hasNextPage: true,
+      startCursor: "",
+      endCursor: ""
+    }
   })
 }
 
@@ -146,17 +164,24 @@ export const action = async ({ request }) => {
 export default function Index() {
 
   const navigate = useNavigate()
-  const nav = useNavigation();
+  const navigation = useNavigation()
   const loaderData = useLoaderData()
-  const actionData = useActionData();
-  const submit = useSubmit();
-  const isLoading = ["loading", "submitting"].includes(nav.state);
+  const actionData = useActionData()
+  const fetcher    = useFetcher()
+  const submit = useSubmit()
+  const isLoading = ["loading", "submitting"].includes(navigation.state);
   // const productId = actionData?.product?.id.replace(
   //   "gid://shopify/Product/",
   //   ""
   // );
 
   const [products, setProducts] = useState([])
+  const [pageInfo, setPageInfo] = useState({
+    hasPreviousPage: false,
+    hasNextPage: false,
+    startCursor: "",
+    endCursor: ""
+  })
 
   // useEffect(() => {
   //   if (productId) {
@@ -167,7 +192,16 @@ export default function Index() {
   useEffect(() => {
     console.log('useEffect loaderData', loaderData)
     setProducts(loaderData.products)
+    setPageInfo(loaderData.pageInfo)
   }, [loaderData])
+
+  useEffect(() => {
+    if (!!fetcher.data) {
+      console.log('fetcher.data', fetcher.data)
+      setProducts(fetcher.data.products)
+      setPageInfo(fetcher.data.pageInfo)
+    }
+  }, [fetcher.data])
 
   useEffect(() => {
     console.log('useEffect actionData', actionData)
@@ -266,7 +300,7 @@ export default function Index() {
                     </Link>{" "}
                     interface examples like an{" "}
                     <Link url="/app/additional" removeUnderline>
-                      additional page in the app nav
+                      additional page in the app navigation
                     </Link>
                     , as well as an{" "}
                     <Link
@@ -480,6 +514,7 @@ export default function Index() {
           ),
         )}
       </IndexTable>
+
       <div
         style={{
           width: 'fit-content',
@@ -487,19 +522,19 @@ export default function Index() {
           marginTop: '2em'
         }}
       >
-        <Pagination
-          // hasPrevious={pageInfo.hasPreviousPage}
-          // hasNext={pageInfo.hasNextPage}
+        {/* <Pagination
+          hasPrevious={pageInfo.hasPreviousPage}
+          hasNext={pageInfo.hasNextPage}
           onPrevious={() => {
             console.log('Previous')
             // fetcher.load(`?query=${queryValue}&type=${tabName}`)
-            // fetcher.load(`?prevOrNext=prev&cursor=${pageInfo.startCursor}`)
+            // fetcher.load(`?prevOrNext=prev&cursor=${1}`)
           }}
           onNext={() => {
             console.log('Next')
-            // fetcher.load(`?prevOrNext=next&cursor=${pageInfo.endCursor}`)
+            // fetcher.load(`?prevOrNext=next&cursor=${2}`)
           }}
-        />
+        /> */}
       </div>
     </Page>
   );

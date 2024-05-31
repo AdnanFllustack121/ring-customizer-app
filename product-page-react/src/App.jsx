@@ -720,9 +720,9 @@ function App() {
       <div id="jewelry-builder-app-media-wrapper">
         {
           // !!allMedias?.length && (featuredMediaIndex !== null)  && createPortal(
-          !!allMedias?.length && (featuredMediaIndex !== null)  &&
+          !!allMedias?.length && (featuredMediaIndex !== null)
+          ?
           <>
-
             {
               allMedias[featuredMediaIndex].includes('mp4')
               ?
@@ -807,6 +807,20 @@ function App() {
           // ,
           // document.querySelector('#jewelry-builder-app-media-wrapper')
           // )
+          :
+
+          (
+            !!metaFieldData?.file_url && !!metaFieldData?.featured_image
+            ?
+            <>
+              <img
+                id='image-main'
+                src={ metaFieldData?.file_url.split('files')[0] + metaFieldData.featured_image }
+              />
+            </>
+            :
+            ''
+          )
         }
       </div>
 
@@ -814,12 +828,14 @@ function App() {
 
         {/* Vendor */}
         {
-          !!productInfo?.product_vendor &&
-          <p>{productInfo.product_vendor}</p>
+          !!metaFieldData?.vendor &&
+          <p>{metaFieldData.vendor}</p>
         }
 
         {/* Title */}
-        <h1>{productInfo.product_title}</h1>
+        <h1>
+          {metaFieldData.title}
+        </h1>
 
         <fieldset>
           <div className="price price--large price--sold-out price--show-badge">

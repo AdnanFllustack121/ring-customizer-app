@@ -13,12 +13,14 @@
 <div id="jewelry-builder-app-root"></div>
 <script id="jewelrybuilderapp" type="application/ld+json">
 {
-  "title": "{{ product.title }}",
+  "title": {{ product.title | json }},
   "description": {{ product.description | json }},
+  "vendor": {{ product.vendor | json }},
   "featured_image": "{{ product.featured_image }}",
   "featured_media": "{{ product.featured_media }}",
   "vendor": "{{ product.vendor }}",
-  "metafields": {{ product.metafields.jewelrybuilderapp | json }}
+  "metafields": {{ product.metafields.jewelrybuilderapp | json }},
+  "file_url": "{{ '' | file_url }}"
 }
 </script>
 
