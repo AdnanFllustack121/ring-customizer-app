@@ -20,13 +20,41 @@ import {
 import { authenticate } from "../shopify.server";
 import { Products } from "../db.server";
 
+import indexStyles from "~/styles/index.css";
+
+export const links = () => [
+  { rel: "stylesheet", href: indexStyles },
+]
+
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request)
 
-  const url = new URL(request.url)
+  const url        = new URL(request.url)
   const prevOrNext = url.searchParams.get("prevOrNext")
-  const cursor = url.searchParams.get("cursor")
+  const cursor     = url.searchParams.get("cursor")
   console.log('searchParams', prevOrNext, cursor)
+
+  // Get total count of records
+  const totalProducts = await Products.countDocuments()
+
+  let limit = 5
+  let currentPage = !!cursor ? cursor : 1
+
+  console.log('currentPage', typeof currentPage, currentPage)
+
+  let skip = currentPage - 1
+  let remaining = 0
+
+
+  if (cursor) {
+    skip = limit * (cursor - 1)
+
+    remaining = totalProducts - (limit * cursor)
+  } else {
+    remaining = totalProducts - (limit * 1)
+  }
+
+  console.log('skip', skip)
 
   const products = await Products.find(
     {
@@ -36,20 +64,22 @@ export const loader = async ({ request }) => {
       ]
     },
     "_id product_id product_title product_image product_price product_sku product_type",
-    // {
-    //   skip: 0,
-    //   limit: 5
-    // }
+    {
+      skip: skip,
+      limit: limit
+    }
   )
+
+  console.log('remaining', !!remaining, typeof Math.abs(remaining), remaining)
 
   return json({
     success: true,
     products: products,
     pageInfo: {
-      hasPreviousPage: true,
-      hasNextPage: true,
-      startCursor: "",
-      endCursor: ""
+      hasPreviousPage: (currentPage > 1) ? true : false,
+      hasNextPage: (remaining > 0) ? true : false,
+      startCursor: (currentPage > 1) ? currentPage - 1 : "",
+      endCursor: (remaining > 0) ?  Number(currentPage) + 1 : ""
     }
   })
 }
@@ -159,7 +189,7 @@ export const action = async ({ request }) => {
   return json({
     success: true
   });
-};
+}
 
 export default function Index() {
 
@@ -252,7 +282,9 @@ export default function Index() {
       let product_type = ''
       if (productInfo.tags.length) {
         const found_product_type = productInfo.tags.find(tag => tag.includes('ProductType_'))
-        product_type = found_product_type.split('_')?.[1]
+        if (!!found_product_type) {
+          product_type = found_product_type.split('_')?.[1]
+        }
       }
       formData.append('product_type', product_type)
 
@@ -466,54 +498,59 @@ export default function Index() {
           </Layout.Section>
         </Layout>
       </BlockStack> */}
-      <IndexTable
-        resourceName={{
-          singular: 'product',
-          plural: 'products'
-        }}
-        itemCount={products.length}
-        selectedItemsCount={ allResourcesSelected ? '' : selectedResources.length }
-        onSelectionChange={(selectionType, isSelecting, selection) => {
-          clearSelection()
-          if ( ( selectionType === 'single' ) && (!!isSelecting) ) {
-            handleSelectionChange(selectionType, isSelecting, selection)
-          }
-        }}
-        headings={[
-          { title: '' },
-          { title: 'Title' },
-        ]}
-        promotedBulkActions={[
-          {
-            content: "Edit",
-            onAction: onClickProductEditHandler
-          },
-          {
-            content: "Delete",
-            onAction: onClickProductDeleteHandler
-          }
-        ]}
-      >
-        {products.map(
-          ({_id, product_id, product_title, product_image}, index) => (
-            <IndexTable.Row
-              id={_id}
-              key={_id}
-              selected={selectedResources.includes(_id)}
-              position={index}
-            >
-              <IndexTable.Cell>
-                <Thumbnail source={product_image} />
-              </IndexTable.Cell>
-              <IndexTable.Cell>
-                <Text variant="bodyMd" fontWeight="bold" as="span">
-                  {product_title}
-                </Text>
-              </IndexTable.Cell>
-            </IndexTable.Row>
-          ),
-        )}
-      </IndexTable>
+
+      <div className="rca-indextable">
+
+        <IndexTable
+          resourceName={{
+            singular: 'product',
+            plural: 'products'
+          }}
+          itemCount={products.length}
+          selectedItemsCount={ allResourcesSelected ? '' : selectedResources.length }
+          onSelectionChange={(selectionType, isSelecting, selection) => {
+            clearSelection()
+            if ( ( selectionType === 'single' ) && (!!isSelecting) ) {
+              handleSelectionChange(selectionType, isSelecting, selection)
+            }
+          }}
+          headings={[
+            { title: '' },
+            { title: 'Title' },
+          ]}
+          promotedBulkActions={[
+            {
+              content: "Edit",
+              onAction: onClickProductEditHandler
+            },
+            {
+              content: "Delete",
+              onAction: onClickProductDeleteHandler
+            }
+          ]}
+        >
+          {products.map(
+            ({_id, product_id, product_title, product_image}, index) => (
+              <IndexTable.Row
+                id={_id}
+                key={_id}
+                selected={selectedResources.includes(_id)}
+                position={index}
+              >
+                <IndexTable.Cell>
+                  <Thumbnail source={product_image} />
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text variant="bodyMd" fontWeight="bold" as="span">
+                    {product_title}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            ),
+          )}
+        </IndexTable>
+
+      </div>
 
       <div
         style={{
@@ -522,19 +559,21 @@ export default function Index() {
           marginTop: '2em'
         }}
       >
-        {/* <Pagination
+        <Pagination
           hasPrevious={pageInfo.hasPreviousPage}
           hasNext={pageInfo.hasNextPage}
           onPrevious={() => {
             console.log('Previous')
             // fetcher.load(`?query=${queryValue}&type=${tabName}`)
             // fetcher.load(`?prevOrNext=prev&cursor=${1}`)
+            fetcher.submit({ prevOrNext: 'prev', cursor: pageInfo.startCursor }, { replace: false })
           }}
           onNext={() => {
             console.log('Next')
-            // fetcher.load(`?prevOrNext=next&cursor=${2}`)
+            // fetcher.load(`/index?prevOrNext=next&cursor=${2}`)
+            fetcher.submit({ prevOrNext: 'next', cursor: pageInfo.endCursor }, { replace: false })
           }}
-        /> */}
+        />
       </div>
     </Page>
   );
