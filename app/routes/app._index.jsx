@@ -35,16 +35,17 @@ export const loader = async ({ request }) => {
   console.log('searchParams', prevOrNext, cursor)
 
   // Get total count of records
-  const totalProducts = await Products.countDocuments()
+  const totalProducts = await Products.countDocuments({
+    $or: [
+      { shop: { $exists: false } },
+      { shop: session.shop }
+    ]
+  })
 
   let limit = 5
   let currentPage = !!cursor ? cursor : 1
-
-  console.log('currentPage', typeof currentPage, currentPage)
-
   let skip = currentPage - 1
   let remaining = 0
-
 
   if (cursor) {
     skip = limit * (cursor - 1)
@@ -53,8 +54,6 @@ export const loader = async ({ request }) => {
   } else {
     remaining = totalProducts - (limit * 1)
   }
-
-  console.log('skip', skip)
 
   const products = await Products.find(
     {
@@ -69,8 +68,6 @@ export const loader = async ({ request }) => {
       limit: limit
     }
   )
-
-  console.log('remaining', !!remaining, typeof Math.abs(remaining), remaining)
 
   return json({
     success: true,
