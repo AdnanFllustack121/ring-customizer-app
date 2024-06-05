@@ -620,7 +620,7 @@ function App() {
   }
 
   const getProductById = async () => {
-    const productResponse = await fetch(`/apps/jewelry-builder-app/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
+    const productResponse = await fetch(`${proxyBaseUrl}/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
     if (!!productResponse && !!productResponse.success) {
       setProductInfo(productResponse.data)
     }
@@ -636,19 +636,21 @@ function App() {
 
   const handleAddToCart = async (event) => {
     setIsDisabled(true)
-    
+
     event.preventDefault()
-    
+
     // setIsAddToCartLoading(true)
-    
+
     console.log('handleAddToCart metaFieldData', metaFieldData)
 
-    
-    const line_item_properties = {}
+
+    const line_item_properties = {
+      SKU: metaFieldData.sku
+    }
     const formData = {
       options: {}
     }
-    
+
 
     console.log('selectedOptions', selectedOptions)
 
@@ -656,7 +658,7 @@ function App() {
     formData.final_product_price = finalProductPrice
 
     // return
-    
+
     Object.values(selectedOptions).forEach(selected_Option => {
       line_item_properties[selected_Option.option_title] = selected_Option.option_value_title
     })
@@ -673,7 +675,7 @@ function App() {
       }
     }
 
-    console.log('line_item_properties', line_item_properties)
+    // console.log('line_item_properties', line_item_properties)
 
     if (Object.keys(formData).length) {
 

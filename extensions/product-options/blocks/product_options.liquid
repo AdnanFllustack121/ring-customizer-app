@@ -19,6 +19,7 @@
   "featured_image": "{{ product.featured_image }}",
   "featured_media": "{{ product.featured_media }}",
   "vendor": "{{ product.vendor }}",
+  "sku": "{{ product.selected_or_first_available_variant.sku }}",
   "metafields": {{ product.metafields.jewelrybuilderapp | json }},
   "file_url": "{{ '' | file_url }}"
 }
