@@ -106,7 +106,7 @@ export const saveTheProductBasicData = () => {
 }
 
 
-export const generateMedias = ({ options: productOptions, product_sku: productSku, product_type }) => {
+export const generateMedias = ({ options: productOptions, product_sku: productSku, product_type, shop }) => {
     console.log('generateMedias productOptions, productSku, product_type', productOptions, productSku, product_type)
 
     // 
@@ -147,7 +147,10 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
                 if (productTypeObj) {
                     //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
-                    let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    // let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    let final_media_url = `https://${shop}/cdn/shop/files/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+
+                    let final_media_video_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
 
                     console.log('final_media_url', final_media_url, product_options)
 
@@ -280,7 +283,7 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
 
                         // Video START
-                        media_image_paths.push(`${final_media_url}36.mp4`)
+                        media_image_paths.push(`${final_media_video_url}36.mp4`)
                         // Video END
 
 
