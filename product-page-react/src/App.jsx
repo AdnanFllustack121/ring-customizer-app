@@ -15,6 +15,8 @@ import './App.css'
 
 const proxyBaseUrl = `/apps/jewelry-builder-app`
 const currency = !!window?.Shopify?.currency?.active ? window.Shopify.currency.active : 'USD'
+const navigator = window.navigator
+console.log('navigator', navigator)
 
 // function App({ mediaSelector }) {
 function App() {
@@ -78,7 +80,7 @@ function App() {
       console.log('useEffect filteredOptions', filteredOptions)
 
       const searchParams = new URLSearchParams(window.location.search)
-      console.log('searchParams', searchParams, window.location.search, JSON.stringify(searchParams))
+      console.log('useEffect filteredOptions searchParams', searchParams, window.location.search, JSON.stringify(searchParams))
 
       // console.log('productInfo?.variants?.length', productInfo?.variants?.length)
       // console.log('productInfo.options', productInfo.options)
@@ -88,13 +90,15 @@ function App() {
 
       for ( let index = 0; index < filteredOptions.length; index++ ) {
         const mainOption = filteredOptions[index]
-        console.log('mainOption.option_slug', mainOption.option_slug)
+        // console.log('useEffect filteredOptions mainOption.option_slug', mainOption.option_slug)
 
         if (!mainOption?.option_values?.length) {
           continue
         }
+        // console.log('useEffect filteredOptions mainOption.option_values', mainOption.option_values)
 
         let mainOptionValue = mainOption.option_values[0]
+        // console.log('useEffect filteredOptions mainOptionValue', mainOptionValue)
 
         if (!!searchParams.size && searchParams.has(mainOption.option_slug)) {
           const searchParamsoption_slug = searchParams.get(mainOption.option_slug)
@@ -102,6 +106,29 @@ function App() {
           if (foundOptionValue) {
             mainOptionValue = foundOptionValue
           }
+        } else {
+          console.log('useEffect filteredOptions mainOption', mainOption)
+
+          // Default Options START
+
+          if ( "center_stone_weight" === mainOption.option_slug ) {
+            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "1.00")
+          }
+
+          if ( "center_stone_color" === mainOption.option_slug ) {
+            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "H")
+          }
+
+          if ( "center_stone_clarity" === mainOption.option_slug ) {
+            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "SI3")
+          }
+
+          if ( "metal_type" === mainOption.option_slug ) {
+            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "14k_ww")
+          }
+
+          // Default Options END
+
         }
 
         // 
@@ -392,9 +419,14 @@ function App() {
     // 
 
     if (!!Object.keys(selectedOptions).length) {
-      const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
-      console.log('final_product_price', final_product_price)
-      setFinalProductPrice(final_product_price)
+      console.log('metaFieldData.metafields', metaFieldData.metafields)
+      if ( Object.keys( metaFieldData.metafields ).length ) {
+        const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
+        console.log('final_product_price', final_product_price)
+        setFinalProductPrice(final_product_price)
+      } else {
+        setFinalProductPrice("Call for Price")
+      }
     }
 
 
@@ -846,10 +878,14 @@ function App() {
                 <span className="visually-hidden visually-hidden--inline">Regular price</span>
                 <span className="price-item price-item--regular">
                   {/* Rs. {finalProductPrice} */}
-                  Price: {i18n.formatCurrency(finalProductPrice, {
-                    currency: currency,
-                    form: 'explicit',
-                  })}
+                  Price: {
+                    ( typeof finalProductPrice === "string" )
+                    ?
+                    finalProductPrice : i18n.formatCurrency(finalProductPrice, {
+                      currency: currency,
+                      form: 'explicit',
+                    })
+                  }
                 </span>
               </div>
             </div>
@@ -890,6 +926,7 @@ function App() {
             )
           })
         }
+
         <fieldset>
           <legend>Quantity:</legend>
           <div className='quantity-input'>
@@ -923,10 +960,14 @@ function App() {
 
         <fieldset>
           <button className="rca-share__button" onClick={() => {
-            navigator.share({
-              url: location.href,
-              title: document.title
-            })
+
+            if (!!navigator?.share) {
+              navigator.share({
+                url: location.href,
+                title: document.title
+              })
+            }
+
           }}>
             <svg width="13" height="12" viewBox="0 0 13 12" class="icon icon-share" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
               <path d="M1.625 8.125V10.2917C1.625 10.579 1.73914 10.8545 1.9423 11.0577C2.14547 11.2609 2.42102 11.375 2.70833 11.375H10.2917C10.579 11.375 10.8545 11.2609 11.0577 11.0577C11.2609 10.8545 11.375 10.579 11.375 10.2917V8.125" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>

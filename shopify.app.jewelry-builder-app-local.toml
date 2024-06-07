@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://created-waiting-emirates-ccd.trycloudflare.com"
+application_url = "https://well-smart-jersey-pan.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://created-waiting-emirates-ccd.trycloudflare.com/auth/callback",
-  "https://created-waiting-emirates-ccd.trycloudflare.com/auth/shopify/callback",
-  "https://created-waiting-emirates-ccd.trycloudflare.com/api/auth/callback"
+  "https://well-smart-jersey-pan.trycloudflare.com/auth/callback",
+  "https://well-smart-jersey-pan.trycloudflare.com/auth/shopify/callback",
+  "https://well-smart-jersey-pan.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://created-waiting-emirates-ccd.trycloudflare.com"
+url = "https://well-smart-jersey-pan.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 
