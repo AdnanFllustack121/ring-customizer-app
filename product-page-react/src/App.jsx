@@ -420,7 +420,20 @@ function App() {
 
     if (!!Object.keys(selectedOptions).length) {
       console.log('metaFieldData.metafields', metaFieldData.metafields)
-      if ( Object.keys( metaFieldData.metafields ).length ) {
+
+      // metaFieldData?.metafields?.premium
+      // metaFieldData?.metafields?.sideStoneValue
+      // metaFieldData?.metafields?.smallStoneWeight
+      // metaFieldData?.metafields?.metalWeight
+
+      if (
+        !metaFieldData.metafields?.premium ||
+        !metaFieldData.metafields?.sideStoneValue ||
+        !metaFieldData.metafields?.smallStoneWeight ||
+        !metaFieldData.metafields?.metalWeight
+      ) {
+        setFinalProductPrice("Call for Price")
+      } else {
         const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
         console.log('final_product_price', final_product_price)
         setFinalProductPrice(final_product_price)
