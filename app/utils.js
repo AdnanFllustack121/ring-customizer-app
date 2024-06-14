@@ -27,17 +27,6 @@ export const createFile = async (filePathWithName, base64Data) => {
     }
 }
 
-export const authenticateProxyRoute = async (request) => {
-    if (
-        !!request.headers.get('x-force-upstream') &&
-        (request.headers.get('x-force-upstream') === 'app_proxy_pool') &&
-        !!request.headers.get('x-shop-domain')
-    ) {
-        return true
-    } else {
-        throw new Error("Oh no! Something went wrong!")
-    }
-}
 
 export const shopifyRest = async ({ session, method = "GET", path, body }) => {
     try {

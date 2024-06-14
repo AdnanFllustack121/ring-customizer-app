@@ -1,11 +1,10 @@
 import { json } from "@remix-run/node"
 import { Products, Session } from "../db.server"
-import { authenticateProxyRoute, createFile, makeid, shopifyRest } from "../utils"
-import { apiVersion, authenticate } from "../shopify.server"
+import { createFile, makeid, shopifyRest } from "../utils"
+import shopify, { apiVersion, authenticate } from "../shopify.server"
 
 export const loader = async ({ params, request }) => {
 
-    // await authenticateProxyRoute(request)
     const { storefront, liquid } = await authenticate.public.appProxy(request)
 
     console.log('storefront', storefront)
@@ -26,7 +25,6 @@ export const loader = async ({ params, request }) => {
 
 export const action = async ({ params, request }) => {
 
-    // await authenticateProxyRoute(request)
     const appProxyVars = await authenticate.public.appProxy(request)
     console.log('appProxyVars', appProxyVars)
 
@@ -38,28 +36,52 @@ export const action = async ({ params, request }) => {
     switch (request.method) {
         case "POST":
 
-        const payload = await request.json()
+            const payload = await request.json()
 
-        let image_path = ''
-        if (!!payload?.image) {
-            // image_path = await createFile('image_path.png', payload.image)
-            // image_path = payload.image.replace(/^data:image\/png;base64,/, "")
-            image_path = payload.image
-        }
+            let image_path = ''
+            if (!!payload?.image) {
+                // image_path = await createFile('image_path.png', payload.image)
+                // image_path = payload.image.replace(/^data:image\/png;base64,/, "")
+                image_path = payload.image
+            }
 
-        // if (!!image_path) {
-            // const shop_domain = request.headers.get('x-shop-domain')
-            // console.log('shop_domain', shop_domain)
-            // const session = await Session.findOne({ shop: shop_domain })
+            if (!payload?.metafields) {
+                return json({
+                    success: false
+                })
+            }
+
+            // 
+            let params_product_id = params.product_id
+
+            if (!!payload?.relatedToId) {
+                params_product_id = payload.relatedToId
+
+                // return json({
+                //     success: false,
+                //     data: params_product_id,
+                //     delete: params.product_id
+                // })
+
+                const deleteProduct = await shopifyRest({
+                    session,
+                    method: "DELETE",
+                    path: `products/${params.product_id}.json`,
+                })
+                console.log('deleteProduct', deleteProduct)
+
+            }
+
+            // 
 
             const getProduct = await shopifyRest({
                 session,
-                path: `products/${params.product_id}.json`,
+                path: `products/${params_product_id}.json`,
             })
-            console.log('getProduct', getProduct)
+            // console.log('getProduct', getProduct)
 
             const productCustomizationData = await Products.findOne({
-                product_id: `gid://shopify/Product/${params.product_id}`
+                product_id: `gid://shopify/Product/${params_product_id}`
             })
             console.log('productCustomizationData', productCustomizationData)
 
@@ -69,31 +91,10 @@ export const action = async ({ params, request }) => {
                 !!productCustomizationData
             ) {
                 const product_data = getProduct.product
+                console.log('product_data', product_data)
 
-                // console.log('payload.options', payload.options)
-                let options_price = 0
-
-                // const payload_options = Object.keys(payload.options)
-                // for (let index = 0; index < payload_options.length; index++) {
-                //     const payload_option = payload.options[payload_options[index]]
-
-                //     const category = productCustomizationData.categories.find(cat => cat.category_id === payload_option.category_id)
-
-                //     const option = category.options.find(opt => opt.option_id === payload_option.option_id)
-
-                //     options_price += +option.option_price
-
-                // }
-                console.log('options_price', options_price)
-
-                // const total_price = parseFloat(+product_data.variants[0].price + options_price).toFixed(2)
-                // const total_price = parseFloat(+product_data.variants[0].price).toFixed(2)
                 const total_price = parseFloat(+payload.final_product_price).toFixed(2)
-
                 console.log('total_price', total_price)
-                // return json({
-                //     success: false
-                // })
 
                 const productCreateResponse = await shopifyRest({
                     session,
@@ -101,9 +102,9 @@ export const action = async ({ params, request }) => {
                     path: 'products.json',
                     body: {
                         "product": {
-                            "title": `${product_data.title} - Custom Builder - Customer's Product with option_price ${total_price} ID ${makeid(24)}`,
+                            "title": `${product_data.title} - Custom Builder - Customer's Product with ID ${makeid(24)}`,
                             "body_html": product_data.body_html,
-                            "vendor": `related_to_${product_data.id}`,
+                            "vendor": product_data.vendor,
                             "product_type": "custom_ordered",
                             // "status": "draft"
                             "tags": `related_to_${product_data.id}`,
@@ -111,12 +112,51 @@ export const action = async ({ params, request }) => {
                                 // "attachment": image_path
                                 "src": image_path
                             }],
-                            "metafields": [{
-                                "key": "hidden",
-                                "value": 1,
-                                "type": "number_integer",
-                                "namespace": "seo"
-                            }],
+                            "metafields": [
+                                {
+                                    "key": "hidden",
+                                    "value": 1,
+                                    "type": "number_integer",
+                                    "namespace": "seo"
+                                },
+                                {
+                                    "key": "related_to",
+                                    "value": product_data.id,
+                                    "type": "number_integer",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+                                {
+                                    "key": "selectedOptions",
+                                    "value": JSON.stringify(payload.selectedOptions),
+                                    "type": "json",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+
+                                {
+                                    "key": "metalWeight",
+                                    "value": payload.metafields.metalWeight,
+                                    "type": "number_decimal",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+                                {
+                                    "key": "smallStoneWeight",
+                                    "value": payload.metafields.smallStoneWeight,
+                                    "type": "number_decimal",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+                                {
+                                    "key": "sideStoneValue",
+                                    "value": payload.metafields.sideStoneValue,
+                                    "type": "number_decimal",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+                                {
+                                    "key": "premium",
+                                    "value": payload.metafields.premium,
+                                    "type": "number_decimal",
+                                    "namespace": "jewelrybuilderapp"
+                                }
+                            ],
                             "variants": [{
                                 price: total_price
                             }]
@@ -141,41 +181,83 @@ export const action = async ({ params, request }) => {
 
             }
 
-        // }
-
-
-        //   const formData = await request.formData()
-
-        //   const product_id = formData.get("product_id")
-        //   const product_title = formData.get("product_title")
-    
-        //   const doExists = await Products.findOne({ product_id })
-        //   if (doExists) {
-        //     return json({
-        //       success: false,
-        //       message: "Already Exists"
-        //     })
-        //   } else {
-        //     const isProductCreated = await Products.create({
-        //       product_id,
-        //       product_title
-        //     })
-
-        //     return json({
-        //       success: true,
-        //       product: isProductCreated,
-        //       message: "Success!"
-        //     })
-        //   }
-
           break;
-    
+
+
         case "PATCH":
+            // const payloadOfUpdate = await request.json()
+            // console.log('payloadOfUpdate', payloadOfUpdate)
+
+            // if (!payloadOfUpdate?.selectedOptions) {
+            //     return json({
+            //         success: false
+            //     })
+            // }
+
+            // const getProductToUpdate = await shopifyRest({
+            //     session,
+            //     path: `products/${params.product_id}.json`,
+            // })
+            // console.log('getProductToUpdate', getProductToUpdate)
+
+            // if (
+            //     !!getProductToUpdate &&
+            //     ('product' in getProductToUpdate)
+            // ) {
+            //     const product_data = getProductToUpdate.product
+
+            //     const total_price = parseFloat(+payloadOfUpdate.final_product_price).toFixed(2)
+
+            //     const bodyToUpdate = {
+            //         "product": {
+            //             "id": product_data.id,
+            //             // "metafields": [
+            //             //     {
+            //             //         "key": "selectedOptions",
+            //             //         "value": JSON.stringify(payloadOfUpdate.selectedOptions),
+            //             //         "type": "json",
+            //             //         "namespace": "jewelrybuilderapp"
+            //             //     },
+            //             // ],
+            //             "variants": [{
+            //                 id: product_data.variants[0].id,
+            //                 price: total_price
+            //             }]
+            //         }
+            //     }
+
+            //     console.log('bodyToUpdate', bodyToUpdate)
+
+            //     const productCreateResponse = await shopifyRest({
+            //         session,
+            //         method: "PUT",
+            //         path: `products/${product_data.id}.json`,
+            //         body: bodyToUpdate
+            //     })
+            //     console.log('productCreateResponse', productCreateResponse)
+
+            //     if (
+            //         'product' in productCreateResponse &&
+            //         !!productCreateResponse.product &&
+            //         'variants' in productCreateResponse.product &&
+            //         !!productCreateResponse.product.variants &&
+            //         !!productCreateResponse.product.variants.length
+            //     ) {
+            //         const variant = productCreateResponse.product.variants[productCreateResponse.product.variants.length - 1]
+            //         return json({
+            //             success: true,
+            //             data: variant.id
+            //         })
+            //     }
+
+                
+            // }
+
           break;
-    
-        case "DELETE":    
+
+        case "DELETE":
           break;
-      
+
         default:
           break;
     }

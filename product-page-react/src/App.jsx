@@ -21,6 +21,8 @@ console.log('navigator', navigator)
 // function App({ mediaSelector }) {
 function App() {
   const [productInfo, setProductInfo] = useState({})
+  const [relatedToId, setRelatedToId] = useState(null)
+
   const [filteredOptions, setFilteredOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState({})
   const [quantity, setQuantity] = useState(1)
@@ -31,7 +33,7 @@ function App() {
 
   const [isDisabled, setIsDisabled] = useState(false)
 
-  const [metaFieldData, setMetaFieldData] = useState({})
+  const [metaFieldData, setMetaFieldData] = useState(null)
 
   const [finalProductPrice, setFinalProductPrice] = useState(0)
 
@@ -41,12 +43,7 @@ function App() {
 
 
   useEffect(() => {
-    console.log('useEffect metaFieldData', metaFieldData)
-  }, [metaFieldData])
-
-
-  useEffect(() => {
-    console.log('useEffect getProductById()')
+    console.log('useEffect first! no dependencies.')
 
     // 
     const jewelrybuilderapp_script_tag = document.querySelector('#jewelrybuilderapp')
@@ -57,9 +54,29 @@ function App() {
     // 
 
     // console.log('optionsJson', optionsJson)
-
-    getProductById()
   }, [])
+
+
+  useEffect(() => {
+    if (metaFieldData) {
+      console.log('useEffect metaFieldData', metaFieldData)
+
+      if (!!metaFieldData?.metafields?.related_to) {
+        console.log('useEffect metaFieldData.metafields.related_to', metaFieldData.metafields.related_to)
+        setRelatedToId(metaFieldData.metafields.related_to)
+      } else {
+        getProductById()
+      }
+    }
+  }, [metaFieldData])
+
+
+  useEffect(() => {
+    console.log('useEffect relatedToId', relatedToId)
+    if (relatedToId) {
+      getProductById(relatedToId)
+    }
+  }, [relatedToId])
 
 
   useEffect(() => {
@@ -107,24 +124,41 @@ function App() {
             mainOptionValue = foundOptionValue
           }
         } else {
-          console.log('useEffect filteredOptions mainOption', mainOption)
+          // console.log('useEffect filteredOptions mainOption', mainOption.option_slug, mainOption)
 
           // Default Options START
 
-          if ( "center_stone_weight" === mainOption.option_slug ) {
-            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "1.00")
-          }
+          if (!!relatedToId) {
 
-          if ( "center_stone_color" === mainOption.option_slug ) {
-            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "H")
-          }
+            const metafieldsSelectedOptions = Object.values(metaFieldData.metafields.selectedOptions)
+            // console.log('useEffect filteredOptions metafieldsSelectedOptions', metafieldsSelectedOptions)
 
-          if ( "center_stone_clarity" === mainOption.option_slug ) {
-            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "SI3")
-          }
+            const metafieldsSelectedOption = metafieldsSelectedOptions.find(metafieldsSelectedOption => metafieldsSelectedOption.option_slug === mainOption.option_slug)
+            console.log('useEffect filteredOptions metafieldsSelectedOption', metafieldsSelectedOption)
 
-          if ( "metal_type" === mainOption.option_slug ) {
-            mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "14k_ww")
+            if (metafieldsSelectedOption) {
+              mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === metafieldsSelectedOption.option_value_slug)
+              console.log('useEffect filteredOptions mainOptionValue', mainOptionValue)
+            }
+
+          } else {
+
+            if ( "center_stone_weight" === mainOption.option_slug ) {
+              mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "1.00")
+            }
+  
+            if ( "center_stone_color" === mainOption.option_slug ) {
+              mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "H")
+            }
+  
+            if ( "center_stone_clarity" === mainOption.option_slug ) {
+              mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "SI3")
+            }
+  
+            if ( "metal_type" === mainOption.option_slug ) {
+              mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "14k_ww")
+            }
+  
           }
 
           // Default Options END
@@ -183,7 +217,15 @@ function App() {
 
       console.log('initiallySelectedOptions', initiallySelectedOptions)
 
-      setSelectedOptions(initiallySelectedOptions)
+      console.log('relatedToId', relatedToId)
+
+      console.log('metaFieldData.metafields?.selectedOptions', metaFieldData.metafields?.selectedOptions)
+      // if (relatedToId && !!metaFieldData.metafields?.selectedOptions) {
+      //   // metaFieldData
+      //   setSelectedOptions(metaFieldData.metafields.selectedOptions)
+      // } else {
+        setSelectedOptions(initiallySelectedOptions)
+      // }
     }
 
     /*
@@ -437,8 +479,6 @@ function App() {
         const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
         console.log('final_product_price', final_product_price)
         setFinalProductPrice(final_product_price)
-      } else {
-        setFinalProductPrice("Call for Price")
       }
     }
 
@@ -664,8 +704,12 @@ function App() {
     })
   }
 
-  const getProductById = async () => {
-    const productResponse = await fetch(`${proxyBaseUrl}/api/product/${ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
+  const getProductById = async (related_to_id = null) => {
+
+    console.log('getProductById metaFieldData', metaFieldData)
+
+    const productResponse = await fetch(`${proxyBaseUrl}/api/product/${related_to_id ? related_to_id : ShopifyAnalytics.meta.product.id}`).then((response) => response.json())
+
     if (!!productResponse && !!productResponse.success) {
       setProductInfo(productResponse.data)
     }
@@ -680,29 +724,45 @@ function App() {
   }
 
   const handleAddToCart = async (event) => {
-    setIsDisabled(true)
-
     event.preventDefault()
+
+
+    console.log('handleAddToCart metaFieldData', metaFieldData)
+    if (
+      !metaFieldData.metafields?.metalWeight ||
+      !metaFieldData.metafields?.smallStoneWeight ||
+      !metaFieldData.metafields?.sideStoneValue ||
+      !metaFieldData.metafields?.premium
+    ) {
+      console.log("Call for Price")
+      return
+    }
+
+
+    setIsDisabled(true)
 
     // setIsAddToCartLoading(true)
 
     console.log('handleAddToCart metaFieldData', metaFieldData)
 
-
     const line_item_properties = {
       SKU: metaFieldData.sku
     }
-    const formData = {
-      options: {}
-    }
 
+    const formData = {
+      options: {},
+      selectedOptions,
+      metafields: {
+        metalWeight: metaFieldData.metafields.metalWeight,
+        smallStoneWeight: metaFieldData.metafields.smallStoneWeight,
+        sideStoneValue: metaFieldData.metafields.sideStoneValue,
+        premium: metaFieldData.metafields.premium
+      }
+    }
 
     console.log('selectedOptions', selectedOptions)
 
-
     formData.final_product_price = finalProductPrice
-
-    // return
 
     Object.values(selectedOptions).forEach(selected_Option => {
       line_item_properties[selected_Option.option_title] = selected_Option.option_value_title
@@ -720,6 +780,10 @@ function App() {
       }
     }
 
+    if (relatedToId) {
+      formData.relatedToId = relatedToId
+    }
+    // return
     // console.log('line_item_properties', line_item_properties)
 
     if (Object.keys(formData).length) {
@@ -756,7 +820,6 @@ function App() {
         // setIsAddToCartLoading(false)
       }
     }
-
 
   }
 
@@ -881,7 +944,7 @@ function App() {
 
         {/* Title */}
         <h1>
-          {metaFieldData.title}
+          {!!metaFieldData?.title && metaFieldData.title}
         </h1>
 
         <fieldset>
@@ -960,8 +1023,32 @@ function App() {
         </fieldset>
 
         <fieldset>
-          <button type="submit" disabled={isDisabled} onClick={handleAddToCart}>
-            Add to cart
+          <button
+            type="submit"
+            disabled={
+              isDisabled ||
+              (
+                !metaFieldData?.metafields?.metalWeight ||
+                !metaFieldData?.metafields?.smallStoneWeight ||
+                !metaFieldData?.metafields?.sideStoneValue ||
+                !metaFieldData?.metafields?.premium
+              )
+            }
+            onClick={
+              // relatedToId
+              // ?
+              // handleUpdateCart
+              // :
+              handleAddToCart
+            }
+          >
+            {
+              relatedToId
+              ?
+              'Update cart item'
+              :
+              'Add to cart'
+            }
           </button>
         </fieldset>
 
