@@ -135,11 +135,15 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
                 console.log('productTypeObj', productTypeObj)
 
                 if (productTypeObj) {
+
+                    let shopify_cdn_base = `https://${shop}/cdn/shop/files/`
+                    let kattdiamonds_url = ''
+
                     //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
                     // let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
-                    let final_media_url = `https://${shop}/cdn/shop/files/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    let final_media_url = `${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
 
-                    let final_media_video_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    let final_media_video_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/`
 
                     console.log('final_media_url', final_media_url, product_options)
 
@@ -267,19 +271,19 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
                         // All 6 images
                         for (let index = 1; index <= 6; index++) {
-                            media_image_paths.push(`${final_media_url}0${index}.jpg`)
+                            media_image_paths.push(`${shopify_cdn_base}${final_media_url}0${index}.jpg`)
                         }
 
 
                         // Video START
-                        media_image_paths.push(`${final_media_video_url}36.mp4`)
+                        media_image_paths.push(`${final_media_video_url + final_media_url}36.mp4`)
                         // Video END
 
 
                         final_media_url += '01.jpg'
                         console.log('final_media_url', final_media_url)
     
-                        media_image_path = final_media_url
+                        media_image_path = shopify_cdn_base + final_media_url
                     }
                 }
             }
