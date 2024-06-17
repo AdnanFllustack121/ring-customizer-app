@@ -34,7 +34,7 @@ export const action = async ({ request }) => {
     case "PRODUCTS_CREATE":
     case "PRODUCTS_UPDATE":
       // throw new Response()
-      productsCreateOrUpdateHandler(shop, payload)
+      productsCreateOrUpdateHandler(admin, shop, payload)
       break;
     case "PRODUCTS_DELETE":
       productsDeleteHandler(payload)
@@ -54,7 +54,7 @@ export const action = async ({ request }) => {
 };
 
 
-const productsCreateOrUpdateHandler = async (shop, productPayload) => {
+const productsCreateOrUpdateHandler = async (admin, shop, productPayload) => {
 
   // console.log('productsCreateOrUpdateHandler START', productPayload)
 
@@ -178,6 +178,25 @@ const productsCreateOrUpdateHandler = async (shop, productPayload) => {
 
     if (!!options.length) {
 
+      // Get Domain START
+      let shop_domain = shop
+      const response = await admin.graphql(
+        `#graphql
+        {
+          shop {
+            domains {
+              host
+            }
+          }
+        }`,
+      )
+      const responseJson = await response.json()
+      console.log('responseJson', responseJson?.data?.shop?.domains?.[0]?.host)
+      if (!!responseJson?.data?.shop?.domains?.[0]?.host) {
+        shop_domain = responseJson.data.shop.domains[0].host
+      }
+      // Get Domain END
+
       // const the_variations = generateVariations(options)
       // console.log('the_variations', the_variations)
 
@@ -195,7 +214,7 @@ const productsCreateOrUpdateHandler = async (shop, productPayload) => {
       // console.log('productsCreateOrUpdateHandler product', product)
 
 
-      const the_medias = generateMedias(product)
+      const the_medias = generateMedias(shop_domain, product)
       // console.log('productsCreateOrUpdateHandler the_medias', the_medias)
 
 

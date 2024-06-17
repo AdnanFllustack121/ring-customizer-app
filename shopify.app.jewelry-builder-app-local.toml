@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://racial-nominated-knows-ladder.trycloudflare.com"
+application_url = "https://figure-savannah-ensemble-holiday.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://racial-nominated-knows-ladder.trycloudflare.com/auth/callback",
-  "https://racial-nominated-knows-ladder.trycloudflare.com/auth/shopify/callback",
-  "https://racial-nominated-knows-ladder.trycloudflare.com/api/auth/callback"
+  "https://figure-savannah-ensemble-holiday.trycloudflare.com/auth/callback",
+  "https://figure-savannah-ensemble-holiday.trycloudflare.com/auth/shopify/callback",
+  "https://figure-savannah-ensemble-holiday.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://racial-nominated-knows-ladder.trycloudflare.com"
+url = "https://figure-savannah-ensemble-holiday.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

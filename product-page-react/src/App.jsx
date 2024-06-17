@@ -746,7 +746,7 @@ function App() {
     console.log('handleAddToCart metaFieldData', metaFieldData)
 
     const line_item_properties = {
-      SKU: metaFieldData.sku
+      SKU: relatedToId ? metaFieldData.metafields.related_to_sku : metaFieldData.sku
     }
 
     const formData = {

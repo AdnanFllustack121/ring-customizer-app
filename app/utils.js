@@ -95,7 +95,7 @@ export const saveTheProductBasicData = () => {
 }
 
 
-export const generateMedias = ({ options: productOptions, product_sku: productSku, product_type, shop }) => {
+export const generateMedias = (shop_domain, { options: productOptions, product_sku: productSku, product_type, shop }) => {
     console.log('generateMedias productOptions, productSku, product_type', productOptions, productSku, product_type)
 
     // 
@@ -136,8 +136,7 @@ export const generateMedias = ({ options: productOptions, product_sku: productSk
 
                 if (productTypeObj) {
 
-                    let shopify_cdn_base = `https://${shop}/cdn/shop/files/`
-                    let kattdiamonds_url = ''
+                    let shopify_cdn_base = `https://${shop_domain}/cdn/shop/files/`
 
                     //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
                     // let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`

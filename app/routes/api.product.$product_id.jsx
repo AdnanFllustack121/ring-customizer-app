@@ -102,7 +102,7 @@ export const action = async ({ params, request }) => {
                     path: 'products.json',
                     body: {
                         "product": {
-                            "title": `${product_data.title} - Custom Builder - Customer's Product with ID ${makeid(24)}`,
+                            "title": `${product_data.title} - Custom Builder - SKU ${product_data.variants[0].sku} ${makeid(24)}`,
                             "body_html": product_data.body_html,
                             "vendor": product_data.vendor,
                             "product_type": "custom_ordered",
@@ -123,6 +123,12 @@ export const action = async ({ params, request }) => {
                                     "key": "related_to",
                                     "value": product_data.id,
                                     "type": "number_integer",
+                                    "namespace": "jewelrybuilderapp"
+                                },
+                                {
+                                    "key": "related_to_sku",
+                                    "value": product_data.variants[0].sku,
+                                    "type": "single_line_text_field",
                                     "namespace": "jewelrybuilderapp"
                                 },
                                 {
