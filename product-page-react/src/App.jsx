@@ -904,7 +904,23 @@ function App() {
                           onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                         >
                           <div className="video-thumb-overlay"></div>
-                          <img src={allMedias[0]} />
+                          <img src={allMedias[0]} onLoad={async () => {
+                            console.log('Video Image Loaded', allMedias)
+
+                            const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
+                            console.log('videoMedia', videoMedia)
+
+                            try {
+                              
+                              const videoMediaFetch = await fetch(videoMedia, {
+                                method: "HEAD",
+                                // mode: "no-cors"
+                              })
+                              console.log('videoMediaFetch', videoMediaFetch)
+                            } catch (error) {
+                              console.log('videoMediaFetch error', error)
+                            }
+                          }} />
                         </li>
                       )
                     }

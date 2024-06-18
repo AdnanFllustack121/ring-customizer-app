@@ -483,12 +483,7 @@
       },
       {
         "optionValueTitle": "5.00",
-        "ProductType": "all",
-        "hideOnlyWhen": {
-          "optionSlug": "center_stone_type",
-          "optionValueSlug": "ld",
-          "ProductType": "Earrings"
-        }
+        "ProductType": "all"
       },
       {
         "optionValueTitle": "5.25",
