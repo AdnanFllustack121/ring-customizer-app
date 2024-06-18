@@ -102,7 +102,7 @@ export const action = async ({ params, request }) => {
                     path: 'products.json',
                     body: {
                         "product": {
-                            "title": `${product_data.title} - Custom Builder - SKU ${product_data.variants[0].sku} ${makeid(24)}`,
+                            "title": `${product_data.title} - Custom Builder - SKU ${product_data.variants[0].sku}`,
                             "body_html": product_data.body_html,
                             "vendor": product_data.vendor,
                             "product_type": "custom_ordered",
