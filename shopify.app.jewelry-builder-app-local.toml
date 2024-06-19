@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://elegant-legitimate-gadgets-afraid.trycloudflare.com"
+application_url = "https://sox-navigation-handles-shows.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://elegant-legitimate-gadgets-afraid.trycloudflare.com/auth/callback",
-  "https://elegant-legitimate-gadgets-afraid.trycloudflare.com/auth/shopify/callback",
-  "https://elegant-legitimate-gadgets-afraid.trycloudflare.com/api/auth/callback"
+  "https://sox-navigation-handles-shows.trycloudflare.com/auth/callback",
+  "https://sox-navigation-handles-shows.trycloudflare.com/auth/shopify/callback",
+  "https://sox-navigation-handles-shows.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://elegant-legitimate-gadgets-afraid.trycloudflare.com"
+url = "https://sox-navigation-handles-shows.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

@@ -496,6 +496,45 @@ function App() {
     } else {
       // document.querySelector(mediaSelector).style.display = 'block'
     }
+
+    // Check for video existance START
+    (async () => {
+      console.log('Video Image Loaded', allMedias)
+      const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
+      console.log('videoMedia', videoMedia)
+      try {
+        const videoMediaFetch = await fetch(videoMedia, {
+          method: "HEAD",
+        })
+        console.log('videoMediaFetch', videoMediaFetch)
+        if (videoMediaFetch?.ok === false) {
+          
+        }
+      } catch (error) {
+        console.log('videoMediaFetch error', error, allMedias)
+        setAllMedias(prevMedias => {
+          const newMedias = [...prevMedias]
+
+          let video_url = newMedias[6]
+
+          if (video_url.includes('_yy_')) {
+            video_url = video_url.replace("_yy_", "_ww_")
+          }
+
+          if (video_url.includes('_rr_')) {
+            video_url = video_url.replace("_rr_", "_ww_")
+          }
+
+          newMedias[6] = video_url
+
+          return [
+            ...newMedias
+          ]
+        })
+      }
+    })()
+    // Check for video existance END
+
   }, [allMedias])
 
 
@@ -904,23 +943,7 @@ function App() {
                           onClick={() => { setFeaturedMediaIndex(singleMediaIndex) }}
                         >
                           <div className="video-thumb-overlay"></div>
-                          <img src={allMedias[0]} onLoad={async () => {
-                            console.log('Video Image Loaded', allMedias)
-
-                            const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
-                            console.log('videoMedia', videoMedia)
-
-                            try {
-                              
-                              const videoMediaFetch = await fetch(videoMedia, {
-                                method: "HEAD",
-                                // mode: "no-cors"
-                              })
-                              console.log('videoMediaFetch', videoMediaFetch)
-                            } catch (error) {
-                              console.log('videoMediaFetch error', error)
-                            }
-                          }} />
+                          <img src={allMedias[0]} />
                         </li>
                       )
                     }
