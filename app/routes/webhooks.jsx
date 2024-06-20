@@ -185,15 +185,16 @@ const productsCreateOrUpdateHandler = async (admin, shop, productPayload) => {
         {
           shop {
             domains {
-              host
+              url
             }
           }
         }`,
       )
       const responseJson = await response.json()
-      console.log('responseJson', responseJson?.data?.shop?.domains?.[0]?.host)
-      if (!!responseJson?.data?.shop?.domains?.[0]?.host) {
-        shop_domain = responseJson.data.shop.domains[0].host
+      console.log('responseJson', responseJson?.data?.shop?.domains?.[0]?.url)
+      if (!!responseJson?.data?.shop?.domains?.[0]?.url) {
+        shop_domain = responseJson.data.shop.domains[0].url
+        console.log('shop_domain', shop_domain)
       }
       // Get Domain END
 

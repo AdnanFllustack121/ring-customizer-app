@@ -100,20 +100,20 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
 
     // 
     const options = productOptions.filter(po => !!optionsJson.find(oj => oj.slug === po.option_slug)?.changeMedia)
-    console.log('options', options)
+    // console.log('options', options)
     // 
 
     const mediaRecords = []
 
     // Helper function to recursively generate mediaRecords
     function generate(currentIndex, currentVariation) {
-        console.log('currentVariation', JSON.stringify(currentVariation))
+        // console.log('currentVariation', JSON.stringify(currentVariation))
       if (currentIndex === options.length) {
         let variant_title = []
         const product_options = currentVariation.map(cv => {
           variant_title.push(cv.option_value_title)
 
-            console.log('cv', cv)
+            // console.log('cv', cv)
 
           return {
             option_id: cv.option_id,
@@ -132,11 +132,11 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                 const onlySkuNumber = productSku
 
                 const productTypeObj = productTypes.find(pt => pt.productType === product_type)
-                console.log('productTypeObj', productTypeObj)
+                // console.log('productTypeObj', productTypeObj)
 
                 if (productTypeObj) {
 
-                    let shopify_cdn_base = `https://${shop_domain}/cdn/shop/files/`
+                    let shopify_cdn_base = `${shop_domain}/cdn/shop/files/`
 
                     //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
                     // let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
@@ -144,7 +144,7 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
 
                     let final_media_video_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/`
 
-                    console.log('final_media_url', final_media_url, product_options)
+                    // console.log('final_media_url', final_media_url, product_options)
 
                     const option_value_titles = product_options.map(po => po.option_value_title)
                     // console.log('option_value_titles', option_value_titles)
