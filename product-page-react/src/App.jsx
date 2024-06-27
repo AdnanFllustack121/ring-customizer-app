@@ -158,7 +158,7 @@ function App() {
             if ( "metal_type" === mainOption.option_slug ) {
               mainOptionValue = mainOption.option_values.find(mainOption_option_values => mainOption_option_values.option_value_slug === "14k_ww")
             }
-  
+
           }
 
           // Default Options END
@@ -178,6 +178,7 @@ function App() {
           }
         }
 
+        console.log('nclds 1')
         if (foundOptionInJson?.hideOnlyWhen) {
           const foundSelectedOption = Object.values(initiallySelectedOptions).find(initiallySelectedOption => (
             (initiallySelectedOption.option_slug === foundOptionInJson.hideOnlyWhen.optionSlug) &&
@@ -500,6 +501,7 @@ function App() {
     // Check for video existance START
     (async () => {
       console.log('Video Image Loaded', allMedias)
+      console.log('nclds 4')
       const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
       console.log('videoMedia', videoMedia)
       try {
@@ -516,11 +518,14 @@ function App() {
           const newMedias = [...prevMedias]
 
           let video_url = newMedias[6]
+          console.log('video_url', video_url)
 
+          console.log('nclds 5')
           if (video_url.includes('_yy_')) {
             video_url = video_url.replace("_yy_", "_ww_")
           }
 
+          console.log('nclds 6')
           if (video_url.includes('_rr_')) {
             video_url = video_url.replace("_rr_", "_ww_")
           }
@@ -546,6 +551,7 @@ function App() {
       if (metalTypeOption) {
         const selectedOptionsHavingMedia = Object.values(selectedOptions).filter(selectedOption => !!selectedOption.change_media && selectedOption.option_slug != "metal_type")
 
+        console.log('nclds 7')
         const metalTypeOptionValue = metalTypeOption.option_values.find(metalOptionValue => metalOptionValue.option_value_slug.includes('_ww'))
 
         const mergedMediaOptions = [...selectedOptionsHavingMedia, metalTypeOptionValue]
@@ -629,6 +635,7 @@ function App() {
           if (foundOptionFromJson?.hideOnlyWhen) {
             const showOnlyWhenOptionSlug = foundOptionFromJson.hideOnlyWhen.optionSlug
             const showOnlyWhenOptionValueSlug = foundOptionFromJson.hideOnlyWhen.optionValueSlug
+            console.log('nclds 8')
             const testing = Object.values(newSelectedOptions).find(newSelectedOption => (
               newSelectedOption.option_slug === showOnlyWhenOptionSlug && showOnlyWhenOptionValueSlug.includes(newSelectedOption.option_value_slug)
             ))
@@ -872,6 +879,7 @@ function App() {
           !!allMedias?.length && (featuredMediaIndex !== null)
           ?
           <>
+            {console.log('nclds 9', allMedias, featuredMediaIndex)}
             {
               allMedias[featuredMediaIndex].includes('mp4')
               ?
@@ -891,6 +899,7 @@ function App() {
               {allMedias.map((singleMedia, singleMediaIndex) => {
 
                 // console.log('singleMedia', singleMedia)
+                {console.log('nclds 10')}
 
                 return (
                   <>

@@ -95,7 +95,12 @@ export const saveTheProductBasicData = () => {
 }
 
 
-export const generateMedias = (shop_domain, { options: productOptions, product_sku: productSku, product_type, shop }) => {
+export const generateMedias = (
+    // admin,
+    shop_domain,
+    { options: productOptions, product_sku: productSku, product_type, shop },
+    files_array = []
+) => {
     console.log('generateMedias productOptions, productSku, product_type', productOptions, productSku, product_type)
 
     // 
@@ -104,6 +109,7 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
     // 
 
     const mediaRecords = []
+    let video_url_array = []
 
     // Helper function to recursively generate mediaRecords
     function generate(currentIndex, currentVariation) {
@@ -128,6 +134,7 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
 
             // 
             let media_image_path = ''
+
             if (!!productSku) {
                 const onlySkuNumber = productSku
 
@@ -139,12 +146,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                     let shopify_cdn_base = `${shop_domain}/cdn/shop/files/`
 
                     //                    |-----------------------------------------------File Path---------------------------------------------------|------SKU------|-|--------ProductType_Short----------|
-                    // let final_media_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
-                    let final_media_url = `${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    // let URL_parameters = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
+                    let URL_parameters = `${onlySkuNumber}_${productTypeObj.ProductType_Short}_`
 
                     let final_media_video_url = `https://kattdiamonds.com/media/catalog/product/${productTypeObj.productType.toLowerCase()}/${onlySkuNumber}/`
 
-                    // console.log('final_media_url', final_media_url, product_options)
+                    // console.log('URL_parameters', URL_parameters, product_options)
 
                     const option_value_titles = product_options.map(po => po.option_value_title)
                     // console.log('option_value_titles', option_value_titles)
@@ -157,7 +164,7 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                     // console.log('metalTypeValueObj', metalTypeValueObj)
 
                     if (metalTypeValueObj) {
-                        final_media_url += `${metalTypeValueObj.optionValue_4Pic}_04_`
+                        URL_parameters += `${metalTypeValueObj.optionValue_4Pic}_04_`
 
                         // Center Stone Shape
                         const centerStoneShapeObj = optionsJson.find(oj => oj.slug === 'center_stone_shape')
@@ -167,12 +174,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return centerStoneShapeValue.optionValueTitle === center_stone_shape_product_option.option_value_title
                             })
                             if (centerStoneShapeValueObj) {
-                                final_media_url += `${centerStoneShapeValueObj.optionValue_Short}-`
+                                URL_parameters += `${centerStoneShapeValueObj.optionValue_Short}-`
                             } else {
-                                final_media_url += `na-`
+                                URL_parameters += `na-`
                             }
                         } else {
-                            final_media_url += `na-`
+                            URL_parameters += `na-`
                         }
                         // Center Stone Shape END
 
@@ -184,12 +191,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return centerStoneTypeValue.optionValueTitle === center_stone_type_product_option.option_value_title
                             })
                             if (centerStoneTypeValueObj) {
-                                final_media_url += `${centerStoneTypeValueObj.optionValue_4Pic}_`
+                                URL_parameters += `${centerStoneTypeValueObj.optionValue_4Pic}_`
                             } else {
-                                final_media_url += `na_`
+                                URL_parameters += `na_`
                             }
                         } else {
-                            final_media_url += `na_`
+                            URL_parameters += `na_`
                         }
                         // Center Stone Type END
                         
@@ -203,12 +210,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return sideStoneShapeValue.optionValueTitle === side_stone_shape_product_option.option_value_title
                             })
                             if (sideStoneShapeValueObj) {
-                                final_media_url += `${sideStoneShapeValueObj.optionValue_Short}-`
+                                URL_parameters += `${sideStoneShapeValueObj.optionValue_Short}-`
                             } else {
-                                final_media_url += `na-`
+                                URL_parameters += `na-`
                             }
                         } else {
-                            final_media_url += `na-`
+                            URL_parameters += `na-`
                         }
                         // Side Stone Shape END
 
@@ -220,12 +227,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return sideStoneTypeValue.optionValueTitle === side_stone_type_product_option.option_value_title
                             })
                             if (sideStoneTypeValueObj) {
-                                final_media_url += `${sideStoneTypeValueObj.optionValue_4Pic}_`
+                                URL_parameters += `${sideStoneTypeValueObj.optionValue_4Pic}_`
                             } else {
-                                final_media_url += `na_`
+                                URL_parameters += `na_`
                             }
                         } else {
-                            final_media_url += `na_`
+                            URL_parameters += `na_`
                         }
                         // Side Stone Type END
 
@@ -239,12 +246,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return smallStoneShapeValue.optionValueTitle === small_stone_shape_product_option.option_value_title
                             })
                             if (smallStoneShapeValueObj) {
-                                final_media_url += `${smallStoneShapeValueObj.optionValue_Short}-`
+                                URL_parameters += `${smallStoneShapeValueObj.optionValue_Short}-`
                             } else {
-                                final_media_url += `na-`
+                                URL_parameters += `na-`
                             }
                         } else {
-                            final_media_url += `na-`
+                            URL_parameters += `na-`
                         }
                         // Small Stone Shape END
 
@@ -256,12 +263,12 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
                                 return smallStoneTypeValue.optionValueTitle === small_stone_type_product_option.option_value_title
                             })
                             if (smallStoneTypeValueObj) {
-                                final_media_url += `${smallStoneTypeValueObj.optionValue_4Pic}_`
+                                URL_parameters += `${smallStoneTypeValueObj.optionValue_4Pic}_`
                             } else {
-                                final_media_url += `na_`
+                                URL_parameters += `na_`
                             }
                         } else {
-                            final_media_url += `na_`
+                            URL_parameters += `na_`
                         }
                         // Small Stone Type END
 
@@ -270,23 +277,51 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
 
                         // All 6 images
                         for (let index = 1; index <= 6; index++) {
-                            media_image_paths.push(`${shopify_cdn_base}${final_media_url}0${index}.jpg`)
+                            media_image_paths.push(`${shopify_cdn_base}${URL_parameters}0${index}.jpg`)
                         }
 
+                        // 
+                        video_url_array.push(URL_parameters)
+
+
+                        console.log('URL_parameters', URL_parameters)
 
                         // Video START
-                        media_image_paths.push(`${final_media_video_url + final_media_url}36.mp4`)
+                        const found_file_name = files_array.find(file_single => file_single.filename === URL_parameters + '36.mp4')
+                        console.log('found_file_name', found_file_name)
+                        if (found_file_name && !!found_file_name?.originalSource?.url) {
+                            // media_image_paths.push(`${final_media_video_url + URL_parameters}36.mp4`)
+                            media_image_paths.push(found_file_name.originalSource.url)
+                        } else {
+                            // media_image_paths.push(`${final_media_video_url + URL_parameters}36.mp4`)
+                            let new_video_name = `${URL_parameters}36.mp4`
+
+                            if (new_video_name.includes('_yy_')) {
+                                new_video_name = new_video_name.replace("_yy_", "_ww_")
+                            }
+
+                            if (new_video_name.includes('_rr_')) {
+                                new_video_name = new_video_name.replace("_rr_", "_ww_")
+                            }
+
+                            const new_found_file_name = files_array.find(file_single => file_single.filename === new_video_name)
+
+                            media_image_paths.push(new_found_file_name.originalSource.url)
+                        }
                         // Video END
+                        // 
 
 
-                        final_media_url += '01.jpg'
-                        console.log('final_media_url', final_media_url)
-    
-                        media_image_path = shopify_cdn_base + final_media_url
+                        // 
+                        URL_parameters += '01.jpg'
+                        media_image_path = shopify_cdn_base + URL_parameters
+                        // 
                     }
                 }
             }
             // 
+
+            // console.log('video_url_array', video_url_array)
 
             mediaRecords.push({
               media_id: makeid(24),
@@ -344,6 +379,8 @@ export const generateMedias = (shop_domain, { options: productOptions, product_s
     generate(0, [])
 
     // console.log('mediaRecords', mediaRecords)
+    video_url_array = [...new Set(video_url_array)]
+    console.log('video_url_array', video_url_array)
 
     return mediaRecords
 }

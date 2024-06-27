@@ -56,6 +56,8 @@ export const action = async ({ request }) => {
 
 const productsCreateOrUpdateHandler = async (admin, shop, productPayload) => {
 
+  console.log('productsCreateOrUpdateHandler admin', admin)
+
   // console.log('productsCreateOrUpdateHandler START', productPayload)
 
   try {
@@ -215,7 +217,43 @@ const productsCreateOrUpdateHandler = async (admin, shop, productPayload) => {
       // console.log('productsCreateOrUpdateHandler product', product)
 
 
-      const the_medias = generateMedias(shop_domain, product)
+      console.log("product.product_sku", product.product_sku)
+
+
+      // Files START
+      const filesResponse = await admin.graphql(
+        `#graphql
+        {
+          files(first: 250, query: "media_type:video AND filename:${product.product_sku}") {
+            nodes {
+              ... on Video {
+                filename
+                originalSource {
+                  url
+                }
+              }
+            }
+          }
+        }
+        `
+      )
+      const filesResponseJson = await filesResponse.json()
+      console.log('filesResponseJson', filesResponseJson)
+
+      let files_array = []
+      if (!!filesResponseJson?.data?.files?.nodes) {
+        console.log('filesResponseJson', filesResponseJson)
+        files_array = filesResponseJson.data.files.nodes
+      }
+      console.log('files_array', files_array)
+      // Files END
+
+      const the_medias = generateMedias(
+        // admin,
+        shop_domain,
+        product,
+        files_array
+      )
       // console.log('productsCreateOrUpdateHandler the_medias', the_medias)
 
 

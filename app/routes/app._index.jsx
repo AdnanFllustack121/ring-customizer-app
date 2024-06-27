@@ -169,12 +169,12 @@ export const action = async ({ request }) => {
       const selectedResources = body.get("selectedResources")
       if (!!selectedResources) {
         const found_products = await Products.findById(selectedResources)
-        console.log('found_products', found_products)
+        // console.log('found_products', found_products)
 
         // await deleteFile(found_colors.filePath)
 
         const isDeleted = await Products.findByIdAndDelete(selectedResources)
-        console.log('isDeleted', isDeleted)
+        // console.log('isDeleted', isDeleted)
       }
 
       break;

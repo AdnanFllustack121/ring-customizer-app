@@ -1,16 +1,5 @@
-{%- comment -%}
-{% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
-<span style="color:{{ block.settings.colour }}">
-  {% render 'stars', rating: avg_rating %}
-</span>
-{% if avg_rating >= 4 %}
-  <br>
-  <img src="{{ "thumbs-up.png" | asset_img_url: '15x' }}" height="15" width="15" loading="lazy">
-  {{ 'ratings.home.recommendationText' | t }}
-{% endif %}
-{%- endcomment -%}
+<div id="jewelry-builder-app-collection-root"></div>
 
-<div id="jewelry-builder-app-root"></div>
 <script id="jewelrybuilderapp" type="application/ld+json">
 {
   "title": {{ product.title | json }},
@@ -20,14 +9,13 @@
   "featured_media": "{{ product.featured_media }}",
   "sku": "{{ product.selected_or_first_available_variant.sku }}",
   "metafields": {{ product.metafields.jewelrybuilderapp | json }},
-  "file_url": "{{ '' | file_url }}",
-  "video_tag": "{{ '' | video_tag }}"
+  "file_url": "{{ '' | file_url }}"
 }
 </script>
 
 {% schema %}
 {
-  "name": "Product Options",
+  "name": "Product Collection",
   "target": "section",
   "enabled_on": {
     "templates": ["product"]

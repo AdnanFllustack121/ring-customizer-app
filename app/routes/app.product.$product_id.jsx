@@ -29,6 +29,7 @@ import {
   TextField,
   Divider,
   FormLayout,
+  PageActions,
 } from "@shopify/polaris";
 import {
   AddImageMajor,
@@ -1487,6 +1488,31 @@ export default function Product() {
               </div>
             </Card>
           </Layout.Section> */}
+
+          <Layout.Section>
+            <PageActions
+              // primaryAction={{
+              //   content: 'Save'
+              // }}
+              // secondaryActions={[
+              //   {
+              //     content: 'Delete',
+              //     destructive: true,
+              //     onAction: () => {
+
+              //       console.log('productData.id', productData.id)
+
+              //       submit({ selectedResources: [ productData.id ] }, {
+              //         action: '/app',
+              //         method: "DELETE",
+              //         replace: true
+              //       })
+
+              //     }
+              //   }
+              // ]}
+            />
+          </Layout.Section>
 
         </Layout>
       </BlockStack>
