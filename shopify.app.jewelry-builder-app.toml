@@ -1,9 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "Jewelry Builder App"
 client_id = "1944e3d11fe47b32b49a0e4560c2c1f4"
+name = "Jewelry Builder App"
+handle = "jewelry-builder-app"
 application_url = "https://jewelrybuilderapp.com"
 embedded = true
+
+[build]
+include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes

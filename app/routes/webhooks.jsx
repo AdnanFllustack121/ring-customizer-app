@@ -221,30 +221,30 @@ const productsCreateOrUpdateHandler = async (admin, shop, productPayload) => {
 
 
       // Files START
-      const filesResponse = await admin.graphql(
-        `#graphql
-        {
-          files(first: 250, query: "media_type:video AND filename:${product.product_sku}") {
-            nodes {
-              ... on Video {
-                filename
-                originalSource {
-                  url
-                }
-              }
-            }
-          }
-        }
-        `
-      )
-      const filesResponseJson = await filesResponse.json()
-      console.log('filesResponseJson', filesResponseJson)
+      // const filesResponse = await admin.graphql(
+      //   `#graphql
+      //   {
+      //     files(first: 250, query: "media_type:video AND filename:${product.product_sku}") {
+      //       nodes {
+      //         ... on Video {
+      //           filename
+      //           originalSource {
+      //             url
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      //   `
+      // )
+      // const filesResponseJson = await filesResponse.json()
+      // console.log('filesResponseJson', filesResponseJson)
 
       let files_array = []
-      if (!!filesResponseJson?.data?.files?.nodes) {
-        console.log('filesResponseJson', filesResponseJson)
-        files_array = filesResponseJson.data.files.nodes
-      }
+      // if (!!filesResponseJson?.data?.files?.nodes) {
+      //   console.log('filesResponseJson', filesResponseJson)
+      //   files_array = filesResponseJson.data.files.nodes
+      // }
       console.log('files_array', files_array)
       // Files END
 

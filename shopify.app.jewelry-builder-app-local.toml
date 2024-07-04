@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://itunes-sonic-instrumentation-highlight.trycloudflare.com"
+application_url = "https://fiber-contributor-ln-wow.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products,read_files"
 
 [auth]
 redirect_urls = [
-  "https://itunes-sonic-instrumentation-highlight.trycloudflare.com/auth/callback",
-  "https://itunes-sonic-instrumentation-highlight.trycloudflare.com/auth/shopify/callback",
-  "https://itunes-sonic-instrumentation-highlight.trycloudflare.com/api/auth/callback"
+  "https://fiber-contributor-ln-wow.trycloudflare.com/auth/callback",
+  "https://fiber-contributor-ln-wow.trycloudflare.com/auth/shopify/callback",
+  "https://fiber-contributor-ln-wow.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://itunes-sonic-instrumentation-highlight.trycloudflare.com"
+url = "https://fiber-contributor-ln-wow.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

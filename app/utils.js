@@ -288,8 +288,8 @@ export const generateMedias = (
 
                         // Video START
                         const found_file_name = files_array.find(file_single => file_single.filename === URL_parameters + '36.mp4')
-                        console.log('found_file_name', found_file_name)
-                        if (found_file_name && !!found_file_name?.originalSource?.url) {
+                        console.log('found_file_name', typeof found_file_name, found_file_name)
+                        if ( !!found_file_name && !!found_file_name?.originalSource?.url ) {
                             // media_image_paths.push(`${final_media_video_url + URL_parameters}36.mp4`)
                             media_image_paths.push(found_file_name.originalSource.url)
                         } else {
@@ -305,8 +305,12 @@ export const generateMedias = (
                             }
 
                             const new_found_file_name = files_array.find(file_single => file_single.filename === new_video_name)
-
-                            media_image_paths.push(new_found_file_name.originalSource.url)
+                            console.log('new_found_file_name', new_found_file_name)
+                            if ( new_found_file_name && !!new_found_file_name?.originalSource?.url ) {
+                                media_image_paths.push(new_found_file_name.originalSource.url)
+                            } else {
+                                media_image_paths.push(`https://jewelryvideos.jewelrybuilderapp.com/${product_type.toLowerCase()}/${productSku}/${new_video_name}`)
+                            }
                         }
                         // Video END
                         // 
