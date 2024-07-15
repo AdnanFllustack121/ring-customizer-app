@@ -9,23 +9,31 @@ function Swatches({ optn, option_index, selectedOptions, onSelectOption }) {
                         <>
                             <label htmlFor={option_value.option_value_id}>
 
-                            <span className='tooltiptext'>{option_value.option_value_title}</span>
+                                <span className='tooltiptext'>{option_value.option_value_title}</span>
 
-                            {
-                                !!option_value.option_image_path
-                                ?
-                                <img src={`/apps/jewelry-builder-app${option_value.option_image_path}`} alt="" />
-                                :
-                                option_value.option_value_title
-                            }
-                            <input
-                                type="radio"
-                                name={`properties[${optn.option_title}]`}
-                                value={option_value.option_value_title}
-                                id={option_value.option_value_id}
-                                onClick={() => onSelectOption(option_index, optn, option_value)}
-                                checked={selectedOptions[option_index]?.option_value_id === option_value.option_value_id}
-                            />
+                                {
+                                    !!option_value.option_image_path
+                                    ?
+                                    <img src={`/apps/jewelry-builder-app${option_value.option_image_path}`} alt="" />
+                                    :
+                                    option_value.option_value_title
+                                }
+
+                                {
+                                    optn.option_slug === "center_stone_type" &&
+                                    <span className="option_value_title">
+                                        {option_value.option_value_title}
+                                    </span>
+                                }
+
+                                <input
+                                    type="radio"
+                                    name={`properties[${optn.option_title}]`}
+                                    value={option_value.option_value_title}
+                                    id={option_value.option_value_id}
+                                    onClick={() => onSelectOption(option_index, optn, option_value)}
+                                    checked={selectedOptions[option_index]?.option_value_id === option_value.option_value_id}
+                                />
                             </label>
                         </>
                     )
