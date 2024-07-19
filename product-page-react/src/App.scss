@@ -408,3 +408,16 @@ ul.product-image-thumbs {
     height: 70px;
   }
 }
+
+.swiper-button-prev, .swiper-button-next {
+  display: flex !important;
+  color: #121212 !important;
+}
+
+.swiper-button-prev.swiper-button-disabled, .swiper-button-next.swiper-button-disabled {
+  color: #cbcbcb !important;
+}
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
+  background: #121212 !important;
+}
