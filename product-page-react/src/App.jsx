@@ -36,6 +36,7 @@ function App() {
 
   const [metaFieldData, setMetaFieldData] = useState(null)
 
+  const [pricingTable, setPricingTable] = useState(null)
   const [finalProductPrice, setFinalProductPrice] = useState(0)
 
   // console.log('useI18n', useI18n)
@@ -43,8 +44,20 @@ function App() {
   // console.log('i18n', i18n)
 
 
-  useEffect(() => {
+  useEffect(async () => {
     console.log('useEffect first! no dependencies.')
+    try {
+      const JewelryBuilderPricingTablesResponse = await fetch(`${window.location.origin}/cdn/shop/files/JewelryBuilderPricingTables.json`).then((response) => response.json())
+      setPricingTable(JewelryBuilderPricingTablesResponse)
+    } catch (error) {
+      console.log('error', error)
+      setPricingTable({})
+    }
+  }, [])
+
+
+  useEffect(() => {
+    console.log('useEffect pricingTable', pricingTable)
 
     // 
     const jewelrybuilderapp_script_tag = document.querySelector('#jewelrybuilderapp')
@@ -55,7 +68,7 @@ function App() {
     // 
 
     // console.log('optionsJson', optionsJson)
-  }, [])
+  }, [pricingTable])
 
 
   useEffect(() => {
@@ -470,6 +483,8 @@ function App() {
       // metaFieldData?.metafields?.smallStoneWeight
       // metaFieldData?.metafields?.metalWeight
 
+      console.log('pricingTable', pricingTable)
+
       if (
         !metaFieldData.metafields?.premium ||
         !metaFieldData.metafields?.sideStoneValue ||
@@ -478,9 +493,13 @@ function App() {
       ) {
         setFinalProductPrice("Call for Price")
       } else {
-        const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions)
-        console.log('final_product_price', final_product_price)
-        setFinalProductPrice(final_product_price)
+        if ( !!pricingTable && !!Object.keys(pricingTable)?.length ) {
+          const final_product_price = RingBuilderPriceCall(productInfo.product_type, metaFieldData.metafields, selectedOptions, pricingTable)
+          console.log('final_product_price', final_product_price)
+          setFinalProductPrice(final_product_price)
+        } else {
+          setFinalProductPrice("Call for Price")
+        }
       }
     }
 

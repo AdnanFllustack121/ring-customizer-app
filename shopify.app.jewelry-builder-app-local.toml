@@ -2,7 +2,7 @@
 
 name = "Jewelry Builder App Local"
 client_id = "09310e3f895d88fe1c103f62df951647"
-application_url = "https://thousand-stamps-productivity-control.trycloudflare.com"
+application_url = "https://viewpicture-infrared-magnetic-reaches.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,16 +11,16 @@ scopes = "read_orders,write_products,read_files"
 
 [auth]
 redirect_urls = [
-  "https://thousand-stamps-productivity-control.trycloudflare.com/auth/callback",
-  "https://thousand-stamps-productivity-control.trycloudflare.com/auth/shopify/callback",
-  "https://thousand-stamps-productivity-control.trycloudflare.com/api/auth/callback"
+  "https://viewpicture-infrared-magnetic-reaches.trycloudflare.com/auth/callback",
+  "https://viewpicture-infrared-magnetic-reaches.trycloudflare.com/auth/shopify/callback",
+  "https://viewpicture-infrared-magnetic-reaches.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
 
 [app_proxy]
-url = "https://thousand-stamps-productivity-control.trycloudflare.com"
+url = "https://viewpicture-infrared-magnetic-reaches.trycloudflare.com"
 subpath = "jewelry-builder-app"
 prefix = "apps"
 

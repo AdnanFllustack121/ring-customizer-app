@@ -1,7 +1,7 @@
 import jQuery from "jquery";
-import JewelryBuilderPricingTables from "./JewelryBuilderPricingTables";
+// import JewelryBuilderPricingTables from "./JewelryBuilderPricingTables";
 
-console.log('JewelryBuilderPricingTables', JewelryBuilderPricingTables)
+// console.log('JewelryBuilderPricingTables', JewelryBuilderPricingTables)
 
 let ringBuilder = {
   // Product Type and other product specific values, whose values are found in Shopify Product Meta Fields
@@ -59,15 +59,22 @@ let ringBuilder = {
   smallStoneType: null,
   smallStoneShape: null,
 
-  jewelryVars: JewelryBuilderPricingTables.jewelryVars,
+  // jewelryVars: JewelryBuilderPricingTables.jewelryVars,
 
-  stonePrices: JewelryBuilderPricingTables.stonePrices,
+  // stonePrices: JewelryBuilderPricingTables.stonePrices,
 
   defaultImage: "rd-di_na-na_na-na",
 }
 
 
-export function RingBuilderPriceCall(productType, metaFieldData, selectedOptions) {
+export function RingBuilderPriceCall(productType, metaFieldData, selectedOptions, JewelryBuilderPricingTables) {
+
+  // 
+  ringBuilder.jewelryVars = JewelryBuilderPricingTables.jewelryVars
+  ringBuilder.stonePrices = JewelryBuilderPricingTables.stonePrices
+  // 
+
+
     // Set Product Type to: 'Ring', 'Earrings', or 'Pendant'
     ringBuilder.productType = productType;
 
@@ -719,9 +726,11 @@ function calcPremium() {
   return ringBuilder.premium * ringBuilder.jewelryVars.premium_variable;
 }
 
+
 function toAscii(str) {
   return str.trim().toLowerCase().replace(/(\s|-)/g, '_');
 }
+
 
 function breakDownMetal(str) {
   var cleanStr = str.trim().toLowerCase();
