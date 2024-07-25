@@ -60,10 +60,12 @@ function App() {
     console.log('useEffect pricingTable', pricingTable)
 
     // 
-    const jewelrybuilderapp_script_tag = document.querySelector('#jewelrybuilderapp')
-    if (!!jewelrybuilderapp_script_tag && !!jewelrybuilderapp_script_tag?.text) {
-      const jewelrybuilderapp_json = JSON.parse(jewelrybuilderapp_script_tag.text)
-      setMetaFieldData(jewelrybuilderapp_json)
+    if (!!pricingTable) {
+      const jewelrybuilderapp_script_tag = document.querySelector('#jewelrybuilderapp')
+      if (!!jewelrybuilderapp_script_tag && !!jewelrybuilderapp_script_tag?.text) {
+        const jewelrybuilderapp_json = JSON.parse(jewelrybuilderapp_script_tag.text)
+        setMetaFieldData(jewelrybuilderapp_json)
+      }
     }
     // 
 
@@ -521,42 +523,46 @@ function App() {
     // Check for video existance START
     (async () => {
       console.log('Video Image Loaded', allMedias)
-      console.log('nclds 4')
-      const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
-      console.log('videoMedia', videoMedia)
-      try {
-        const videoMediaFetch = await fetch(videoMedia, {
-          method: "HEAD",
-        })
-        console.log('videoMediaFetch', videoMediaFetch)
-        if (videoMediaFetch?.ok === false) {
-          
+
+      if (allMedias) {        
+        console.log('nclds 4')
+        const videoMedia = allMedias.find(singleMedia => singleMedia.includes('mp4'))
+        console.log('videoMedia', videoMedia)
+        try {
+          const videoMediaFetch = await fetch(videoMedia, {
+            method: "HEAD",
+          })
+          console.log('videoMediaFetch', videoMediaFetch)
+          if (videoMediaFetch?.ok === false) {
+            
+          }
+        } catch (error) {
+          console.log('videoMediaFetch error', error, allMedias)
+          setAllMedias(prevMedias => {
+            const newMedias = [...prevMedias]
+  
+            let video_url = newMedias[6]
+            console.log('video_url', video_url)
+  
+            console.log('nclds 5')
+            if (video_url.includes('_yy_')) {
+              video_url = video_url.replace("_yy_", "_ww_")
+            }
+  
+            console.log('nclds 6')
+            if (video_url.includes('_rr_')) {
+              video_url = video_url.replace("_rr_", "_ww_")
+            }
+  
+            newMedias[6] = video_url
+  
+            return [
+              ...newMedias
+            ]
+          })
         }
-      } catch (error) {
-        console.log('videoMediaFetch error', error, allMedias)
-        setAllMedias(prevMedias => {
-          const newMedias = [...prevMedias]
-
-          let video_url = newMedias[6]
-          console.log('video_url', video_url)
-
-          console.log('nclds 5')
-          if (video_url.includes('_yy_')) {
-            video_url = video_url.replace("_yy_", "_ww_")
-          }
-
-          console.log('nclds 6')
-          if (video_url.includes('_rr_')) {
-            video_url = video_url.replace("_rr_", "_ww_")
-          }
-
-          newMedias[6] = video_url
-
-          return [
-            ...newMedias
-          ]
-        })
       }
+
     })()
     // Check for video existance END
 
