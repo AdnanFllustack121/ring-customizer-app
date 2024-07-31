@@ -908,6 +908,7 @@ function App() {
         featuredMediaIndex={featuredMediaIndex}
         setFeaturedMediaIndex={setFeaturedMediaIndex}
 
+        isFirstUnavailable={isFirstUnavailable}
         setIsFirstUnavailable={setIsFirstUnavailable}
       />
 

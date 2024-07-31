@@ -19,31 +19,55 @@ function MediaWrapper({
   featuredMediaIndex,
   setFeaturedMediaIndex,
 
+  isFirstUnavailable,
   setIsFirstUnavailable
 }) {
 
+
   useEffect(() => {
 
-    console.log('MediaWrapper allMedias', allMedias)
+    console.log('allMedias useEffect MediaWrapper allMedias', allMedias)
 
-    const swiper = new Swiper('.swiper', {
-      // configure Swiper to use modules
-      modules: [Navigation, Pagination],
+    if (!document.querySelector('.swiper')?.swiper) {
+      console.log("!document.querySelector('.swiper')?.swiper", !document.querySelector('.swiper')?.swiper)
+      const swiper = new Swiper('.swiper', {
+  
+        grabCursor: true,
+  
+        // configure Swiper to use modules
+        modules: [Navigation, Pagination],
+  
+        observer: true,
+        observeParents: true,
+        observeSlideChildren: true,
+  
+        // If we need pagination
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true
+        },
+  
+        // Navigation arrows
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+  
+      })
 
-      // If we need pagination
-      pagination: {
-        el: '.swiper-pagination',
-      },
+      console.log('allMedias useEffect swiper', swiper)
+    } else {
+      console.log('allMedias useEffect swiper update')
+      document.querySelector('.swiper').swiper.update()
+    }
 
-      // Navigation arrows
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
+    return () => {
+      console.log("allMedias useEffect swiper cleaned up")
+      if (!!document.querySelector('.swiper')?.swiper) {
+        // document.querySelector('.swiper').swiper.destroy()
+      }
+    }
 
-    })
-
-    console.log('swiper', swiper)
 
   }, [allMedias])
 
@@ -126,7 +150,7 @@ function MediaWrapper({
                       {
                         thisMedia.includes('mp4')
                         ?
-                        <video id="myVideo" className="video-player" width="100%" height="100%" autoplay="autoplay" loop="loop">
+                        <video id="myVideo" className="video-player" width="100%" height="100%" autoplay="autoplay" loop="loop" src={thisMedia}>
                           <source src={thisMedia} type="video/mp4" />
                         </video>
                         :
@@ -190,12 +214,13 @@ function MediaWrapper({
                               // console.log('onLoad event', event)
                             }}
                             onError={(event) => {
-                              // console.log('onError singleMediaIndex, event', singleMediaIndex, event)
+                              // console.log('onError singleMediaIndex, singleMedia, event', singleMediaIndex, singleMedia, event)
                               // console.log('onError selectedOptions', selectedOptions)
-                              if (singleMediaIndex === 1) {
+                              // if (singleMediaIndex === 1) {
+                              if ( singleMedia.includes('01.') ) {
                                 setIsFirstUnavailable(true)
                               } else {
-                                // console.log('Before setting media isFirstUnavailable', isFirstUnavailable)
+                                // console.log('onError Before setting media isFirstUnavailable', isFirstUnavailable)
                                 setAllMedias(prevMedias => {
                                   const newMedias = [...prevMedias]
                                   newMedias[singleMediaIndex] = ""
