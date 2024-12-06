@@ -47,30 +47,21 @@ export const shopifyRest = async ({ session, method = "GET", path, body }) => {
     }
 }
 
-export const shopifyGraphQL = async ({ session, query }) => {
+export const shopifyGraphQL = async ({ session, query, variables = null }) => {
     try {
-        // const options = {
-        //     method: "POST",
-        //     headers: {
-        //         'X-Shopify-Access-Token': session.accessToken,
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.parse(query)
-        // }
-        // return await fetch(`https://${session.shop}/admin/api/${apiVersion}/graphql.json`, options).then((res) => res.json())
         const options = {
-            url: `https://${session.shop}/admin/api/${apiVersion}/graphql.json`,
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Access-Token': 'shpua_aeca6e07882718be70c9f559ce02efcb'
+                'X-Shopify-Access-Token': session.accessToken
             },
-            data: {
-                query: query
-            }
+            body: JSON.stringify({ query, variables })
         }
-        return await axios(options)
-
+        const url = `https://${session.shop}/admin/api/${apiVersion}/graphql.json`
+        const response = await fetch(url, options)
+        const data = await response.json()
+        console.log("shopifyGraphQL data", data)
+        return data
     } catch (error) {
         console.log('shopifyGraphQL error', error)
         return error

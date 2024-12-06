@@ -32,11 +32,11 @@ import {
   PageActions,
 } from "@shopify/polaris";
 import {
-  AddImageMajor,
-  CircleCancelMajor,
-  CircleDotsMajor,
-  DeleteMajor,
-  PlusMinor
+  ImageAddIcon,
+  XCircleIcon,
+  MenuHorizontalIcon,
+  DeleteIcon,
+  PlusCircleIcon
 } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { Files, Products, Session } from "../db.server";
@@ -992,7 +992,7 @@ export default function Product() {
                       editColorHandler(option_id, mp.option_value_id)
                     }}
                   >
-                    <Icon source={CircleDotsMajor} />
+                    <Icon source={MenuHorizontalIcon} />
                   </div>
 
                   <div
@@ -1006,7 +1006,7 @@ export default function Product() {
                       removeColorHandler(option_id, mp.option_value_id)
                     }}
                   >
-                    <Icon source={CircleCancelMajor} />
+                    <Icon source={XCircleIcon} />
                   </div>
                 </div>
               </Tooltip>
@@ -1146,7 +1146,7 @@ export default function Product() {
                     <BlockStack inlineAlign="start">
                       <Button
                         variant="plain"
-                        icon={PlusMinor}
+                        icon={PlusCircleIcon}
                         onClick={() => { optionModalToggleActive({ isActive: true }) }}
                       >
                         Add option
@@ -1422,7 +1422,7 @@ export default function Product() {
                                 />
                               </div>
                               :
-                              <Icon source={AddImageMajor} />
+                              <Icon source={ImageAddIcon} />
                             }
                           </IndexTable.Cell>
                           <IndexTable.Cell>{media_title}</IndexTable.Cell>
@@ -1451,7 +1451,7 @@ export default function Product() {
                                   }}
                                   disabled={isLoading}
                                 >
-                                  <Icon source={DeleteMajor} />
+                                  <Icon source={DeleteIcon} />
                                 </Button>
                               </ButtonGroup>
                             </div>

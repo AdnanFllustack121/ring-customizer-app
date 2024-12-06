@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import db, { Products, Session } from "../db.server";
 
-import { generateMedias, generateVariations, makeid, shopifyRest } from "../utils";
+import { generateMedias, generateVariations, makeid, shopifyGraphQL, shopifyRest } from "../utils";
 
 import ProductTypes from "../../json/productTypes.json";
 import optionsJson from "../../json/options.json"
@@ -304,10 +304,20 @@ const ordersCreateHandler = async (orderPayload) => {
   const session = await Session.findOne()
 
   custom_product_ids.forEach(async custom_product_id => {
-    const deleteProduct = await shopifyRest({
+    const productDeleteQuery = `
+      mutation {
+        productDelete(input: {id: "gid://shopify/Product/${custom_product_id}"}) {
+          deletedProductId
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `
+    const deleteProduct = await shopifyGraphQL({
       session,
-      method: "DELETE",
-      path: `products/${custom_product_id}.json`,
+      query: productDeleteQuery
     })
     console.log('deleteProduct')
   })

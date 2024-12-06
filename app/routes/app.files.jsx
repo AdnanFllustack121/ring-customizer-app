@@ -18,7 +18,7 @@ import {
     useIndexResourceState,
     useSetIndexFiltersMode,
 } from "@shopify/polaris";
-import { NoteMinor } from '@shopify/polaris-icons';
+import { NoteIcon } from '@shopify/polaris-icons';
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { authenticate } from "../shopify.server";
 import {
@@ -82,7 +82,8 @@ export const loader = async ({ request }) => {
     return json({
         success: true,
         data: files,
-        tabs: await Files.distinct('type', null, { sort: false })
+        // tabs: await Files.distinct('type', null, { sort: false })
+        tabs: await Files.distinct('type')
     })
 }
 
@@ -501,7 +502,7 @@ export default function ColorsPage() {
                                         source={
                                             ['image/gif', 'image/jpeg', 'image/png'].includes(modalData.colorImageFile.type)
                                             ? window.URL.createObjectURL(modalData.colorImageFile)
-                                            : NoteMinor
+                                            : NoteIcon
                                         }
                                     />
                                     <div>

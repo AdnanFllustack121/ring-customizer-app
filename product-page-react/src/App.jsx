@@ -866,8 +866,10 @@ function App() {
   
       const productResponse = await fetch(`${proxyBaseUrl}/api/product/${ShopifyAnalytics.meta.product.id}`, {
         method: "POST",
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" }
       }).then((response) => response.json())
+      const variantID = productResponse.data.split("/")[4]
       if (
         !!productResponse.success &&
         !!productResponse.data
@@ -879,7 +881,7 @@ function App() {
           },
           body: JSON.stringify({
             'items': [{
-              id: productResponse.data,
+              id: variantID,
               quantity: 1,
               properties: line_item_properties
             }]

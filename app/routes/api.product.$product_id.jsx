@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node"
 import { Products, Session } from "../db.server"
-import { createFile, makeid, shopifyRest } from "../utils"
+import { createFile, makeid, shopifyRest, shopifyGraphQL } from "../utils"
 import shopify, { apiVersion, authenticate } from "../shopify.server"
 
 export const loader = async ({ params, request }) => {
@@ -63,128 +63,329 @@ export const action = async ({ params, request }) => {
                 //     delete: params.product_id
                 // })
 
-                const deleteProduct = await shopifyRest({
+                const productDeleteQuery = `
+                    mutation {
+                        productDelete(input: {id: "gid://shopify/Product/${params.product_id}"}) {
+                            deletedProductId
+                            userErrors {
+                            field
+                            message
+                            }
+                        }
+                    }
+                `
+
+                const deleteProduct = await shopifyGraphQL({
                     session,
-                    method: "DELETE",
-                    path: `products/${params.product_id}.json`,
+                    query: productDeleteQuery,
                 })
-                console.log('deleteProduct', deleteProduct)
 
             }
 
-            // 
+            const productQuery = `
+                query {
+                    node(id: "gid://shopify/Product/${params_product_id}") {
+                        id
+                        ... on Product {
+                            title
+                            bodyHtml
+                            vendor
+                            productType
+                            createdAt
+                            handle
+                            updatedAt
+                            publishedAt
+                            templateSuffix
+                            tags
+                            status
+                            variants(first:20) {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        price
+                                        position
+                                        inventoryPolicy
+                                        compareAtPrice
+                                        createdAt
+                                        updatedAt
+                                        taxable
+                                        barcode
+                                        sku
+                                        inventoryItem{id}
+                                        inventoryQuantity
+                                    }
+                                }
+                            }
+                            options{
+                                id
+                                values
+                                name
+                                position
+                            }
+                            images(first:5) {
+                                edges {
+                                    node {
+                                        id
+                                        altText
+                                        width
+                                        height
+                                        url
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
 
-            const getProduct = await shopifyRest({
+            const getProduct = await shopifyGraphQL({
                 session,
-                path: `products/${params_product_id}.json`,
+                query: productQuery,
             })
             // console.log('getProduct', getProduct)
 
             const productCustomizationData = await Products.findOne({
                 product_id: `gid://shopify/Product/${params_product_id}`
             })
-            console.log('productCustomizationData', productCustomizationData)
 
             if (
                 !!getProduct &&
-                ('product' in getProduct) &&
+                ('data' in getProduct) &&
                 !!productCustomizationData
             ) {
-                const product_data = getProduct.product
-                console.log('product_data', product_data)
-
+                const product_data = getProduct.data.node
                 const total_price = parseFloat(+payload.final_product_price).toFixed(2)
-                console.log('total_price', total_price)
 
-                const productCreateResponse = await shopifyRest({
-                    session,
-                    method: "POST",
-                    path: 'products.json',
-                    body: {
-                        "product": {
-                            "title": `${product_data.title} - Custom Builder - SKU ${product_data.variants[0].sku}`,
-                            "body_html": product_data.body_html,
-                            "vendor": product_data.vendor,
-                            "product_type": "custom_ordered",
-                            // "status": "draft"
-                            "tags": `related_to_${product_data.id}`,
-                            "images": [{
-                                // "attachment": image_path
-                                "src": image_path
-                            }],
-                            "metafields": [
-                                {
-                                    "key": "hidden",
-                                    "value": 1,
-                                    "type": "number_integer",
-                                    "namespace": "seo"
-                                },
-                                {
-                                    "key": "related_to",
-                                    "value": product_data.id,
-                                    "type": "number_integer",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-                                {
-                                    "key": "related_to_sku",
-                                    "value": product_data.variants[0].sku,
-                                    "type": "single_line_text_field",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-                                {
-                                    "key": "selectedOptions",
-                                    "value": JSON.stringify(payload.selectedOptions),
-                                    "type": "json",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-
-                                {
-                                    "key": "metalWeight",
-                                    "value": payload.metafields.metalWeight,
-                                    "type": "number_decimal",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-                                {
-                                    "key": "smallStoneWeight",
-                                    "value": payload.metafields.smallStoneWeight,
-                                    "type": "number_decimal",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-                                {
-                                    "key": "sideStoneValue",
-                                    "value": payload.metafields.sideStoneValue,
-                                    "type": "number_decimal",
-                                    "namespace": "jewelrybuilderapp"
-                                },
-                                {
-                                    "key": "premium",
-                                    "value": payload.metafields.premium,
-                                    "type": "number_decimal",
-                                    "namespace": "jewelrybuilderapp"
+                const productCreateQuery = `
+                    mutation createProductMetafields($input: ProductInput!) {
+                        productCreate(input: $input) {
+                            product {
+                                id
+                                metafields(first: 3) {
+                                    edges {
+                                        node {
+                                            id
+                                            namespace
+                                            key
+                                            value
+                                        }
+                                    }
                                 }
-                            ],
-                            "variants": [{
-                                price: total_price
-                            }]
+                            }
+                            userErrors {
+                                message
+                                field
+                            }
                         }
                     }
+                `;
+
+                const productCreatevariables = {
+                    input: {
+                        title: `${product_data.title} - Custom Builder - SKU ${product_data.variants.edges[0].node.sku}`,
+
+                        vendor: product_data.vendor,
+                        productType: "custom_ordered",
+                        tags: `related_to_${product_data.id}`,
+                        // images: [
+                        //     {
+                        //         // "attachment": image_path
+                        //         "src": image_path
+                        //     }
+                        // ],
+
+                        metafields: [
+                            {
+                                key: "hidden",
+                                value: "1",
+                                type: "number_integer",
+                                namespace: "seo",
+                            },
+                            {
+                                key: "related_to",
+                                value: (product_data.id).split("/")[4],
+                                type: "number_integer",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "related_to_sku",
+                                value: product_data?.variants?.edges[0]?.node.sku,
+                                type: "single_line_text_field",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "selectedOptions",
+                                value: JSON.stringify(payload.selectedOptions),
+                                type: "json",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "metalWeight",
+                                value: String(payload.metafields.metalWeight),
+                                type: "number_decimal",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "smallStoneWeight",
+                                value: String(payload.metafields.smallStoneWeight),
+                                type: "number_decimal",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "sideStoneValue",
+                                value: String(payload.metafields.sideStoneValue),
+                                type: "number_decimal",
+                                namespace: "jewelrybuilderapp"
+                            },
+                            {
+                                key: "premium",
+                                value: String(payload.metafields.premium),
+                                type: "number_decimal",
+                                namespace: "jewelrybuilderapp"
+                            }
+                        ]
+                    }
+                };
+
+                const productCreateResponse = await shopifyGraphQL({
+                    session,
+                    query: productCreateQuery,
+                    variables: productCreatevariables
                 })
-                console.log('productCreateResponse', productCreateResponse)
+                // console.log('productCreateResponse', productCreateResponse);
+                const productCreateID = productCreateResponse.data.productCreate.product.id
+                const publicationIdQuery = `
+                    query {
+                        publications(first:10) {
+                            edges {
+                                node {
+                                    id
+                                    name
+                                }
+                            }
+                        }
+                    }
+                `;
 
-                if (
-                    'product' in productCreateResponse &&
-                    !!productCreateResponse.product &&
-                    'variants' in productCreateResponse.product &&
-                    !!productCreateResponse.product.variants &&
-                    !!productCreateResponse.product.variants.length
-                ) {
-                    const variant = productCreateResponse.product.variants[productCreateResponse.product.variants.length - 1]
-                    return json({
-                        success: true,
-                        data: variant.id
-                    })
+                const getPublicationId = await shopifyGraphQL({
+                    session,
+                    query: publicationIdQuery,
+                })
+
+                // console.log("getPublicationId === ", getPublicationId);
+                const publicationId = (getPublicationId.data.publications.edges[0].node.id).split("/")[4];
+                if (publicationId) {
+
+                    const productPublishQuery = `
+                        mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
+                            publishablePublish(id: $id, input: $input) {
+                                publishable {
+                                    availablePublicationsCount {
+                                        count
+                                    }
+                                    resourcePublicationsCount {
+                                        count
+                                    }
+                                }
+                                shop {
+                                    publicationCount
+                                }
+                                userErrors {
+                                    field
+                                    message
+                                }
+                            }
+                        }
+                    `;
+
+                    const publishVariables = {
+                        id: `${productCreateID}`,
+                        input: [
+                        {
+                            publicationId: `gid://shopify/Publication/${publicationId}`
+                        }
+                        ]
+                    };
+
+                    const publishProduct = await shopifyGraphQL({
+                        session,
+                        query: productPublishQuery,
+                        variables: publishVariables
+                    });
+                    // console.log("publishProduct ======= ", publishProduct);
+
+                    const publishProductResponse = publishProduct.data.publishablePublish.publishable
+
+                    if (publishProductResponse.availablePublicationsCount || publishProductResponse.resourcePublicationsCount) {
+                        const productVariantQuery = `
+                        query {
+                            product(id: "${productCreateID}") {
+                                id
+                                title
+                                variants(first: 10) {
+                                    edges {
+                                        node {
+                                            id
+                                        }
+                                    }
+                                }
+                            }
+                        }`
+
+                        const findVariant = await shopifyGraphQL({
+                            session,
+                            query: productVariantQuery,
+                        });
+                        // console.log("findVariant ===== ", findVariant);
+                        const varientID = findVariant.data?.product?.variants?.edges[0]?.node?.id
+
+                        if (varientID) {
+                            const updatePriceQuery = `
+                                mutation productVariantsBulkUpdate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+                                    productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+                                        product {
+                                            id
+                                        }
+                                        productVariants {
+                                            id
+                                            price
+                                        }
+                                        userErrors {
+                                            field
+                                            message
+                                        }
+                                    }
+                                }
+                            `;
+
+                            const updatePriceVariable = {
+                                productId: `${productCreateID}`,
+                                variants: [
+                                    {
+                                        id: `${varientID}`,
+                                        price: total_price
+                                    }
+                                ]
+                            };
+
+                            const updateVariantPrice = await shopifyGraphQL({
+                                session,
+                                query: updatePriceQuery,
+                                variables: updatePriceVariable
+                            });
+                            // console.log("updateVariantPrice =======", updateVariantPrice);
+
+                            const updateVarientData = updateVariantPrice.data.productVariantsBulkUpdate.productVariants
+                            if (updateVarientData.length) {
+                                return json({
+                                success: true,
+                                data: varientID
+                                })
+                            }
+                        }
+                    }
                 }
-
             }
 
           break;
