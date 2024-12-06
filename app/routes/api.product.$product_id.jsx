@@ -53,9 +53,11 @@ export const action = async ({ params, request }) => {
 
             // 
             let params_product_id = params.product_id
+            console.log("params_product_id ===== ", params_product_id);
 
             if (!!payload?.relatedToId) {
                 params_product_id = payload.relatedToId
+                
 
                 // return json({
                 //     success: false,
@@ -78,7 +80,9 @@ export const action = async ({ params, request }) => {
                 const deleteProduct = await shopifyGraphQL({
                     session,
                     query: productDeleteQuery,
-                })
+                });
+                console.log("deleteProduct ======== ", deleteProduct);
+                
 
             }
 
@@ -88,7 +92,7 @@ export const action = async ({ params, request }) => {
                         id
                         ... on Product {
                             title
-                            bodyHtml
+                            descriptionHtml
                             vendor
                             productType
                             createdAt
@@ -162,6 +166,7 @@ export const action = async ({ params, request }) => {
                         productCreate(input: $input) {
                             product {
                                 id
+                                descriptionHtml
                                 metafields(first: 3) {
                                     edges {
                                         node {
@@ -184,7 +189,7 @@ export const action = async ({ params, request }) => {
                 const productCreatevariables = {
                     input: {
                         title: `${product_data.title} - Custom Builder - SKU ${product_data.variants.edges[0].node.sku}`,
-
+                        descriptionHtml: product_data.descriptionHtml,
                         vendor: product_data.vendor,
                         productType: "custom_ordered",
                         tags: `related_to_${product_data.id}`,
@@ -253,139 +258,194 @@ export const action = async ({ params, request }) => {
                     query: productCreateQuery,
                     variables: productCreatevariables
                 })
-                // console.log('productCreateResponse', productCreateResponse);
-                const productCreateID = productCreateResponse.data.productCreate.product.id
-                const publicationIdQuery = `
-                    query {
-                        publications(first:10) {
-                            edges {
-                                node {
-                                    id
-                                    name
-                                }
-                            }
-                        }
-                    }
-                `;
+                console.log('productCreateResponse', productCreateResponse.data.productCreate.product);
 
-                const getPublicationId = await shopifyGraphQL({
-                    session,
-                    query: publicationIdQuery,
-                })
+                if(productCreateResponse && 'data' in productCreateResponse){
+                    const productCreateID = productCreateResponse.data.productCreate.product.id
+                    console.log("productCreateID ==== ", productCreateID.split("/")[4]);
+                    console.log("image_path ==== ", image_path);
 
-                // console.log("getPublicationId === ", getPublicationId);
-                const publicationId = (getPublicationId.data.publications.edges[0].node.id).split("/")[4];
-                if (publicationId) {
+                                     
 
-                    const productPublishQuery = `
-                        mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
-                            publishablePublish(id: $id, input: $input) {
-                                publishable {
-                                    availablePublicationsCount {
-                                        count
-                                    }
-                                    resourcePublicationsCount {
-                                        count
-                                    }
+                    // Add image to custom product
+                    const imageAddQuery = `
+                        mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
+                            productCreateMedia(media: $media, productId: $productId) {
+                                media {
+                                  alt
+                                  mediaContentType
+                                  status
                                 }
-                                shop {
-                                    publicationCount
+                                mediaUserErrors {
+                                  field
+                                  message
                                 }
-                                userErrors {
-                                    field
-                                    message
+                                product {
+                                  id
+                                  title
                                 }
                             }
                         }
                     `;
-
-                    const publishVariables = {
-                        id: `${productCreateID}`,
-                        input: [
-                        {
-                            publicationId: `gid://shopify/Publication/${publicationId}`
-                        }
-                        ]
+                    const imageAddVariable = {
+                        media: [
+                            {
+                                alt: "Image",
+                                mediaContentType: "IMAGE",
+                                originalSource: image_path
+                            }
+                        ],
+                        productId:productCreateID
                     };
+                      
 
-                    const publishProduct = await shopifyGraphQL({
+                    const addImageToProduct = await shopifyGraphQL({
                         session,
-                        query: productPublishQuery,
-                        variables: publishVariables
+                        query: imageAddQuery,
+                        variables: imageAddVariable
                     });
-                    // console.log("publishProduct ======= ", publishProduct);
+                    console.log("addImageToProduct ===== ",addImageToProduct);
 
-                    const publishProductResponse = publishProduct.data.publishablePublish.publishable
-
-                    if (publishProductResponse.availablePublicationsCount || publishProductResponse.resourcePublicationsCount) {
-                        const productVariantQuery = `
+                    
+                    if(addImageToProduct.errors){
+                        console.log("error in addImageToProduct:", addImageToProduct.errors);
+                        return addImageToProduct.errors
+                    }
+                
+                    const publicationIdQuery = `
                         query {
-                            product(id: "${productCreateID}") {
-                                id
-                                title
-                                variants(first: 10) {
-                                    edges {
-                                        node {
-                                            id
-                                        }
+                            publications(first:10) {
+                                edges {
+                                    node {
+                                        id
+                                        name
                                     }
                                 }
                             }
-                        }`
-
-                        const findVariant = await shopifyGraphQL({
+                        }
+                    `;
+    
+                    const getPublicationId = await shopifyGraphQL({
+                        session,
+                        query: publicationIdQuery,
+                    })
+    
+                    // console.log("getPublicationId === ", getPublicationId);
+                    const publicationId = (getPublicationId.data.publications.edges[0].node.id).split("/")[4];
+                    if (publicationId) {
+    
+                        const productPublishQuery = `
+                            mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
+                                publishablePublish(id: $id, input: $input) {
+                                    publishable {
+                                        availablePublicationsCount {
+                                            count
+                                        }
+                                        resourcePublicationsCount {
+                                            count
+                                        }
+                                    }
+                                    shop {
+                                        publicationCount
+                                    }
+                                    userErrors {
+                                        field
+                                        message
+                                    }
+                                }
+                            }
+                        `;
+    
+                        const publishVariables = {
+                            id: `${productCreateID}`,
+                            input: [
+                            {
+                                publicationId: `gid://shopify/Publication/${publicationId}`
+                            }
+                            ]
+                        };
+    
+                        const publishProduct = await shopifyGraphQL({
                             session,
-                            query: productVariantQuery,
+                            query: productPublishQuery,
+                            variables: publishVariables
                         });
-                        // console.log("findVariant ===== ", findVariant);
-                        const varientID = findVariant.data?.product?.variants?.edges[0]?.node?.id
-
-                        if (varientID) {
-                            const updatePriceQuery = `
-                                mutation productVariantsBulkUpdate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-                                    productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-                                        product {
-                                            id
-                                        }
-                                        productVariants {
-                                            id
-                                            price
-                                        }
-                                        userErrors {
-                                            field
-                                            message
+                        // console.log("publishProduct ======= ", publishProduct);
+    
+                        const publishProductResponse = publishProduct.data.publishablePublish.publishable
+    
+                        if (publishProductResponse.availablePublicationsCount || publishProductResponse.resourcePublicationsCount) {
+                            const productVariantQuery = `
+                            query {
+                                product(id: "${productCreateID}") {
+                                    id
+                                    title
+                                    variants(first: 10) {
+                                        edges {
+                                            node {
+                                                id
+                                            }
                                         }
                                     }
                                 }
-                            `;
-
-                            const updatePriceVariable = {
-                                productId: `${productCreateID}`,
-                                variants: [
-                                    {
-                                        id: `${varientID}`,
-                                        price: total_price
-                                    }
-                                ]
-                            };
-
-                            const updateVariantPrice = await shopifyGraphQL({
+                            }`
+    
+                            const findVariant = await shopifyGraphQL({
                                 session,
-                                query: updatePriceQuery,
-                                variables: updatePriceVariable
+                                query: productVariantQuery,
                             });
-                            // console.log("updateVariantPrice =======", updateVariantPrice);
-
-                            const updateVarientData = updateVariantPrice.data.productVariantsBulkUpdate.productVariants
-                            if (updateVarientData.length) {
-                                return json({
-                                success: true,
-                                data: varientID
-                                })
+                            // console.log("findVariant ===== ", findVariant);
+                            const varientID = findVariant.data?.product?.variants?.edges[0]?.node?.id
+    
+                            if (varientID) {
+                                const updatePriceQuery = `
+                                    mutation productVariantsBulkUpdate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+                                        productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+                                            product {
+                                                id
+                                            }
+                                            productVariants {
+                                                id
+                                                price
+                                            }
+                                            userErrors {
+                                                field
+                                                message
+                                            }
+                                        }
+                                    }
+                                `;
+    
+                                const updatePriceVariable = {
+                                    productId: `${productCreateID}`,
+                                    variants: [
+                                        {
+                                            id: `${varientID}`,
+                                            price: total_price
+                                        }
+                                    ]
+                                };
+    
+                                const updateVariantPrice = await shopifyGraphQL({
+                                    session,
+                                    query: updatePriceQuery,
+                                    variables: updatePriceVariable
+                                });
+                                // console.log("updateVariantPrice =======", updateVariantPrice);
+    
+                                const updateVarientData = updateVariantPrice.data.productVariantsBulkUpdate.productVariants
+                                if (updateVarientData.length) {
+                                    return json({
+                                    success: true,
+                                    data: varientID
+                                    })
+                                }
                             }
                         }
                     }
                 }
+
+         
             }
 
           break;
